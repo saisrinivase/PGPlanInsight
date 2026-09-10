@@ -64,9 +64,10 @@ test("S1: browser security policy restricts scripts, connections, forms, objects
   expect(policies.inlineHandlers).toBe(0);
 });
 
-test("S1: analyzed plans survive reload in browser-local history", async ({ page }) => {
+test("S1: explicitly saved plans survive reload in browser-local history", async ({ page }) => {
   await page.goto("/");
   await page.getByLabel("Case name").fill("QA persistence case");
+  await page.getByLabel("Save this plan").selectOption("7");
   await page.getByLabel("Plan evidence").fill(textPlan);
   await page.getByRole("button", { name: /Analyze plan/ }).click();
   await expect(page.getByTestId("pev2-renderer")).toBeVisible();
@@ -84,4 +85,56 @@ test("S2: malformed input fails safely and remains editable", async ({ page }) =
   await expect(page.getByRole("alert")).toContainText(/TEXT plan/i);
   await expect(input).toBeVisible();
   await expect(input).toHaveValue("hello world");
+});
+
+test("S1: default analysis leaves no saved plan and redaction removes private text", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel("Case name").fill("Temporary private case");
+  await page.getByLabel("Plan evidence").fill(textPlan);
+  await page.getByRole("button", { name: /Analyze plan/ }).click();
+  await expect(page.getByTestId("pev2-renderer")).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("Temporary private case", { exact: true })).toHaveCount(0);
+  const rows = await page.evaluate(() => new Promise<number>((resolve) => {
+    const request = indexedDB.open("pgplan-insight", 1);
+    request.onsuccess = () => { const db = request.result; const count = db.transaction("execution-plans").objectStore("execution-plans").count(); count.onsuccess = () => { resolve(count.result); db.close(); }; };
+  }));
+  expect(rows).toBe(0);
+  await page.getByLabel("Plan evidence").fill(textPlan);
+  await page.getByRole("button", { name: "Preview redacted plan" }).click();
+  await expect(page.getByLabel("Redacted JSON")).not.toHaveValue(/qa_accounts|account_id/);
+  await page.getByRole("button", { name: "Use redacted plan" }).click();
+  await page.getByRole("button", { name: /Analyze plan/ }).click();
+  await expect(page.getByTestId("pev2-renderer")).toBeVisible();
+});
+
+test("S1: saved cases can be deleted individually", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel("Case name").fill("Delete this case");
+  await page.getByLabel("Save this plan").selectOption("1");
+  await page.getByLabel("Plan evidence").fill(textPlan);
+  await page.getByRole("button", { name: /Analyze plan/ }).click();
+  await expect(page.getByTestId("pev2-renderer")).toBeVisible();
+  await page.getByRole("button", { name: "New analysis", exact: true }).click();
+  await page.getByRole("button", { name: "Delete Delete this case", exact: true }).click();
+  await expect(page.getByText("Delete this case", { exact: true })).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByText("Delete this case", { exact: true })).toHaveCount(0);
+});
+
+test("S2: deeply nested input fails with a useful error and valid input still works", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel("Plan evidence").fill('{"Plan":' + '{"Plans":['.repeat(300) + '{"Node Type":"Result"}' + ']}'.repeat(300) + '}');
+  await page.getByRole("button", { name: /Analyze plan/ }).click();
+  await expect(page.getByRole("alert")).toContainText("nesting");
+  await page.getByLabel("Plan evidence").fill(textPlan);
+  await page.getByRole("button", { name: /Analyze plan/ }).click();
+  await expect(page.getByTestId("pev2-renderer")).toBeVisible();
+});
+
+
+test("S1: production preview sends framing and content type protections", async ({ request }) => {
+  const response = await request.get("/");
+  expect(response.headers()["content-security-policy"]).toContain("frame-ancestors 'none'");
+  expect(response.headers()["x-content-type-options"]).toBe("nosniff");
 });

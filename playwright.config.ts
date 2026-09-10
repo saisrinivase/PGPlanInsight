@@ -7,7 +7,7 @@ export default defineConfig({
   workers: 2,
   reporter: [["list"]],
   use: { baseURL: "http://127.0.0.1:4178", trace: "retain-on-failure" },
-  webServer: { command: "npm run dev -- --host 127.0.0.1 --port 4178", url: "http://127.0.0.1:4178", reuseExistingServer: true },
+  webServer: { command: "npx vite preview --host 127.0.0.1 --port 4178", url: "http://127.0.0.1:4178", reuseExistingServer: false },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
     { name: "firefox", use: { ...devices["Desktop Firefox"] } },

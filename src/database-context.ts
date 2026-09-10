@@ -1,3 +1,4 @@
+import { validatePlanStructure } from "./input-boundary.ts";
 export type ContextSection = "relationStats" | "columnStats" | "indexStats" | "extendedStats" | "partitions" | "settings";
 export type ContextAvailability = Record<ContextSection, { status: "captured" | "unavailable"; reason?: string }>;
 
@@ -190,6 +191,7 @@ export function inspectDatabaseContext(source: string): ContextImportResult {
   let decoded: unknown;
   try { decoded = JSON.parse(source); } catch { throw new Error("Database context must be valid JSON."); }
   if (!object(decoded) || (decoded.version !== 1 && decoded.version !== 2)) throw new Error("Expected database context version 1 or 2.");
+  validatePlanStructure(decoded);
   const sourceVersion = decoded.version;
   const relations = boundedArray(decoded.relations, "relations", MAX_RELATIONS).map(parseRelation);
   const availability = parseAvailability(decoded.availability, sourceVersion);

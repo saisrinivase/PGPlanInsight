@@ -1,3 +1,5 @@
+import { verifiedEvidence } from "./release-evidence.mjs";
+const gateEvidence = verifiedEvidence();
 import { createHash, randomUUID } from "node:crypto";
 import { mkdirSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from "node:fs";
 import { basename, join, relative } from "node:path";
@@ -44,7 +46,7 @@ if (blocked.length) {
 }
 writeJsonAtomic(join(evidence, "sbom.cdx.json"), { bomFormat: "CycloneDX", specVersion: "1.5", serialNumber: `urn:uuid:${randomUUID()}`, version: 1, metadata: { timestamp: new Date().toISOString(), component: { type: "application", name: application.name, version: application.version } }, components });
 writeJsonAtomic(join(evidence, "licenses.json"), { generatedAt: new Date().toISOString(), policy: "No unknown, GPL, AGPL, or SSPL production dependency without documented approval.", packages: licenses, exceptions });
-writeJsonAtomic(join(evidence, "release-report.json"), { generatedAt: new Date().toISOString(), application: application.name, version: application.version, result: "PASS", statement: "No known exploitable high or critical production dependency finding was reported by the configured offline advisory gate.", gates: ["locked dependency provenance", "production type/build", "unit tests", "cross-browser E2E", "static secret and unsafe-sink scan", "CSP/referrer and outbound-request checks", "offline dependency advisory audit", "SBOM", "license policy", "artifact SHA-256 manifest"] });
+writeJsonAtomic(join(evidence, "release-report.json"), { generatedAt: new Date().toISOString(), application: application.name, version: application.version, result: "PASS", commit: gateEvidence.commit, sourceHash: gateEvidence.sourceHash, lockHash: gateEvidence.lockHash, checkedAt: gateEvidence.checkedAt, statement: "Online audits reported no known dependency advisories at verification time.", gates: ["locked dependency provenance", "production type/build", "unit tests", "cross-browser E2E", "static secret and unsafe-sink scan", "CSP/referrer and outbound-request checks", "online production and development dependency audits", "SBOM", "license policy", "artifact SHA-256 manifest"] });
 
 const artifactFiles = [];
 const walk = (directory) => { for (const name of readdirSync(directory)) { const path = join(directory, name); if (statSync(path).isDirectory()) walk(path); else if (name !== "manifest.sha256") artifactFiles.push(path); } };

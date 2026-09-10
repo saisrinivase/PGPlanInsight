@@ -13,7 +13,7 @@ const expectedGates = [
   "cross-browser E2E",
   "static secret and unsafe-sink scan",
   "CSP/referrer and outbound-request checks",
-  "offline dependency advisory audit",
+  "online production and development dependency audits",
   "SBOM",
   "license policy",
   "artifact SHA-256 manifest",
@@ -34,6 +34,9 @@ const report = parseRequiredJson(reportPath);
 if (report.result !== "PASS") fail("release-report.json does not report PASS.");
 if (report.version !== "0.5.0") fail(`release-report.json has unexpected version ${String(report.version)}.`);
 if (JSON.stringify(report.gates) !== JSON.stringify(expectedGates)) fail("release-report.json does not contain the ten canonical gates in order.");
+const evidence = parseRequiredJson(join(release, "gate-evidence.json"));
+if (report.sourceHash !== evidence.sourceHash || report.lockHash !== evidence.lockHash || report.checkedAt !== evidence.checkedAt) fail("Report does not match gate evidence.");
+for (const scope of ["production", "all"]) if (evidence.audits?.[scope]?.report?.metadata?.vulnerabilities?.total !== 0) fail("Current dependency evidence is missing or contains findings.");
 parseRequiredJson(join(release, "sbom.cdx.json"));
 parseRequiredJson(join(release, "licenses.json"));
 

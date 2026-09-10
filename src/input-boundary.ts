@@ -2,8 +2,49 @@ import { z } from "zod";
 import type { PlanEnvelope, PlanNode } from "./types.ts";
 
 const envelopeSchema = z.object({ Plan: z.object({}).passthrough() }).passthrough();
-const planInputSchema = z.union([envelopeSchema, z.array(envelopeSchema).min(1)]);
+const planInputSchema = z.union([envelopeSchema, z.array(envelopeSchema).length(1)]);
 const aliases: Record<string, string> = { "Shared Blocks Read": "Shared Read Blocks", "Shared Blocks Hit": "Shared Hit Blocks", "Temporary Read Blocks": "Temp Read Blocks", "Temporary Written Blocks": "Temp Written Blocks", "Peak Memory": "Peak Memory Usage" };
+
+export const MAX_PLAN_BYTES = 10_000_000;
+export const MAX_PLAN_DEPTH = 100;
+export const MAX_PLAN_NODES = 2_000;
+
+// Bound the entire JSON structure before recursive consumers (including PEV2).
+export function validatePlanStructure(root: unknown): void {
+  const pending = [{ value: root, depth: 0 }];
+  let entries = 0;
+  while (pending.length) {
+    const { value, depth } = pending.pop()!;
+    if (depth > MAX_PLAN_DEPTH * 2 + 4) throw new Error("Plan nesting exceeds the safety limit.");
+    if (++entries > 200_000) throw new Error("Plan contains too many fields.");
+    if (typeof value === "number" && !Number.isFinite(value)) throw new Error("Plan numbers must be finite.");
+    if (value && typeof value === "object") {
+      for (const [key, child] of Object.entries(value)) {
+        if (["__proto__", "constructor", "prototype"].includes(key)) throw new Error("Plan contains an unsupported property.");
+        pending.push({ value: child, depth: depth + 1 });
+      }
+    }
+  }
+}
+
+function validateNodes(root: PlanNode): void {
+  const pending = [{ node: root, depth: 0 }];
+  let count = 0;
+  while (pending.length) {
+    const { node, depth } = pending.pop()!;
+    if (++count > MAX_PLAN_NODES) throw new Error("Plan exceeds the 2,000 operation safety limit.");
+    if (depth > MAX_PLAN_DEPTH) throw new Error("Plan exceeds the 100 level nesting safety limit.");
+    if (!node || typeof node !== "object" || Array.isArray(node)) throw new Error("Each plan operation must be an object.");
+    for (const key of ["Node Type", "Relation Name", "Schema", "Alias", "Index Name", "Filter", "Index Cond", "Hash Cond", "Merge Cond", "Join Filter"]) if (node[key] !== undefined && typeof node[key] !== "string") throw new Error(`Invalid text plan field: ${key}.`);
+    if (node.Plans !== undefined && !Array.isArray(node.Plans)) throw new Error("Plan children must be an array.");
+    if (node.Workers !== undefined && !Array.isArray(node.Workers)) throw new Error("Plan workers must be an array.");
+    for (const [key, value] of Object.entries(node)) {
+      if (/^(Actual |Plan Rows$|Plan Width$|Startup Cost$|Total Cost$|.* Blocks$|.* Time$|.* Loops$|Workers Planned$|Workers Launched$|Heap Fetches$|Rows Removed)/.test(key) && value !== undefined && (typeof value !== "number" || !Number.isFinite(value) || value < 0)) throw new Error(`Invalid numeric plan field: ${key}.`);
+    }
+    for (const worker of node.Workers ?? []) pending.push({ node: worker as PlanNode, depth: depth + 1 });
+    for (const child of node.Plans ?? []) pending.push({ node: child, depth: depth + 1 });
+  }
+}
 
 function normalizeNode(node: PlanNode): PlanNode {
   const normalized: PlanNode = { ...node };
@@ -82,10 +123,13 @@ function parseTextPlan(source: string): PlanEnvelope {
 }
 
 export function parsePlanInput(source: string): PlanEnvelope {
-  if (source.length > 10_000_000) throw new Error("Plan exceeds the 10 MB safety limit.");
-  let decoded: unknown; try { decoded = JSON.parse(source); } catch { return parseTextPlan(source); }
+  if (new TextEncoder().encode(source).byteLength > MAX_PLAN_BYTES) throw new Error("Plan exceeds the 10 MB safety limit.");
+  let decoded: unknown; try { decoded = JSON.parse(source); } catch { const plan = parseTextPlan(source); validatePlanStructure(plan); validateNodes(plan.Plan); return plan; }
+  validatePlanStructure(decoded);
   const result = planInputSchema.safeParse(decoded); if (!result.success) throw new Error("Expected a top-level PostgreSQL Plan object.");
   const raw = (Array.isArray(result.data) ? result.data[0] : result.data) as PlanEnvelope;
+  for (const key of ["Planning Time", "Execution Time"]) if (raw[key] !== undefined && (typeof raw[key] !== "number" || !Number.isFinite(raw[key]) || raw[key] < 0)) throw new Error(`Invalid numeric plan field: ${key}.`);
+  validateNodes(raw.Plan);
   const versionValue = raw["PostgreSQL Version"], version = typeof versionValue === "string" ? Number(versionValue.match(/\d+/)?.[0]) : null;
   return { ...raw, Plan: normalizeNode(raw.Plan), __format: "JSON", __postgresMajor: Number.isFinite(version) ? version : null };
 }

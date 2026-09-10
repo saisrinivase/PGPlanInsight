@@ -114,7 +114,7 @@ The AI DBA view prepares a sanitized local packet only. It sends nothing unless 
 - **Export Markdown** creates a DBA-readable report.
 - **Export JSON** creates a machine-readable normalized analysis.
 - Fix Validation can export its comparison report.
-- Saved execution plans remain in browser IndexedDB until **Clear all history** is selected.
+- Plans are not saved by default. Choose 1, 7 or 30 days before analysis to save a plan in this browser profile. Expired cases are deleted when history is opened, and only the newest 50 active cases are retained. Existing legacy cases expire 30 days after creation. Use **Delete** for one case or **Clear all history** for all cases. Closing a tab does not delete saved cases.
 
 Browser history is local to that browser profile and origin. Changing the hostname or port can create a separate browser-storage origin.
 
@@ -140,3 +140,14 @@ npm run build
 ## 12. Privacy boundary
 
 The core application parses, analyzes, stores, and compares plans in the browser. There is no Java backend and no required remote API. Hosting the static files does not itself transmit pasted plan contents back to the host, but browser extensions, modified deployments, or added telemetry can change that boundary and must be reviewed separately.
+
+
+### Privacy controls and deployment hardening
+
+Use **Preview redacted plan** before saving sensitive input. It replaces identifiers and removes SQL, expressions, settings and unknown fields, then lets you inspect the JSON before choosing **Use redacted plan**. Metrics remain and can still be sensitive. Redaction reduces diagnostic evidence; it is not a guarantee of anonymity. The original input is unchanged until you accept the preview.
+
+Serve only the built `dist` directory. A sample Nginx configuration is in `deploy/nginx.conf`; configure HTTPS at your reverse proxy. Set CSP `frame-ancestors 'none'`, `X-Content-Type-Options: nosniff` and `Referrer-Policy: no-referrer` at the actual host. The preview server supplies these headers for tests, but your production host must be verified separately. Do not expose Vite's development server.
+
+The release gate performs its own locked install and online audits. Missing advisory data fails the gate. Standalone artifact generation cannot claim PASS without fresh matching gate evidence. Evidence includes the commit, source hash, lockfile hash, timestamp and both audit reports.
+
+EXPLAIN ANALYZE executes its SQL. Prefer a safe test environment, least privilege and a statement timeout. Transaction rollback cannot undo every side effect (for example sequence advancement or external functions).

@@ -26,3 +26,18 @@ Allowed status values: `NOT STARTED`, `IN PROGRESS`, `PARTIAL`, `BLOCKED`, `COMP
 - Negative verification: Isolated copies with corrupt and empty `release-report.json` both failed the verifier as required. The canonical report remains `PASS` and hash-valid.
 - Known limitations: The production PEV2 and host bundles remain above Vite's 500 kB warning threshold. Current network advisory data and HTTP-only edge headers still require validation in the approved deployment environment.
 - Exact next workspace: Product acceptance—review the five retained workspaces together and resolve only evidence, usability, accessibility, or cross-browser defects.
+
+
+## Security and privacy hardening — 2026-09-10
+
+Implementation complete for the reviewed code risks. The previous offline-gate claims above are historical and superseded by this verification.
+
+- Temporary analysis by default; explicit 1/7/30-day retention; per-case deletion; 50-case cap; legacy expiry and revalidation on reopen.
+- Identifier/expression redaction preview with explicit loss-of-evidence notice; clearer file failures and capture guidance; narrow-screen textarea width fixed.
+- Byte/depth/node/field/type checks before analysis and rendering; isolated workers with timeout/error recovery; context nesting bounded.
+- Vitest upgraded to patched 4.1.11. The gate performs npm ci, tests, production build, production-preview browser tests, static checks and online audits of both dependency scopes. Evidence is fresh, source/lock-hash bound and required for artifact generation.
+- Passed: 92 unit tests; 155 browser workflows across Chromium/Firefox/WebKit plus mobile Chromium/WebKit; 45 intentionally skipped retired-renderer workflows; build; 47-file static check; zero known advisories from both online audits; license/SBOM/hash verification.
+- Negative checks: missing gate evidence prevents artifact generation; invalid report fails verification.
+- Visual checks: desktop intake, 390px mobile intake and redaction preview inspected in the browser. Existing dense-plan, Findings, context and validation workflows passed cross-browser tests.
+- Header protections tested in the production preview; deploy/nginx.conf documents production configuration. Actual deployment headers remain to be verified at the selected host.
+- Limits: bundle-size warning remains; independent DBA-labeled real-world accuracy benchmarking and repeated-run statistical comparison are future product work (docs/PRODUCT_FEEDBACK.md). No production database was accessed, and no diagnostic superiority is claimed. Project licensing remains an owner decision.

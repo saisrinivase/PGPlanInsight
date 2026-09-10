@@ -6,6 +6,7 @@ export interface StoredCase {
   source: string;
   analysis: Analysis;
   createdAt: string;
+  expiresAt?: string;
   build: "pgplan_v0.2.0" | "pgplan_v0.2.1" | "pgplan_v0.3.0" | "pgplan_v0.4.0" | "pgplan_v0.5.0";
 }
 
@@ -27,9 +28,10 @@ async function transaction<T>(mode: IDBTransactionMode, run: (store: IDBObjectSt
   const db = await openDatabase();
   return new Promise<T>((resolve, reject) => {
     const tx = db.transaction(STORE, mode);
-    run(tx.objectStore(STORE), resolve, reject);
-    tx.oncomplete = () => db.close();
-    tx.onerror = () => reject(tx.error);
+    let value: T;
+    run(tx.objectStore(STORE), (result) => { value = result; }, reject);
+    tx.oncomplete = () => { db.close(); resolve(value); };
+    tx.onerror = tx.onabort = () => { db.close(); reject(tx.error ?? new Error("History transaction failed.")); };
   });
 }
 
@@ -38,7 +40,23 @@ export function saveCase(item: StoredCase): Promise<void> {
 }
 
 export function listCases(): Promise<StoredCase[]> {
-  return transaction("readonly", (store, resolve, reject) => { const request = store.getAll(); request.onsuccess = () => resolve((request.result as StoredCase[]).sort((a, b) => b.createdAt.localeCompare(a.createdAt))); request.onerror = () => reject(request.error); });
+  return transaction("readwrite", (store, resolve, reject) => {
+    const request = store.getAll();
+    request.onsuccess = () => {
+      const active = (request.result as StoredCase[]).filter((item) => {
+        const expiry = item.expiresAt ? Date.parse(item.expiresAt) : Date.parse(item.createdAt) + 30 * 86400_000;
+        if (!Number.isFinite(expiry) || expiry <= Date.now()) { store.delete(item.id); return false; }
+        return true;
+      }).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      active.slice(50).forEach((item) => store.delete(item.id));
+      resolve(active.slice(0, 50));
+    };
+    request.onerror = () => reject(request.error);
+  });
+}
+
+export function deleteCase(id: string): Promise<void> {
+  return transaction("readwrite", (store, resolve, reject) => { const request = store.delete(id); request.onsuccess = () => resolve(); request.onerror = () => reject(request.error); });
 }
 
 export function clearCases(): Promise<void> {

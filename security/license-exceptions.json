@@ -1,0 +1,6 @@
+[
+  { "package": "@fortawesome/free-regular-svg-icons", "license": "(CC-BY-4.0 AND MIT)", "rationale": "Icon assets require attribution; package code is MIT." },
+  { "package": "@fortawesome/free-solid-svg-icons", "license": "(CC-BY-4.0 AND MIT)", "rationale": "Icon assets require attribution; package code is MIT." },
+  { "package": "d3-flextree", "license": "WTFPL", "rationale": "Permissive transitive dependency inherited through PEV2 and explicitly reviewed." },
+  { "package": "pev2", "license": "PostgreSQL license", "rationale": "Permissive PostgreSQL-style license for the maintained plan renderer." }
+]

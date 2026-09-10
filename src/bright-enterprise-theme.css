@@ -1,0 +1,98 @@
+/* Bright enterprise theme. Visual tokens only; diagnostic behavior and Plan geometry stay unchanged. */
+:root{
+  color:#172b3a;
+  background:#f6f8fb;
+  --blue:#1769aa;
+  --navy:#123f65;
+  --soft:#eaf3fa;
+  --muted:#607487;
+  --line:#d5e0e9;
+  --green:#2c8257;
+  --amber:#a86d0d;
+  --red:#b83f42;
+  --reference-navy:#eaf1f7;
+  --reference-navy-deep:#e3ecf4;
+  --reference-blue:#1769aa;
+  --reference-line:#d5e0e9;
+  --reference-canvas:#f6f8fb;
+}
+
+html,body{background:#f6f8fb;color:#172b3a}
+body{color-scheme:light}
+
+.shell>header{
+  border-bottom:1px solid #d5e0e9;
+  background:#fff;
+  color:#172b3a;
+  box-shadow:0 1px 3px rgba(23,50,72,.07);
+}
+.shell>header .brand{color:#123f65}
+.shell>header .brand b{color:#1769aa}
+.shell>header .brand-mark{background:#1769aa;color:#fff;box-shadow:none}
+.shell>header .privacy-state{border:1px solid #d6e2ea;background:#f7fafc;color:#536b7d}
+.shell>header .privacy-state i{background:#2c8b5c}
+.shell>header .header-new{border-color:#9db9ce;background:#fff;color:#145d96}
+.shell>header .header-new:hover{border-color:#1769aa;background:#edf5fb}
+
+.intake-console,.shell:has(.command-nav)>main{background:#f6f8fb!important}
+.intake-rail{
+  border-right:1px solid #d0dce5;
+  background:#eef3f7;
+  color:#213d52;
+  box-shadow:none;
+}
+.intake-rail .rail-section{border-bottom-color:#d4dfe7}
+.intake-rail .rail-section>span{color:#6a8192}
+.intake-rail .rail-section button,.intake-rail .rail-section a{color:#29475d}
+.intake-rail .rail-section button:hover,.intake-rail .rail-section a:hover{background:#e1ecf5;color:#124f7e;box-shadow:inset 3px 0 #7eb4dc}
+.intake-rail .rail-section button.active{background:#d9eaf7;color:#0f568c;box-shadow:inset 3px 0 #1769aa}
+.intake-rail .rail-section b{background:#d8e4ed;color:#3c5e76}
+.intake-rail .rail-fact{color:#587184}
+.intake-rail .rail-footer{border-top-color:#d4dfe7}
+.intake-rail .rail-footer span{color:#6a8192}
+
+.shell:has(.command-nav)>.command-nav{
+  border-right:1px solid #d0dce5!important;
+  border-bottom:0!important;
+  background:#eef3f7!important;
+  box-shadow:none!important;
+}
+.shell:has(.command-nav)>.command-nav>button{color:#355268!important}
+.shell:has(.command-nav)>.command-nav>button:hover{border-left-color:#7fb4dc!important;background:#e3edf5!important;color:#124f7e!important}
+.shell:has(.command-nav)>.command-nav>button.active{border-left-color:#1769aa!important;background:#d9eaf7!important;color:#0f568c!important;box-shadow:none}
+
+.workspace-panel,.diagnosis-workspace{color:#172b3a}
+.workspace-panel h2,.history-section h2,.planner-heading h2,.recommendations-heading h2,.context-workbench h2,.validation-heading h2{color:#15334a}
+.section-kicker,.eyebrow{color:#1769aa}
+.lede,.view-heading p{color:#607487}
+
+.evidence-editor,.plan-preview,.console-history,.recommendation-section,.planner-section,.planner-explain,.statistics-qualification,.context-diagnostic-boundary,.context-preview,.environment-drift,.validation-stage,.validation-verdict{
+  border-color:#d3dfe8;
+  background:#fff;
+  box-shadow:0 1px 2px rgba(25,54,76,.045);
+}
+.editor-toolbar,.environment-drift>header,.estimate-head,.context-collector,.planner-summary,.context-state,.validation-stage>header{background:#f8fafc}
+.editor-input textarea,.context-workbench .context-input,.environment-drift>textarea,.validation-after textarea{background:#fff;color:#1d3547}
+
+.recommendations-heading aside,.context-boundary,.validation-heading aside,.statistics-qualification>header{background:#edf5fb;border-color:#78a9cd}
+.planner-explain h3,.context-impact>strong,.context-evidence-columns strong{color:#234b66}
+.planner-section>header,.recommendation-section>header,.context-preview>header{background:#fbfcfd}
+.planner-access-item:hover,.finding-investigation>summary:hover,.estimate-row:hover{background:#f4f8fb}
+
+.context-evidence-tag.proven{background:#e5f4eb;color:#246c49}
+.context-evidence-tag.qualifies{background:#fff1cf;color:#825a13}
+.context-evidence-tag.unknown{background:#edf1f4;color:#526977}
+.context-state.applied{border-left-color:#2c8257}
+
+button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible{
+  outline:3px solid rgba(23,105,170,.24);
+  outline-offset:2px;
+}
+button:not(:disabled){transition:background-color .14s ease,border-color .14s ease,color .14s ease}
+
+@media(max-width:760px){
+  .shell:has(.command-nav)>.command-nav{border-right:0!important;border-bottom:1px solid #d0dce5!important;background:#f7f9fb!important}
+  .shell:has(.command-nav)>.command-nav>button:hover,.shell:has(.command-nav)>.command-nav>button.active{border-left-color:transparent!important;border-bottom-color:#1769aa!important}
+}
+
+@media(prefers-reduced-motion:reduce){button:not(:disabled){transition:none}}

@@ -1,0 +1,40 @@
+[
+  {
+    "Execution Time": 4200,
+    "Plan": {
+      "Node Type": "Nested Loop",
+      "Actual Total Time": 4198,
+      "Actual Rows": 2500,
+      "Actual Loops": 1,
+      "Shared Read Blocks": 120000,
+      "Shared I/O Read Time": 3600,
+      "Plans": [
+        {
+          "Node Type": "Nested Loop",
+          "Join Filter": "((a.unit_id)::text = (b.unit_id)::text)",
+          "Rows Removed by Join Filter": 280000,
+          "Actual Total Time": 3800,
+          "Actual Rows": 2500,
+          "Actual Loops": 1,
+          "Shared Read Blocks": 90000
+        },
+        {
+          "Node Type": "Index Only Scan",
+          "Relation Name": "most_recent_medical_school",
+          "Actual Rows": 2500,
+          "Actual Loops": 1,
+          "Heap Fetches": 2400,
+          "Actual Total Time": 150
+        },
+        {
+          "Node Type": "Result",
+          "Parent Relationship": "SubPlan",
+          "Subplan Name": "SubPlan 1",
+          "Actual Rows": 1,
+          "Actual Loops": 2500,
+          "Actual Total Time": 120
+        }
+      ]
+    }
+  }
+]

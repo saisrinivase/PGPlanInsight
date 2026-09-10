@@ -1,0 +1,27 @@
+name: PGPlan Insight release gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Locked install
+        run: npm ci
+      - name: Install supported browser engines
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Run release gate
+        run: npm run release:gate

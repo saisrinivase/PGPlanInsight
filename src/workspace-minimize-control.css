@@ -1,0 +1,8 @@
+.shell:has(.focus-nav)>.focus-nav{position:relative;padding-top:58px}
+.focus-nav .nav-minimize{position:absolute;top:12px;right:12px;display:grid;width:34px;min-height:34px!important;height:34px;margin:0!important;padding:0!important;place-items:center;border:1px solid rgba(255,255,255,.32)!important;border-radius:4px!important;background:rgba(255,255,255,.08)!important;color:#fff!important}
+.focus-nav .nav-minimize:hover,.focus-nav .nav-minimize:focus-visible{background:rgba(255,255,255,.18)!important;outline:2px solid rgba(112,185,247,.8);outline-offset:2px}
+.focus-nav .nav-minimize span{width:auto;height:auto;margin:0;border:0;font-size:22px;line-height:1}
+.focus-nav .nav-minimize b{display:none}
+.shell:has(.focus-nav.collapsed)>.focus-nav{padding-top:58px}
+.focus-nav.collapsed .nav-minimize{right:15px;width:34px}
+@media(max-width:760px){.shell:has(.focus-nav)>.focus-nav{padding-top:0;padding-right:0}.focus-nav .nav-minimize,.focus-nav.collapsed .nav-minimize{position:sticky;z-index:2;top:auto;right:0;left:auto;flex:0 0 38px;background:#0b4f87!important}.shell:has(.focus-nav.collapsed)>.focus-nav{padding-top:0}}

@@ -1,0 +1,16 @@
+[
+  {
+    "Execution Time": 2400,
+    "Plan": {
+      "Node Type": "Seq Scan",
+      "Relation Name": "big_table",
+      "Actual Total Time": 2390,
+      "Actual Rows": 1200000,
+      "Actual Loops": 1,
+      "Shared Read Blocks": 180000,
+      "Shared I/O Read Time": 1700,
+      "Workers Planned": 4,
+      "Workers Launched": 0
+    }
+  }
+]

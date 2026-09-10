@@ -1,0 +1,17 @@
+[
+  {
+    "Execution Time": 1800,
+    "WAL Records": 950000,
+    "WAL FPI": 60000,
+    "WAL Bytes": 268435456,
+    "Plan": {
+      "Node Type": "ModifyTable",
+      "Actual Total Time": 1790,
+      "Actual Rows": 300000,
+      "Actual Loops": 1,
+      "Shared Read Blocks": 4000,
+      "Shared I/O Read Time": 120,
+      "Shared I/O Write Time": 820
+    }
+  }
+]

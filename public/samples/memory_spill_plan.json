@@ -1,0 +1,25 @@
+[
+  {
+    "Execution Time": 2100,
+    "Plan": {
+      "Node Type": "Sort",
+      "Actual Total Time": 2090,
+      "Actual Rows": 900000,
+      "Actual Loops": 1,
+      "Sort Method": "external merge",
+      "Temp Read Blocks": 260000,
+      "Temp Written Blocks": 300000,
+      "Plans": [
+        {
+          "Node Type": "Hash Join",
+          "Actual Total Time": 1800,
+          "Actual Rows": 900000,
+          "Actual Loops": 1,
+          "Batches": 16,
+          "Temp Read Blocks": 120000,
+          "Temp Written Blocks": 130000
+        }
+      ]
+    }
+  }
+]

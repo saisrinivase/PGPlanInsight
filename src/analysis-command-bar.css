@@ -1,0 +1,155 @@
+/* Full-width diagnostic workspace: navigation is a command bar, never a canvas rail. */
+.shell:has(.command-nav) {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: 62px 48px minmax(0, 1fr) auto !important;
+  min-width: 0;
+}
+
+.shell:has(.command-nav) > header {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+}
+
+.shell:has(.command-nav) > .command-nav {
+  position: relative !important;
+  z-index: 40;
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 0 !important;
+  width: 100% !important;
+  min-height: 48px !important;
+  padding: 0 24px !important;
+  overflow: visible !important;
+  border: 0 !important;
+  border-bottom: 1px solid #cbd5e1 !important;
+  background: #fff !important;
+}
+
+.shell:has(.command-nav) > .command-nav > button {
+  align-self: stretch !important;
+  min-width: 0 !important;
+  min-height: 48px !important;
+  height: 48px !important;
+  padding: 0 15px !important;
+  border: 0 !important;
+  border-bottom: 3px solid transparent !important;
+  background: transparent !important;
+  color: #526579 !important;
+  font: 600 13px "IBM Plex Sans", system-ui, sans-serif !important;
+  text-align: center !important;
+  white-space: nowrap;
+}
+
+.shell:has(.command-nav) > .command-nav > button:hover {
+  background: #f3f6f9 !important;
+  color: #123a60 !important;
+}
+
+.shell:has(.command-nav) > .command-nav > button.active {
+  border-left: 0 !important;
+  border-bottom-color: #0b71c7 !important;
+  background: #edf5fc !important;
+  color: #074c84 !important;
+}
+
+.command-nav .tools-trigger { margin-left: auto; }
+
+.shell:has(.command-nav) > .command-nav .expert-nav {
+  position: absolute !important;
+  top: 47px !important;
+  right: 24px !important;
+  left: auto !important;
+  display: grid !important;
+  min-width: 220px;
+  padding: 6px !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #fff !important;
+  box-shadow: 0 12px 24px rgba(18, 58, 96, .15) !important;
+}
+
+.shell:has(.command-nav) > .command-nav .expert-nav button {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 0;
+  border-left: 3px solid transparent;
+  background: #fff;
+  color: #40566c;
+  font: 600 12px "IBM Plex Sans", system-ui, sans-serif;
+  text-align: left;
+}
+
+.shell:has(.command-nav) > .command-nav .expert-nav button:hover,
+.shell:has(.command-nav) > .command-nav .expert-nav button.active {
+  border-left-color: #0b71c7;
+  background: #edf5fc;
+  color: #074c84;
+}
+
+.shell:has(.command-nav) > main {
+  grid-column: 1 !important;
+  grid-row: 3 !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0;
+  padding: 0 18px 36px !important;
+  background: #f4f6f8 !important;
+}
+
+.shell:has(.command-nav) > footer {
+  grid-column: 1 !important;
+  grid-row: 4 !important;
+}
+
+@media (max-width: 760px) {
+  .shell:has(.command-nav) { display: block !important; }
+  .shell:has(.command-nav) > .command-nav {
+    position: sticky !important;
+    top: 0;
+    padding: 0 8px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: thin;
+  }
+  .shell:has(.command-nav) > .command-nav > button {
+    flex: 0 0 auto !important;
+  }
+  .command-nav .tools-trigger { margin-left: 0; }
+  .shell:has(.command-nav) > .command-nav .expert-nav {
+    position: fixed !important;
+    top: 108px !important;
+    right: 10px !important;
+    left: 10px !important;
+  }
+  .shell:has(.command-nav) > main { padding-inline: 10px !important; }
+}
+
+/* PEV2 portals Tippy overlays to document.body, outside its shadow-root CSS. */
+body > [data-tippy-root] {
+  z-index: 10000 !important;
+  pointer-events: none;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+}
+
+body > [data-tippy-root] .tippy-box {
+  max-width: 320px !important;
+  border: 1px solid #18293a;
+  border-radius: 3px;
+  background: #1f3042;
+  box-shadow: 0 5px 14px rgba(15, 23, 42, .22);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+body > [data-tippy-root] .tippy-content {
+  padding: 6px 9px;
+}
+
+body > [data-tippy-root] .tippy-arrow {
+  color: #1f3042;
+}

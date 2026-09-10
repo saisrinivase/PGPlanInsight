@@ -1,0 +1,12 @@
+.secondary-action {
+  margin-top: 18px;
+  padding: 9px 13px;
+  border: 1px solid #2563a6;
+  border-radius: 6px;
+  background: #fff;
+  color: #174a7c;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondary-action:hover { background: #eaf2fb; }

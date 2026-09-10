@@ -1,0 +1,69 @@
+/* QA compactness pass: preserve evidence while fitting the operational workspace. */
+.inline-node-detail {
+  grid-template-columns: minmax(250px, .9fr) minmax(340px, 1.25fr) minmax(250px, 1fr);
+  gap: 10px 14px;
+  padding: 10px 14px 11px 58px;
+}
+
+.inline-diagnosis strong { margin-top: 4px; line-height: 1.3; }
+.inline-diagnosis p { max-width: 48ch; margin-top: 3px; line-height: 1.35; }
+.inline-node-detail dl div { padding: 4px 8px; }
+.inline-node-detail dd { margin-top: 2px; }
+
+.inline-causal-trace {
+  grid-template-columns: minmax(230px, .75fr) minmax(300px, 1fr) minmax(270px, 1fr);
+  gap: 8px 12px;
+  padding: 7px 10px;
+}
+
+.inline-causal-trace > div strong { margin-top: 3px; line-height: 1.35; }
+.inline-causal-trace dl div { padding: 2px 8px; }
+.inline-causal-trace p,
+.inline-causal-trace small { line-height: 1.35; }
+.inline-predicate code,
+.inline-index code { margin-top: 4px; padding: 6px 8px; }
+
+.recommendations-workbench,
+.access-workbench,
+.recommendations-heading > *,
+.access-intro > *,
+.index-candidate-list article > *,
+.access-item > * { min-width: 0; }
+
+.recommendations-heading {
+  grid-template-columns: minmax(300px, 1fr) minmax(250px, 340px);
+  gap: 22px;
+}
+
+.index-candidate-list article {
+  grid-template-columns: minmax(210px, .7fr) minmax(0, 1fr);
+  gap: 8px 18px;
+}
+
+.access-intro {
+  grid-template-columns: minmax(260px, .8fr) minmax(0, 1.2fr);
+  gap: 22px;
+}
+
+.access-item {
+  grid-template-columns: 50px minmax(205px, .78fr) minmax(0, 1.22fr);
+}
+
+@media (max-width: 1180px) {
+  .recommendations-heading,
+  .access-intro { grid-template-columns: 1fr; }
+  .recommendations-heading aside { max-width: none; }
+  .index-candidate-list article { grid-template-columns: 1fr; }
+  .index-candidate-list p,
+  .candidate-next { grid-column: 1; }
+  .access-item { grid-template-columns: 44px minmax(0, 1fr); }
+  .access-explanation { grid-column: 2; border-top: 1px solid #e1e6eb; }
+}
+
+@media (max-width: 760px) {
+  .inline-node-detail {
+    grid-template-columns: 250px 330px 250px;
+    padding-left: 42px;
+  }
+  .inline-causal-trace { grid-template-columns: 250px 330px 250px; }
+}

@@ -1,0 +1,7 @@
+/* Plan-level findings only; node facts and interpretation live behind each row's info control. */
+.recommendation-rail.compact-priority-rail{display:block;background:#fff}
+.compact-priority-rail .top-recommendations{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));max-height:none;padding:14px 16px}
+.compact-priority-rail .rail-heading{grid-column:1/-1;margin:0 0 7px}
+.compact-priority-rail .top-recommendations button{min-height:58px;padding:9px 12px;border-top:1px solid #e5eaee;border-right:1px solid #e5eaee}
+.compact-priority-rail .top-recommendations button:last-child{border-right:0}
+@media(max-width:760px){.compact-priority-rail .top-recommendations{grid-template-columns:1fr}.compact-priority-rail .top-recommendations button{border-right:0}}

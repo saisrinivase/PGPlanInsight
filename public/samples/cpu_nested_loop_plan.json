@@ -1,0 +1,30 @@
+[
+  {
+    "Execution Time": 1600,
+    "Plan": {
+      "Node Type": "Nested Loop",
+      "Actual Total Time": 1590,
+      "Actual Rows": 120000,
+      "Actual Loops": 1,
+      "Shared Read Blocks": 500,
+      "Shared I/O Read Time": 20,
+      "Plans": [
+        {
+          "Node Type": "Nested Loop",
+          "Actual Total Time": 1500,
+          "Actual Rows": 120000,
+          "Actual Loops": 1,
+          "Rows Removed by Filter": 400000
+        },
+        {
+          "Node Type": "Result",
+          "Parent Relationship": "SubPlan",
+          "Subplan Name": "SubPlan 2",
+          "Actual Rows": 1,
+          "Actual Loops": 800,
+          "Actual Total Time": 200
+        }
+      ]
+    }
+  }
+]

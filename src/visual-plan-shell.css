@@ -1,0 +1,8 @@
+.simple-plan-layout.visual-plan-mode{grid-template-columns:1fr}
+.simple-plan-layout.visual-plan-mode>.recommendation-rail{border-right:0;border-bottom:1px solid #cfd8df}
+.simple-plan-layout.visual-plan-mode>.simple-tree-canvas{min-width:0}
+.plan-view-switch{display:flex}
+.plan-view-switch button{padding:8px 10px;border:1px solid #cbd5dc;background:#fff;color:#526779;font-size:9px;font-weight:700;cursor:pointer}
+.plan-view-switch button+button{border-left:0}
+.plan-view-switch button.active{border-color:#336791;background:#336791;color:#fff}
+@media(max-width:760px){.plan-view-switch{width:100%}.plan-view-switch button{flex:1}}

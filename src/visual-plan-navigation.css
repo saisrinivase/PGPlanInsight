@@ -1,0 +1,7 @@
+.visual-graph-node-shell{position:relative;z-index:2}
+.visual-graph-stage{display:flex;min-width:max-content;justify-content:center;zoom:var(--plan-zoom,1);transform-origin:top center;transition:zoom .15s ease}
+.visual-navigation-controls{display:flex;align-items:center;justify-content:flex-end;gap:5px;flex-wrap:wrap}
+.visual-navigation-controls output{min-width:38px;color:#35536a;font:700 8px "IBM Plex Mono",monospace;text-align:center}
+.visual-navigation-controls button{min-width:30px}
+@media(max-width:1180px){.visual-plan-toolbar{grid-template-columns:1fr}.visual-plan-toolbar nav{justify-content:flex-start}.visual-navigation-controls{justify-content:flex-start}}
+@media(prefers-reduced-motion:reduce){.visual-graph-stage{transition:none}}

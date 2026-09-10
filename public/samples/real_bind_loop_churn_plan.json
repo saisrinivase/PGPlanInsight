@@ -1,0 +1,106 @@
+[
+  {
+    "Execution Time": 7103.050,
+    "Plan": {
+      "Node Type": "Sort",
+      "Actual Total Time": 7103.031,
+      "Actual Rows": 0,
+      "Actual Loops": 1,
+      "Shared Hit Blocks": 82316,
+      "Shared Read Blocks": 2384,
+      "Shared I/O Read Time": 2275.251,
+      "Plans": [
+        {
+          "Node Type": "Hash Join",
+          "Actual Total Time": 7103.030,
+          "Actual Rows": 0,
+          "Actual Loops": 1,
+          "Rows Removed by Filter": 7014,
+          "Shared Hit Blocks": 82316,
+          "Shared Read Blocks": 2384,
+          "Shared I/O Read Time": 2275.251,
+          "Plans": [
+            {
+              "Node Type": "Nested Loop",
+              "Actual Total Time": 7102.853,
+              "Actual Rows": 744,
+              "Actual Loops": 1,
+              "Plans": [
+                {
+                  "Node Type": "Nested Loop",
+                  "Actual Total Time": 7095.780,
+                  "Actual Rows": 895,
+                  "Actual Loops": 1,
+                  "Join Filter": "(this_.application_id = \"*SELECT* 1\".application_id)",
+                  "Rows Removed by Join Filter": 79895,
+                  "Shared Hit Blocks": 82245,
+                  "Shared Read Blocks": 1868,
+                  "Shared I/O Read Time": 1943.244,
+                  "Plans": [
+                    {
+                      "Node Type": "Nested Loop",
+                      "Actual Total Time": 6798.913,
+                      "Actual Rows": 1096,
+                      "Actual Loops": 1,
+                      "Join Filter": "(this_.application_id = sp.application_id)",
+                      "Rows Removed by Join Filter": 615,
+                      "Shared Hit Blocks": 82065,
+                      "Shared Read Blocks": 1640,
+                      "Shared I/O Read Time": 1647.121,
+                      "Plans": [
+                        {
+                          "Node Type": "Result",
+                          "Parent Relationship": "SubPlan",
+                          "Subplan Name": "SubPlan 11",
+                          "Actual Total Time": 0.000,
+                          "Actual Rows": 1,
+                          "Actual Loops": 1295
+                        },
+                        {
+                          "Node Type": "Index Only Scan",
+                          "Relation Name": "units",
+                          "Actual Total Time": 0.003,
+                          "Actual Rows": 0,
+                          "Actual Loops": 10284,
+                          "Shared Hit Blocks": 30852,
+                          "Shared Read Blocks": 0,
+                          "Heap Fetches": 0
+                        },
+                        {
+                          "Node Type": "Index Only Scan",
+                          "Relation Name": "transcript_status",
+                          "Actual Total Time": 0.002,
+                          "Actual Rows": 1,
+                          "Actual Loops": 10284,
+                          "Shared Hit Blocks": 42252,
+                          "Shared Read Blocks": 0,
+                          "Heap Fetches": 0
+                        },
+                        {
+                          "Node Type": "Subquery Scan",
+                          "Parent Relationship": "SubPlan",
+                          "Subplan Name": "SubPlan 5",
+                          "Actual Total Time": 0.588,
+                          "Actual Rows": 166,
+                          "Actual Loops": 617
+                        },
+                        {
+                          "Node Type": "Nested Loop",
+                          "Actual Total Time": 11.670,
+                          "Actual Rows": 1121,
+                          "Actual Loops": 550,
+                          "Join Filter": "(program_assignments.application_id = a.application_id)",
+                          "Rows Removed by Join Filter": 633367
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

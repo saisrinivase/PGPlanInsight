@@ -1,5 +1,5 @@
 import { redactPlanForSharing } from "../redact-plan.ts";
-import { type DragEvent, type FormEvent, useRef, useState } from "react";
+import { type ClipboardEvent, type DragEvent, type FormEvent, useRef, useState } from "react";
 import type { StoredCase } from "../case-store.ts";
 
 interface Props { onAnalyze: (source: string, title: string, retentionDays?: number) => void; busy: boolean; error: string; history: StoredCase[]; onOpenCase: (item: StoredCase) => void; onClearHistory: () => void; onDeleteCase: (id: string) => void }
@@ -10,6 +10,21 @@ export function IntakeV06({ onAnalyze, busy, error, history, onOpenCase, onClear
   const [retentionDays, setRetentionDays] = useState(0), [fileError, setFileError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null), historyRef = useRef<HTMLElement>(null);
   const submit = (event: FormEvent) => { event.preventDefault(); onAnalyze(source, title, retentionDays); };
+  const paste = (event: ClipboardEvent<HTMLTextAreaElement>) => {
+    const text = event.clipboardData.getData("text/plain");
+    if (text.length < 100_000) return;
+    event.preventDefault();
+    const input = event.currentTarget;
+    const next = source.slice(0, input.selectionStart) + text + source.slice(input.selectionEnd);
+    if (new TextEncoder().encode(next).byteLength > 10_000_000) {
+      setFileError("Pasted plan exceeds the 10 MB limit. Choose a smaller plan.");
+      return;
+    }
+    const cursor = input.selectionStart + text.length;
+    setFileError("");
+    setSource(next);
+    requestAnimationFrame(() => input.setSelectionRange(cursor, cursor));
+  };
   const readFile = async (file?: File) => { if (!file) return; setFileError(""); if (file.size > 10_000_000) { setFileError("File exceeds the 10 MB limit. Choose a smaller plan."); return; } try { setSource(await file.text()); if (!title) setTitle(file.name.replace(/\.(json|txt)$/i, "")); } catch { setFileError("This file could not be read. Try another file or paste its contents."); } };
   const previewRedaction = () => { try { setRedactedPreview(redactPlanForSharing(source)); setFileError(""); } catch (caught) { setFileError(caught instanceof Error ? caught.message : "Unable to redact this plan."); } };
   const drop = (event: DragEvent) => { event.preventDefault(); setDragging(false); void readFile(event.dataTransfer.files[0]); };
@@ -27,7 +42,7 @@ export function IntakeV06({ onAnalyze, busy, error, history, onOpenCase, onClear
         <div className="editor-toolbar"><div><span>Execution plan input</span><strong>TEXT or FORMAT JSON</strong></div><div><button type="button" onClick={() => { setSource(""); setTitle(""); }}>Clear</button><button type="button" disabled={!source.trim() || busy} onClick={previewRedaction}>Preview redacted plan</button><button type="button" onClick={() => fileRef.current?.click()}>Choose file</button><input ref={fileRef} className="file-input" type="file" accept=".json,.txt,application/json,text/plain" onChange={(event) => void readFile(event.target.files?.[0])} /></div></div>
         <div className="editor-case"><label htmlFor="case-title-v06">Case name <span>Optional</span></label><input id="case-title-v06" maxLength={200} value={title} onChange={(event) => setTitle(event.target.value)} placeholder="e.g. Monthly report before index review" /></div>
         <label className="plan-evidence-label" htmlFor="plan-input-v06">Plan evidence <span>10 MB maximum</span></label>
-        <div className="editor-input"><div className="editor-gutter" aria-hidden="true">1<br />2<br />3<br />4<br />5<br />6<br />7<br />8</div><textarea id="plan-input-v06" required spellCheck={false} value={source} onChange={(event) => setSource(event.target.value)} placeholder={`Paste PostgreSQL EXPLAIN output here…\n\nRecommended capture:\nEXPLAIN (ANALYZE, BUFFERS, VERBOSE, SETTINGS, WAL, FORMAT JSON)`} /></div>
+        <div className="editor-input"><div className="editor-gutter" aria-hidden="true">1<br />2<br />3<br />4<br />5<br />6<br />7<br />8</div><textarea id="plan-input-v06" required spellCheck={false} value={source} onPaste={paste} onChange={(event) => setSource(event.target.value)} placeholder={`Paste PostgreSQL EXPLAIN output here…\n\nRecommended capture:\nEXPLAIN (ANALYZE, BUFFERS, VERBOSE, SETTINGS, WAL, FORMAT JSON)`} /></div>
         {(error || fileError) && <p className="form-error" role="alert">{fileError || error}</p>}
         <div className="editor-case"><label htmlFor="retention">Save this plan</label><select id="retention" value={retentionDays} onChange={(event) => setRetentionDays(Number(event.target.value))}><option value={0}>Do not save (default)</option><option value={1}>Save for 1 day</option><option value={7}>Save for 7 days</option><option value={30}>Save for 30 days</option></select><p>Saved plans include raw expressions and remain in this browser profile. Remove sensitive values before saving. Expired cases are deleted when history is opened; at most 50 cases are kept.</p></div>
         {redactedPreview && <section className="redaction-preview" aria-label="Redacted plan preview"><h2>Review before using or sharing</h2><p>Identifiers are replaced. Expressions, SQL, settings and unrecognized fields are removed. Row counts, costs and timings remain and may still be sensitive. Predicate and settings diagnostics will be limited. Review the complete output.</p><label htmlFor="redacted-preview">Redacted JSON</label><textarea id="redacted-preview" readOnly value={redactedPreview} /><div><button type="button" onClick={() => { setSource(redactedPreview); setTitle(""); setRedactedPreview(""); }}>Use redacted plan</button><button type="button" onClick={() => setRedactedPreview("")}>Cancel preview</button></div></section>}

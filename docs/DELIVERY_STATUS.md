@@ -1,6 +1,6 @@
 # PGPlan Insight delivery status
 
-Updated: 2026-09-09
+Updated: 2026-09-11
 
 | Stage | Status | Implementation evidence | Test evidence | Security evidence | Remaining risk |
 |---|---|---|---|---|---|
@@ -41,3 +41,13 @@ Implementation complete for the reviewed code risks. The previous offline-gate c
 - Visual checks: desktop intake, 390px mobile intake and redaction preview inspected in the browser. Existing dense-plan, Findings, context and validation workflows passed cross-browser tests.
 - Header protections tested in the production preview; deploy/nginx.conf documents production configuration. Actual deployment headers remain to be verified at the selected host.
 - Limits: bundle-size warning remains; independent DBA-labeled real-world accuracy benchmarking and repeated-run statistical comparison are future product work (docs/PRODUCT_FEEDBACK.md). No production database was accessed, and no diagnostic superiority is claimed. Project licensing remains an owner decision.
+
+## Release acceptance and scale validation — 2026-09-11
+
+- Added production-browser acceptance coverage for complete Plan, Grid, and Raw rendering at 100, 500, 1,000, and the supported 2,000-node ceiling.
+- Added optimized large clipboard handling that preserves the selected replacement range, enforces the existing 10 MB boundary, and remains editable after rejection.
+- Added a 20-cycle analysis/navigation stress workflow with page-error detection and a per-cycle 15-second guardrail.
+- The unified release gate passed from a clean locked install: 92/92 unit tests; 185 active browser workflows across Chromium, Firefox, WebKit, mobile Chromium, and mobile WebKit; 45 retired-renderer workflows intentionally skipped; production build; static security checks; dependency audits; SBOM; license inventory; and artifact verification.
+- Maximum measured 2,000-node analyze-to-Grid time was 11.9 seconds in desktop Firefox and 8.5 seconds in mobile WebKit; all profiles remained below the 30-second acceptance ceiling. These are local release-gate measurements, not production service-level guarantees.
+- The generated release contains one canonical production artifact set. All 31 SHA-256 manifest entries independently validated, `release-report.json` is readable and reports `PASS`, the production index references hashed bundles, and no suffixed duplicate artifacts exist.
+- No database or network service is involved in the stress test; browser-level Playwright coverage is the relevant load model. The known Vite warning for visualization and host bundles above 500 kB remains non-blocking and should be addressed as a future loading-performance improvement.

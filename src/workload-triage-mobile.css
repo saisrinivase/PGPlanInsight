@@ -1,0 +1,23 @@
+@media (max-width: 800px) {
+  .triage-table { min-width: 0; }
+  .triage-table thead { display: none; }
+  .triage-table tbody,
+  .triage-table tr,
+  .triage-table td { display: block; }
+  .triage-table tr { position: relative; padding: 12px 12px 12px 54px; border-bottom: 1px solid #cdd7de; }
+  .triage-table td { padding: 4px 0; border: 0; }
+  .triage-table td:first-child { position: absolute; top: 12px; left: 12px; }
+  .triage-table td:nth-child(2) { padding-bottom: 8px; border-bottom: 1px solid #e0e6ea; }
+  .triage-table td:nth-child(3),
+  .triage-table td:nth-child(4),
+  .triage-table td:nth-child(5) { display: inline-block; width: 33%; padding: 9px 8px 5px 0; }
+  .triage-table td:nth-child(6) { padding: 9px 0; }
+  .triage-table td:last-child button { width: 100%; margin-top: 4px; }
+  .triage-table td > span { max-width: none; }
+}
+
+@media (max-width: 480px) {
+  .triage-table td:nth-child(3),
+  .triage-table td:nth-child(4),
+  .triage-table td:nth-child(5) { display: block; width: 100%; padding: 6px 0; }
+}

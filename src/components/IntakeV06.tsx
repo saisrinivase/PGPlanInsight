@@ -2,10 +2,10 @@ import { redactPlanForSharing } from "../redact-plan.ts";
 import { type ClipboardEvent, type DragEvent, type FormEvent, useRef, useState } from "react";
 import type { StoredCase } from "../case-store.ts";
 
-interface Props { onAnalyze: (source: string, title: string, retentionDays?: number) => void; busy: boolean; error: string; history: StoredCase[]; onOpenCase: (item: StoredCase) => void; onClearHistory: () => void; onDeleteCase: (id: string) => void }
+interface Props { onAnalyze: (source: string, title: string, retentionDays?: number) => void; onOpenWorkload: () => void; initialTitle?: string; busy: boolean; error: string; history: StoredCase[]; onOpenCase: (item: StoredCase) => void; onClearHistory: () => void; onDeleteCase: (id: string) => void }
 
-export function IntakeV06({ onAnalyze, busy, error, history, onOpenCase, onClearHistory, onDeleteCase }: Props) {
-  const [source, setSource] = useState(""), [title, setTitle] = useState(""), [dragging, setDragging] = useState(false);
+export function IntakeV06({ onAnalyze, onOpenWorkload, initialTitle = "", busy, error, history, onOpenCase, onClearHistory, onDeleteCase }: Props) {
+  const [source, setSource] = useState(""), [title, setTitle] = useState(initialTitle), [dragging, setDragging] = useState(false);
   const [redactedPreview, setRedactedPreview] = useState("");
   const [retentionDays, setRetentionDays] = useState(0), [fileError, setFileError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null), historyRef = useRef<HTMLElement>(null);
@@ -31,13 +31,13 @@ export function IntakeV06({ onAnalyze, busy, error, history, onOpenCase, onClear
   const sample = async () => { try { const response = await fetch("/samples/memory_spill_plan.json"); if (!response.ok) throw new Error(); onAnalyze(await response.text(), "Live sample · sort spill"); } catch { setFileError("Sample could not be loaded. Please retry."); } };
   return <section className="intake-console">
     <aside className="intake-rail" aria-label="Analysis workspace navigation">
-      <div className="rail-section"><span>Workspace</span><button className="active"><i>＋</i>New analysis</button><button onClick={() => historyRef.current?.scrollIntoView({ behavior: "smooth" })}><i>◷</i>Plan history <b>{history.length}</b></button><a href="https://www.postgresql.org/docs/current/using-explain.html" target="_blank" rel="noreferrer"><i>?</i>Capture documentation</a></div>
+      <div className="rail-section"><span>Workspace</span><button className="active"><i>＋</i>New analysis</button><button onClick={onOpenWorkload}><i>≡</i>Prioritize workload</button><button onClick={() => historyRef.current?.scrollIntoView({ behavior: "smooth" })}><i>◷</i>Plan history <b>{history.length}</b></button><a href="https://www.postgresql.org/docs/current/using-explain.html" target="_blank" rel="noreferrer"><i>?</i>Capture documentation</a></div>
       <div className="rail-section"><span>Local analysis</span><div className="rail-fact"><i />No database connection</div><div className="rail-fact"><i />Nothing transmitted</div><div className="rail-fact"><i />Saving is optional</div></div>
       <div className="rail-footer"><strong>PGPlan Insight</strong><span>Browser-local diagnostics</span></div>
     </aside>
 
     <div className="intake-operations">
-      <header className="operations-heading"><div><div className="section-kicker">PostgreSQL plan diagnostics</div><h1>Diagnose the plan. Verify the change.</h1><p>Analyze pasted EXPLAIN evidence locally. No database credentials or server connection required.</p></div><button type="button" onClick={sample} disabled={busy}>Load sample plan</button></header>
+      <header className="operations-heading"><div><div className="section-kicker">PostgreSQL plan diagnostics</div><h1>Diagnose the plan. Verify the change.</h1><p>Analyze pasted EXPLAIN evidence locally. No database credentials or server connection required.</p></div><div className="operations-heading-actions"><button type="button" onClick={onOpenWorkload}>Prioritize workload</button><button type="button" onClick={sample} disabled={busy}>Load sample plan</button></div></header>
       <form className={`evidence-editor ${dragging ? "dragging" : ""}`} onSubmit={submit} onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={drop}>
         <div className="editor-toolbar"><div><span>Execution plan input</span><strong>TEXT or FORMAT JSON</strong></div><div><button type="button" onClick={() => { setSource(""); setTitle(""); }}>Clear</button><button type="button" disabled={!source.trim() || busy} onClick={previewRedaction}>Preview redacted plan</button><button type="button" onClick={() => fileRef.current?.click()}>Choose file</button><input ref={fileRef} className="file-input" type="file" accept=".json,.txt,application/json,text/plain" onChange={(event) => void readFile(event.target.files?.[0])} /></div></div>
         <div className="editor-case"><label htmlFor="case-title-v06">Case name <span>Optional</span></label><input id="case-title-v06" maxLength={200} value={title} onChange={(event) => setTitle(event.target.value)} placeholder="e.g. Monthly report before index review" /></div>

@@ -49,6 +49,8 @@ import "./value-layer.css";
 import "./analysis-command-bar.css";
 import "./theme-operations-console.css";
 import "./bright-enterprise-theme.css";
+import "./workload-triage.css";
+import "./workload-triage-mobile.css";
 
 import "./privacy-controls.css";
 createRoot(document.getElementById("app")!).render(<StrictMode><App /></StrictMode>);

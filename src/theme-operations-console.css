@@ -1,6 +1,6 @@
 /* Theme B · Operations Console. Color and typography only; no layout rules. */
 :root {
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #172a34;
   background: #ecefed;
   --blue: #227d91;
@@ -229,7 +229,7 @@ button, input, textarea { font-family:inherit; }
 .planner-access-item>summary span,.planner-access-item>summary strong,.planner-access-item>summary small{display:block}
 .planner-access-item>summary small{color:#718188;font-size:8px;text-transform:uppercase}
 .planner-access-item>summary strong{margin-top:2px;font:600 10px "IBM Plex Mono",ui-monospace,monospace}
-.planner-access-item .planner-operation strong{font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;font-size:11px}
+.planner-access-item .planner-operation strong{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:11px}
 .planner-access-item .planner-operation small{margin-top:2px;text-transform:none}
 .planner-access-item>summary>b{justify-self:end;color:#266f80;font-size:9px}
 .planner-access-item.review{box-shadow:inset 3px 0 #b67a15;background:#fffdf7}
@@ -256,11 +256,18 @@ button, input, textarea { font-family:inherit; }
 /* Validate fix: proof gate, not a celebratory scorecard. */
 .validation-workbench{width:min(1320px,100%);margin:0 auto;padding:14px 0 30px}
 .validation-heading{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:end;padding-bottom:10px;border-bottom:1px solid #c7d2d4}
-.validation-heading h2{margin:3px 0 2px;font-size:26px;letter-spacing:-.03em}
+.validation-heading h2{margin:3px 0 2px;font-size:22px;letter-spacing:-.02em}
 .validation-heading .lede{max-width:760px;margin:0;font-size:12px;line-height:1.5}
 .validation-heading aside{padding:9px 11px;border-left:3px solid #227d91;background:#f3f7f6}
 .validation-heading aside strong,.validation-heading aside span{display:block}.validation-heading aside strong{font-size:10px}.validation-heading aside span{margin-top:3px;color:#60737b;font-size:9px;line-height:1.4}
 .validation-stage{margin-top:8px;border:1px solid #c7d2d4;background:#fff}
+.validation-baseline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:8px 0 0;border:1px solid #c7d2d4;background:#fff}
+.validation-baseline>div{padding:10px 12px;border-right:1px solid #dce3e4}
+.validation-baseline>div:last-child{border-right:0}
+.validation-baseline dt{color:#718188;font:700 8px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.04em;text-transform:uppercase}
+.validation-baseline dd{margin:4px 0 0;color:#213943;font:700 11px "IBM Plex Mono",ui-monospace,monospace}
+.validation-attestation-note{margin:0;padding:8px 12px;border-bottom:1px solid #dce3e4;background:#f8faf9;color:#5d7078;font-size:9px;line-height:1.45}
+.validation-attestation-note strong{color:#334d57}
 .validation-stage>header{display:flex;align-items:center;justify-content:space-between;min-height:38px;padding:0 12px;border-bottom:1px solid #d7dfe1}
 .validation-stage>header>div{display:flex;align-items:center;gap:9px}.validation-stage>header span{color:#227d91;font:700 9px "IBM Plex Mono",ui-monospace,monospace}.validation-stage>header h3{margin:0;font-size:12px}.validation-stage>header small{color:#718188;font-size:9px}
 .validation-workbench .comparison-attestations{grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:0;padding:0;border:0}
@@ -277,6 +284,7 @@ button, input, textarea { font-family:inherit; }
 .validation-workbench .comparability-gate{margin:0;border:0}.validation-workbench .comparability-gate>div{grid-template-columns:190px 1fr;padding:8px 12px}.validation-stage>.table-wrap,.structural-changes .table-wrap{margin:0;border:0;border-radius:0}.validation-stage th,.validation-stage td{padding:9px 11px;font-size:9px}.structural-changes>summary{display:flex;justify-content:space-between;padding:10px 12px;cursor:pointer;color:#334d57;font-size:10px}.structural-changes>summary b{color:#227d91}.validation-empty{margin:0;padding:12px;color:#64767d;font-size:9px}.validation-decision{display:grid;grid-template-columns:1fr 1fr auto;align-items:stretch;margin-top:8px;border:1px solid #c7d2d4;background:#f7f9f8}.validation-decision>div{padding:10px 12px;border-right:1px solid #dce3e4}.validation-decision strong{font-size:10px}.validation-decision p{margin:3px 0 0;color:#5f7178;font-size:9px;line-height:1.4}.validation-decision button{align-self:center;margin:0 12px;white-space:nowrap}
 @media(max-width:900px){.validation-heading{grid-template-columns:1fr}.validation-workbench .comparison-attestations{grid-template-columns:1fr 1fr}.validation-workbench .comparison-attestations label:nth-child(2){border-right:0}.validation-workbench .comparison-attestations label:nth-child(-n+2){border-bottom:1px solid #e0e6e7}.validation-verdict{grid-template-columns:1fr}.validation-verdict>div{border-right:0;border-bottom:1px solid #dce3e4}.validation-decision{grid-template-columns:1fr}.validation-decision>div{border-right:0;border-bottom:1px solid #dce3e4}.validation-decision button{justify-self:start;margin-block:10px}}
 @media(max-width:560px){.validation-workbench .comparison-attestations,.validation-verdict dl{grid-template-columns:1fr}.validation-workbench .comparison-attestations label{border-right:0;border-bottom:1px solid #e0e6e7}.validation-verdict dl>div{border-right:0;border-bottom:1px solid #e0e6e7}.after-plan-input>span,.validation-stage>header{align-items:flex-start;flex-direction:column;gap:3px}}
+@media(max-width:560px){.validation-baseline{grid-template-columns:1fr 1fr}.validation-baseline>div:nth-child(2){border-right:0}.validation-baseline>div:nth-child(-n+2){border-bottom:1px solid #dce3e4}}
 
 .statistics-qualification{margin:24px 28px 0;border:1px solid #cbd6df;background:#fff;color:#203448}
 .statistics-qualification>header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;padding:16px 18px;border-bottom:1px solid #dce3e9}
@@ -366,7 +374,7 @@ button, input, textarea { font-family:inherit; }
 input:focus,
 textarea:focus { border-color:#4b98a7; box-shadow:0 0 0 3px rgba(34,125,145,.14); }
 
-body > [data-tippy-root] { font-family:Arial,"Helvetica Neue",Helvetica,sans-serif; }
+body > [data-tippy-root] { font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
 body > [data-tippy-root] .tippy-box { border-color:#173e55; background:#173e55; }
 body > [data-tippy-root] .tippy-arrow { color:#173e55; }
 

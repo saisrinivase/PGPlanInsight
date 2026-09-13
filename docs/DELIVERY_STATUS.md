@@ -17,14 +17,14 @@ Allowed status values: `NOT STARTED`, `IN PROGRESS`, `PARTIAL`, `BLOCKED`, `COMP
 
 ## Active slice
 
-- Workspace: Sample-plan library expansion (COMPLETE)
-- User-visible outcome: A user can choose among six focused diagnostic examples or exercise Plan, Grid, and Raw with 100, 500, 1,000, or the supported 2,000 operations.
-- Evidence boundary: Diagnostic fixtures demonstrate captured plan patterns. Large-plan fixtures are explicitly labeled synthetic navigation checks and are not presented as production diagnoses or performance benchmarks.
-- Presentation: The former single sample action now opens a compact, keyboard-dismissable library with separate diagnostic and scale groups. It retains the approved AWR-style Arial/Helvetica interface and responsive one-column narrow layout.
-- QA evidence: 110/110 unit tests and production build passed. Ten focused sample loading and 500-node completeness workflows passed across Chromium, Firefox, WebKit, mobile Chromium, and mobile WebKit. Desktop and 390 px layouts were visually inspected without clipping or overlap.
-- Security evidence: Existing diagnostic samples load from same-origin static paths. Scale plans are deterministically generated in the browser with a hard 2,000-node boundary. No dependency, external request, HTML/URL sink, credential, or execution capability was added.
-- Known limitations: Synthetic scale fixtures validate rendering and navigation rather than realistic planner causality. Real diagnostic examples remain intentionally smaller and focused so their evidence is understandable.
-- Exact next workspace: Validate fix quality pass, preserving the approved Plan and Planner diagnostics workspaces.
+- Workspace: Validate fix quality pass (COMPLETE)
+- User-visible outcome: The workspace now starts with the captured before-plan baseline, separates comparability declarations from measured evidence, and preserves blocker/warning/pass results before allowing an improvement claim.
+- Evidence boundary: Same SQL, representative parameters, comparable environment, and repetition are operator declarations and are explicitly labeled as not verified from the plan. Missing runtime or captured setting drift blocks the verdict.
+- Presentation: All analysis workspaces use one native system interface font with IBM Plex Mono reserved for evidence values. Navigation is compact, numbered, horizontally safe on narrow screens, and uses a restrained teal active indicator; the approved Plan geometry is unchanged.
+- QA evidence: 112/112 unit tests; 20/20 focused cross-browser/mobile tests; and the complete release gate passed with 200 active browser tests across five profiles, 45 retired-renderer tests skipped, plus 100–2,000-node performance and repeated-navigation stress coverage.
+- Security evidence: Static checks passed 50 source files; dependency install reported zero vulnerabilities; CSP, referrer, same-origin behavior, SBOM, licenses, and all 24 artifact hashes passed.
+- Known limitations: Manual declarations cannot prove cache state, concurrency, parameter representativeness, or workload-wide benefit. Production approval still requires representative repeated execution.
+- Exact next workspace: Database context quality pass, preserving the approved Plan, Findings, Planner diagnostics, and Validate fix workspaces.
 
 
 ## Security and privacy hardening — 2026-09-10

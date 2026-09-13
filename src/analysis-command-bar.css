@@ -21,40 +21,47 @@
   align-items: stretch !important;
   gap: 0 !important;
   width: 100% !important;
-  min-height: 44px !important;
-  padding: 0 18px !important;
+  min-height: 48px !important;
+  padding: 0 24px !important;
   overflow: visible !important;
   border: 0 !important;
   border-bottom: 1px solid #cbd5e1 !important;
-  background: #fff !important;
+  background: #fbfcfc !important;
 }
 
 .shell:has(.command-nav) > .command-nav > button {
   align-self: stretch !important;
   min-width: 0 !important;
-  min-height: 44px !important;
-  height: 44px !important;
-  padding: 0 13px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-height: 48px !important;
+  height: 48px !important;
+  padding: 0 16px !important;
   border: 0 !important;
   border-bottom: 3px solid transparent !important;
   background: transparent !important;
   color: #526579 !important;
-  font: 600 12px Arial,"Helvetica Neue",Helvetica, system-ui, sans-serif !important;
+  font: 600 12px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif !important;
   text-align: center !important;
   white-space: nowrap;
 }
 
 .shell:has(.command-nav) > .command-nav > button:hover {
-  background: #f3f6f9 !important;
-  color: #123a60 !important;
+  background: #f3f6f5 !important;
+  color: #164f61 !important;
 }
 
 .shell:has(.command-nav) > .command-nav > button.active {
   border-left: 0 !important;
-  border-bottom-color: #0b71c7 !important;
-  background: #edf5fc !important;
-  color: #074c84 !important;
+  border-bottom-color: #17758a !important;
+  background: transparent !important;
+  color: #164f61 !important;
 }
+
+.command-nav .nav-index { color:#85959a; font:700 9px "IBM Plex Mono",ui-monospace,monospace; letter-spacing:.02em; }
+.command-nav button.active .nav-index { color:#17758a; }
+.command-nav .nav-ready { display:grid; width:16px; height:16px; place-items:center; border-radius:50%; background:#2b8b5b; color:#fff; font-size:9px; }
 
 .command-nav .tools-trigger { margin-left: auto; }
 
@@ -78,7 +85,7 @@
   border-left: 3px solid transparent;
   background: #fff;
   color: #40566c;
-  font: 600 12px Arial,"Helvetica Neue",Helvetica, system-ui, sans-serif;
+  font: 600 12px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   text-align: left;
 }
 
@@ -131,7 +138,7 @@
 body > [data-tippy-root] {
   z-index: 10000 !important;
   pointer-events: none;
-  font-family: Arial,"Helvetica Neue",Helvetica, system-ui, sans-serif;
+  font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 
 body > [data-tippy-root] .tippy-box {

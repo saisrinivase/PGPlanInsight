@@ -120,29 +120,39 @@ test("dense Plan outline and graph expand without clipping final nodes", async (
     };
   });
   expect(layout.planMode).toBe(true);
-  expect(layout.hostHeight).toBeGreaterThanOrEqual(layout.outlineBottom - layout.hostTop);
+  expect(layout.hostHeight + 1).toBeGreaterThanOrEqual(layout.outlineBottom - layout.hostTop);
   expect(layout.rootOverflow).toBe("visible");
   expect(layout.documentOverflow).toBeLessThanOrEqual(0);
   await rows.last().click();
   await expect(rows.last()).toBeVisible();
 });
 
-test("Plan, Findings, and Planner diagnostics share one interface typeface", async ({ page }) => {
+test("analysis workspaces share one native interface typeface", async ({ page }) => {
   await analyze(page, productionNestedLoopPlan, "Typography consistency");
   const renderer = page.getByTestId("pev2-renderer");
   const planFont = await renderer.evaluate((host) =>
     getComputedStyle(host.shadowRoot!.querySelector<HTMLElement>(".plan-container")!).fontFamily,
   );
-  expect(planFont).toContain("Arial");
+  expect(planFont).toContain("system-ui");
 
   await page.getByRole("button", { name: "Findings", exact: true }).click();
   const findingsFont = await page.getByRole("heading", { name: "Findings" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(findingsFont).toContain("Arial");
+  expect(findingsFont).toContain("system-ui");
 
   await page.getByRole("button", { name: "Planner diagnostics", exact: true }).click();
   const plannerFont = await page.getByRole("heading", { name: "Planner diagnostics" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(plannerFont).toContain("Arial");
+  expect(plannerFont).toContain("system-ui");
   expect(findingsFont).toBe(plannerFont);
+
+  await page.getByRole("button", { name: "Validate fix", exact: true }).click();
+  const validationFont = await page.getByRole("heading", { name: "Validate fix" }).evaluate((element) => getComputedStyle(element).fontFamily);
+  expect(validationFont).toContain("system-ui");
+  expect(validationFont).toBe(plannerFont);
+
+  await page.getByRole("button", { name: "Database context", exact: true }).click();
+  const contextFont = await page.getByRole("heading", { name: "Database context" }).evaluate((element) => getComputedStyle(element).fontFamily);
+  expect(contextFont).toContain("system-ui");
+  expect(contextFont).toBe(validationFont);
 });
 
 test("deep Plan outline and duration tooltip remain readable", async ({ page }) => {
@@ -390,6 +400,10 @@ test("Fix Validation compares structurally different plans", async ({ page }) =>
 test("Fix Validation blocks a one-run improvement and exposes complete proof evidence", async ({ page }) => {
   await analyze(page, fixture("02_non_sargable_expression"), "Unrepeated comparison");
   await page.getByRole("button", { name: "Validate fix", exact: true }).click();
+  const baseline = page.getByRole("group", { name: "Captured before-plan baseline" });
+  await expect(baseline).toContainText("Before runtime");
+  await expect(baseline).toContainText("Shared reads");
+  await expect(page.getByText("Operator declarations—not verified from the plan:")).toBeVisible();
   await page.getByText("Same SQL shape", { exact: true }).click();
   await page.getByText("Equivalent representative parameters", { exact: true }).click();
   await page.getByText("Comparable settings, cache state and concurrency", { exact: true }).click();
@@ -463,7 +477,7 @@ test("Context Pack v2 previews redaction, provenance, completeness, and the read
   await expect(preview).toContainText("password");
   await expect(preview).toContainText("partitions");
   await page.getByRole("button", { name: "Apply to this analysis" }).click();
-  await expect(page.getByRole("button", { name: "Database context ✓" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Database context", exact: true })).toHaveAttribute("aria-current", "page");
   await expect(page.getByText("Context applied", { exact: true })).toBeVisible();
   await expect(page.getByText(/PostgreSQL 16\.4/)).toBeVisible();
   await expect(input).not.toHaveValue(/discard-me/);

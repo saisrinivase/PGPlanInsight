@@ -31,3 +31,21 @@ test("comparison cannot declare improvement from one unrepeated execution", () =
   expect(comparison.verdict).toBe("Inconclusive");
   expect(comparison.comparability.find((check) => check.id === "repeat")).toMatchObject({ status: "blocker" });
 });
+
+test("comparison blocks a verdict when measured runtime is absent", () => {
+  const before = analyzePlan(envelope({ ...scan, "Actual Total Time": 100 }, 100));
+  const after = analyzePlan(JSON.stringify([{ Plan: { "Node Type": "Seq Scan", "Relation Name": "orders", "Plan Rows": 1000 } }]));
+  const comparison = compareAnalyses(before, after, { sameStatement: true, sameParameters: true, comparableEnvironment: true, repeatedCapture: true });
+  expect(comparison.runtimeDeltaPercent).toBeNull();
+  expect(comparison.verdict).toBe("Inconclusive");
+  expect(comparison.comparability.find((check) => check.id === "runtime")).toMatchObject({ status: "blocker" });
+});
+
+test("captured setting drift overrides an environment declaration", () => {
+  const before = analyzePlan(JSON.stringify([{ Plan: scan, "Execution Time": 100, Settings: { work_mem: "4MB" } }]));
+  const after = analyzePlan(JSON.stringify([{ Plan: { ...scan, "Actual Total Time": 20 }, "Execution Time": 20, Settings: { work_mem: "64MB" } }]));
+  const comparison = compareAnalyses(before, after, { sameStatement: true, sameParameters: true, comparableEnvironment: true, repeatedCapture: true });
+  expect(comparison.verdict).toBe("Inconclusive");
+  expect(comparison.comparability.find((check) => check.id === "environment")).toMatchObject({ status: "blocker" });
+  expect(comparison.comparability.find((check) => check.id === "environment")?.detail).toContain("work_mem");
+});

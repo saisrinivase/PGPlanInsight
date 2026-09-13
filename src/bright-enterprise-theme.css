@@ -2,9 +2,9 @@
 :root{
   color:#172b3a;
   background:#f6f8fb;
-  --blue:#1769aa;
-  --navy:#123f65;
-  --soft:#eaf3fa;
+  --blue:#17758a;
+  --navy:#173e4a;
+  --soft:#e9f2f1;
   --muted:#607487;
   --line:#d5e0e9;
   --green:#2c8257;
@@ -12,7 +12,7 @@
   --red:#b83f42;
   --reference-navy:#eaf1f7;
   --reference-navy-deep:#e3ecf4;
-  --reference-blue:#1769aa;
+  --reference-blue:#17758a;
   --reference-line:#d5e0e9;
   --reference-canvas:#f6f8fb;
 }
@@ -52,14 +52,14 @@ body{color-scheme:light}
 .intake-rail .rail-footer span{color:#6a8192}
 
 .shell:has(.command-nav)>.command-nav{
-  border-right:1px solid #d0dce5!important;
-  border-bottom:0!important;
-  background:#eef3f7!important;
+  border-right:0!important;
+  border-bottom:1px solid #d0d9da!important;
+  background:#fbfcfc!important;
   box-shadow:none!important;
 }
 .shell:has(.command-nav)>.command-nav>button{color:#355268!important}
-.shell:has(.command-nav)>.command-nav>button:hover{border-left-color:#7fb4dc!important;background:#e3edf5!important;color:#124f7e!important}
-.shell:has(.command-nav)>.command-nav>button.active{border-left-color:#1769aa!important;background:#d9eaf7!important;color:#0f568c!important;box-shadow:none}
+.shell:has(.command-nav)>.command-nav>button:hover{background:#f0f5f4!important;color:#164f61!important}
+.shell:has(.command-nav)>.command-nav>button.active{border-bottom-color:#17758a!important;background:transparent!important;color:#164f61!important;box-shadow:none}
 
 .workspace-panel,.diagnosis-workspace{color:#172b3a}
 .workspace-panel h2,.history-section h2,.planner-heading h2,.recommendations-heading h2,.context-workbench h2,.validation-heading h2{color:#15334a}

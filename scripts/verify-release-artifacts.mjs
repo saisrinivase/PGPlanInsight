@@ -51,7 +51,7 @@ const walk = (directory) => { for (const name of readdirSync(directory)) { const
 walk(dist);
 const duplicate = files.find((path) => /(?:[ -]\d+)\.[^.]+$/.test(basename(path)));
 if (duplicate) fail(`duplicate suffixed artifact remains: ${relative(dist, duplicate)}.`);
-if (!files.some((path) => /ibm-plex-sans.*\.woff2?$/.test(basename(path)))) fail("IBM Plex Sans production font assets are missing.");
+if (!files.some((path) => /ibm-plex-mono.*\.woff2?$/.test(basename(path)))) fail("IBM Plex Mono production font assets are missing.");
 
 const manifestPath = join(release, "manifest.sha256");
 const manifestLines = readRequired(manifestPath).trim().split("\n");

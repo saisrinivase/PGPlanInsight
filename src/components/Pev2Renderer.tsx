@@ -25,14 +25,14 @@ export function Pev2Renderer({ planSource }: { planSource: string }) {
     shadow.replaceChildren();
     const style = document.createElement("style");
     style.textContent = `${fontAwesomeDom.css()}\n${bootstrapCss}\n${pev2Css}\n
-      :host { display:block; min-height:680px; color:#172a34; font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+      :host { display:block; min-height:680px; color:#172a34; font-family:Arial,"Helvetica Neue",Helvetica,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
       *, *::before, *::after { box-sizing:border-box; }
       #pev2-root { position:relative; min-height:680px; height:calc(100vh - 250px); background:#fff; overflow:hidden; }
       #pev2-root > div { min-height:100%; }
       .nav-tabs { padding-inline:16px; background:#f7f9fb; border-bottom-color:#cbd5e1; }
       .nav-link { color:#356978; font-weight:600; }
       .nav-link.active { color:#164f61 !important; }
-      .plan-container, .plan-diagram, .diagram-container { font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif !important; }
+      .plan-container, .plan-diagram, .diagram-container { font-family:Arial,"Helvetica Neue",Helvetica,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif !important; }
       .plan-container, .diagram-container { background:#f8f9f7 !important; }
       .plan-grid { background:#fff !important; }
       #pev2-root.pgplan-grid-view { height:auto !important; overflow:visible !important; }
@@ -58,7 +58,7 @@ export function Pev2Renderer({ planSource }: { planSource: string }) {
         border-bottom:1px solid #cbd5e1;
         background:#eef4f7;
         color:#526579;
-        font:11px/1.4 "IBM Plex Sans",system-ui,sans-serif;
+        font:11px/1.4 Arial,"Helvetica Neue",Helvetica,system-ui,sans-serif;
       }
       .plan-grid thead { background:#f7f9fb !important; box-shadow:0 1px 0 #9aabb7; }
       .plan-grid thead th { padding-top:7px !important; padding-bottom:7px !important; color:#324a5b; font-weight:700; }
@@ -70,7 +70,7 @@ export function Pev2Renderer({ planSource }: { planSource: string }) {
         border-top:1px solid #cbd5e1;
         background:#f8fafc;
         color:#526579;
-        font:12px/1.4 "IBM Plex Sans", system-ui, sans-serif;
+        font:12px/1.4 Arial,"Helvetica Neue",Helvetica, system-ui, sans-serif;
       }
       .pgplan-io-note strong { color:#24364b; }
       .plan-stats:has(.stat-dropdown-container) {

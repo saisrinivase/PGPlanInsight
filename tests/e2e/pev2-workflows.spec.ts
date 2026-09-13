@@ -75,7 +75,8 @@ test("dense Raw content expands fully and wraps long source lines", async ({ pag
     };
   });
   expect(layout.textLength).toBeGreaterThan(5_000);
-  expect(layout.hostHeight).toBeGreaterThanOrEqual(layout.rawBottom - layout.hostTop);
+  // Firefox can report the same rendered edge with a sub-pixel rounding delta.
+  expect(layout.hostHeight + 1).toBeGreaterThanOrEqual(layout.rawBottom - layout.hostTop);
   expect(layout.whiteSpace).toBe("pre-wrap");
   expect(layout.documentOverflow).toBeLessThanOrEqual(0);
 });
@@ -111,15 +112,16 @@ test("Plan, Findings, and Planner diagnostics share one interface typeface", asy
   const planFont = await renderer.evaluate((host) =>
     getComputedStyle(host.shadowRoot!.querySelector<HTMLElement>(".plan-container")!).fontFamily,
   );
-  expect(planFont).toContain("IBM Plex Sans");
+  expect(planFont).toContain("Arial");
 
   await page.getByRole("button", { name: "Findings", exact: true }).click();
   const findingsFont = await page.getByRole("heading", { name: "Findings" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(findingsFont).toContain("IBM Plex Sans");
+  expect(findingsFont).toContain("Arial");
 
   await page.getByRole("button", { name: "Planner diagnostics", exact: true }).click();
   const plannerFont = await page.getByRole("heading", { name: "Planner diagnostics" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(plannerFont).toContain("IBM Plex Sans");
+  expect(plannerFont).toContain("Arial");
+  expect(findingsFont).toBe(plannerFont);
 });
 
 test("deep Plan outline and duration tooltip remain readable", async ({ page }) => {
@@ -311,11 +313,9 @@ test("core workflow navigation preserves the full-width analysis canvas", async 
   await expect(statistics).toContainText("Estimate drift is observed; its statistics cause is not established.");
   await expect(statistics).toContainText("unknown");
   await expect(statistics).toContainText("Import a sanitized Database Context Pack");
-  const explanation = page.getByRole("region", { name: "Why planner diagnostics matter" });
-  await expect(explanation).toContainText("The method PostgreSQL used to retrieve rows");
-  await expect(explanation).toContainText("Cardinality controls join order, scan choice, memory, and parallelism");
-  await expect(page.getByRole("heading", { name: "Access paths", exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Row estimates", exact: true })).toBeVisible();
+  const explanation = page.getByRole("region", { name: "How to read Planner diagnostics" });
+  await expect(explanation).toContainText("Start with time, reads, filtering, heap fetches, and repeated loops");
+  await expect(explanation).toContainText("Investigate the deepest first row-estimate divergence");
   await expect(page.getByRole("button", { name: "Access Paths" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Bad Estimates" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Minimize workspace navigation" })).toHaveCount(0);
@@ -332,11 +332,13 @@ test("Planner diagnostics prioritizes measured access work and the first estimat
   const workspace = page.locator(".planner-diagnostics");
   const accessItems = workspace.locator("details.planner-access-item");
   await expect(workspace).toContainText("Planner cost explains a choice");
-  await expect(workspace).toContainText("An index can still be expensive when repeated thousands of times");
+  await expect(workspace).toContainText("An index is not automatically cheap");
   await expect(accessItems.first()).toHaveClass(/review/);
   expect(await accessItems.evaluateAll((items) => items.filter((item) => (item as HTMLDetailsElement).open).length)).toBe(1);
   await expect(accessItems.first()).toContainText("Index Only Scan");
   await expect(accessItems.first()).toContainText("Heap visits reduced the benefit");
+  await expect(accessItems.first()).toContainText("Why PostgreSQL may have chosen it");
+  await expect(accessItems.first()).toContainText("Bounded hypothesis");
   await expect(workspace.locator(".estimate-row.origin")).toHaveCount(1);
   await expect(workspace.locator(".estimate-row.origin")).toContainText("Investigate first: deepest material divergence");
   await expect(workspace.getByText("Candidate experiment—not a recommendation", { exact: true })).toHaveCount(0);

@@ -1,6 +1,6 @@
 # PGPlan Insight delivery status
 
-Updated: 2026-09-12
+Updated: 2026-09-13
 
 | Stage | Status | Implementation evidence | Test evidence | Security evidence | Remaining risk |
 |---|---|---|---|---|---|
@@ -17,14 +17,14 @@ Allowed status values: `NOT STARTED`, `IN PROGRESS`, `PARTIAL`, `BLOCKED`, `COMP
 
 ## Active slice
 
-- Workspace: Findings quality pass (COMPLETE)
-- User-visible outcome: A DBA can identify the highest-priority evidence-backed experiment without rereading the Plan workspace.
-- Evidence boundary: Observed, derived, suspected, unknown, and verified claims remain visibly distinct. A plan-only finding does not prove catalog state, workload recurrence, causality, or fix effectiveness.
-- Presentation: The first finding leads with its captured signal and one controlled action. Validation prerequisites, success criteria, and rollback are available in a compact disclosure. The shared analysis tab bar now follows the approved Plan workspace's 44 px, IBM Plex Sans rhythm without a large active-tab block.
-- QA evidence: 104/104 unit tests and production build passed. Fifteen focused Findings/typeface/progressive-disclosure workflows passed across Chromium, Firefox, WebKit, mobile Chromium, and mobile WebKit. Desktop rendering was visually inspected; mobile layout and overflow were exercised in both mobile browser profiles.
-- Security evidence: React text rendering remains the default; no HTML/URL sink, secret, dependency, or outbound behavior was added. Full release-gate evidence is recorded by the gate result for this source revision.
-- Known limitations: Candidate indexes remain controlled experiments and require Database Context plus representative before/after validation. The existing visualization bundle-size warning remains non-blocking.
-- Exact next workspace: Planner diagnostics quality pass, with access-path and first-divergence explanations optimized for engineers new to EXPLAIN.
+- Workspace: Planner diagnostics quality pass (COMPLETE)
+- User-visible outcome: An engineer new to EXPLAIN can distinguish measured access-path work from planner cost, understand why a sequential or index path may have been chosen, and begin at the deepest first meaningful row-estimate divergence.
+- Evidence boundary: Runtime metrics are described as measured only when present. Access-method explanations and statistics causes remain bounded hypotheses until relation size, selectivity, statistics, visibility-map state, and competing indexes are supplied through Database Context.
+- Presentation: A compact three-step reading guide leads into ranked access-path review and estimate divergence. Expanded access paths separate measured interpretation, possible planner rationale, captured metrics, predicate evidence, and one next action. The application now uses an AWR-style Arial/Helvetica interface typeface globally; IBM Plex Mono remains for code and aligned numeric evidence.
+- QA evidence: 104/104 unit tests and production build passed. Fifteen focused navigation, typography, and Planner diagnostics workflows passed across Chromium, Firefox, WebKit, mobile Chromium, and mobile WebKit. Desktop Planner and Plan rendering were visually inspected with a representative sequential-scan/index-only-scan plan.
+- Security evidence: Explanations are deterministic local functions rendered as React text. No HTML/URL sink, secret, dependency, execution capability, or outbound behavior was added. Full release-gate evidence is recorded by the gate result for this source revision.
+- Known limitations: A pasted plan alone cannot prove whether a chosen access path is optimal or establish the cause of an estimate error. Database Context and representative repeated before/after execution remain required. The existing visualization bundle-size warning remains non-blocking.
+- Exact next workspace: Validate fix quality pass, preserving the approved Plan and Planner diagnostics workspaces.
 
 
 ## Security and privacy hardening — 2026-09-10

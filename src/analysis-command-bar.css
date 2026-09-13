@@ -39,7 +39,7 @@
   border-bottom: 3px solid transparent !important;
   background: transparent !important;
   color: #526579 !important;
-  font: 600 12px "IBM Plex Sans", system-ui, sans-serif !important;
+  font: 600 12px Arial,"Helvetica Neue",Helvetica, system-ui, sans-serif !important;
   text-align: center !important;
   white-space: nowrap;
 }
@@ -78,7 +78,7 @@
   border-left: 3px solid transparent;
   background: #fff;
   color: #40566c;
-  font: 600 12px "IBM Plex Sans", system-ui, sans-serif;
+  font: 600 12px Arial,"Helvetica Neue",Helvetica, system-ui, sans-serif;
   text-align: left;
 }
 
@@ -131,7 +131,7 @@
 body > [data-tippy-root] {
   z-index: 10000 !important;
   pointer-events: none;
-  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-family: Arial,"Helvetica Neue",Helvetica, system-ui, sans-serif;
 }
 
 body > [data-tippy-root] .tippy-box {

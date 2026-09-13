@@ -36,7 +36,8 @@ async function analyze(page: import("@playwright/test").Page, source: string, ti
 test("JSON diagnosis, execution tree table, expert tools, and local report export", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Diagnose the plan. Verify the change." })).toBeVisible();
-  await page.getByRole("button", { name: "Load sample plan" }).click();
+  await page.getByRole("button", { name: "Sample plans" }).click();
+  await page.getByRole("button", { name: /Sort spill/ }).click();
   await expect(page.getByRole("heading", { name: "See the work. Select the cause." })).toBeVisible();
   await expect(page.getByRole("button", { name: /Direct spill at Sort/ })).toBeVisible();
   await page.getByRole("button", { name: /Direct spill at Sort/ }).click();

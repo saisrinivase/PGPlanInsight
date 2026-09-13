@@ -1,14 +1,22 @@
 import { redactPlanForSharing } from "../redact-plan.ts";
-import { type ClipboardEvent, type DragEvent, type FormEvent, useRef, useState } from "react";
+import { type ClipboardEvent, type DragEvent, type FormEvent, useEffect, useRef, useState } from "react";
 import type { StoredCase } from "../case-store.ts";
+import { loadSamplePlan, SAMPLE_PLANS, type SamplePlan } from "../sample-plans.ts";
 
 interface Props { onAnalyze: (source: string, title: string, retentionDays?: number) => void; onOpenWorkload: () => void; initialTitle?: string; busy: boolean; error: string; history: StoredCase[]; onOpenCase: (item: StoredCase) => void; onClearHistory: () => void; onDeleteCase: (id: string) => void }
 
 export function IntakeV06({ onAnalyze, onOpenWorkload, initialTitle = "", busy, error, history, onOpenCase, onClearHistory, onDeleteCase }: Props) {
   const [source, setSource] = useState(""), [title, setTitle] = useState(initialTitle), [dragging, setDragging] = useState(false);
   const [redactedPreview, setRedactedPreview] = useState("");
+  const [samplesOpen, setSamplesOpen] = useState(false);
   const [retentionDays, setRetentionDays] = useState(0), [fileError, setFileError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null), historyRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!samplesOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setSamplesOpen(false); };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [samplesOpen]);
   const submit = (event: FormEvent) => { event.preventDefault(); onAnalyze(source, title, retentionDays); };
   const paste = (event: ClipboardEvent<HTMLTextAreaElement>) => {
     const text = event.clipboardData.getData("text/plain");
@@ -28,7 +36,7 @@ export function IntakeV06({ onAnalyze, onOpenWorkload, initialTitle = "", busy, 
   const readFile = async (file?: File) => { if (!file) return; setFileError(""); if (file.size > 10_000_000) { setFileError("File exceeds the 10 MB limit. Choose a smaller plan."); return; } try { setSource(await file.text()); if (!title) setTitle(file.name.replace(/\.(json|txt)$/i, "")); } catch { setFileError("This file could not be read. Try another file or paste its contents."); } };
   const previewRedaction = () => { try { setRedactedPreview(redactPlanForSharing(source)); setFileError(""); } catch (caught) { setFileError(caught instanceof Error ? caught.message : "Unable to redact this plan."); } };
   const drop = (event: DragEvent) => { event.preventDefault(); setDragging(false); void readFile(event.dataTransfer.files[0]); };
-  const sample = async () => { try { const response = await fetch("/samples/memory_spill_plan.json"); if (!response.ok) throw new Error(); onAnalyze(await response.text(), "Live sample · sort spill"); } catch { setFileError("Sample could not be loaded. Please retry."); } };
+  const sample = async (choice: SamplePlan) => { try { setSamplesOpen(false); onAnalyze(await loadSamplePlan(choice), `Sample · ${choice.title}`); } catch { setFileError("Sample could not be loaded. Please retry."); } };
   return <section className="intake-console">
     <aside className="intake-rail" aria-label="Analysis workspace navigation">
       <div className="rail-section"><span>Workspace</span><button className="active"><i>＋</i>New analysis</button><button onClick={onOpenWorkload}><i>≡</i>Prioritize workload</button><button onClick={() => historyRef.current?.scrollIntoView({ behavior: "smooth" })}><i>◷</i>Plan history <b>{history.length}</b></button><a href="https://www.postgresql.org/docs/current/using-explain.html" target="_blank" rel="noreferrer"><i>?</i>Capture documentation</a></div>
@@ -37,7 +45,8 @@ export function IntakeV06({ onAnalyze, onOpenWorkload, initialTitle = "", busy, 
     </aside>
 
     <div className="intake-operations">
-      <header className="operations-heading"><div><div className="section-kicker">PostgreSQL plan diagnostics</div><h1>Diagnose the plan. Verify the change.</h1><p>Analyze pasted EXPLAIN evidence locally. No database credentials or server connection required.</p></div><div className="operations-heading-actions"><button type="button" onClick={onOpenWorkload}>Prioritize workload</button><button type="button" onClick={sample} disabled={busy}>Load sample plan</button></div></header>
+      <header className="operations-heading"><div><div className="section-kicker">PostgreSQL plan diagnostics</div><h1>Diagnose the plan. Verify the change.</h1><p>Analyze pasted EXPLAIN evidence locally. No database credentials or server connection required.</p></div><div className="operations-heading-actions"><button type="button" onClick={onOpenWorkload}>Prioritize workload</button><button type="button" onClick={() => setSamplesOpen(true)} disabled={busy}>Sample plans</button></div></header>
+      {samplesOpen && <div className="sample-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSamplesOpen(false); }}><section className="sample-library" role="dialog" aria-modal="true" aria-labelledby="sample-library-title"><header><div><div className="section-kicker">Local examples</div><h2 id="sample-library-title">Choose a sample plan</h2><p>Use a diagnostic example to learn a pattern or a synthetic scale plan to test large-plan navigation.</p></div><button type="button" aria-label="Close sample plans" onClick={() => setSamplesOpen(false)}>×</button></header><div className="sample-groups"><section><h3>Diagnostic examples</h3><p>Curated PostgreSQL evidence with a specific investigation theme.</p><div className="sample-list">{SAMPLE_PLANS.filter((item) => item.category === "diagnostic").map((item) => <button type="button" key={item.id} onClick={() => void sample(item)}><strong>{item.title}</strong><span>{item.description}</span><small>Open example ›</small></button>)}</div></section><section><h3>Large-plan examples</h3><p>Synthetic plans for checking complete rendering and navigation—not production diagnoses.</p><div className="sample-list scale">{SAMPLE_PLANS.filter((item) => item.category === "scale").map((item) => <button type="button" key={item.id} onClick={() => void sample(item)}><strong>{item.title}</strong><span>{item.description}</span><small>{item.nodeCount?.toLocaleString()} operations ›</small></button>)}</div></section></div></section></div>}
       <form className={`evidence-editor ${dragging ? "dragging" : ""}`} onSubmit={submit} onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={drop}>
         <div className="editor-toolbar"><div><span>Execution plan input</span><strong>TEXT or FORMAT JSON</strong></div><div><button type="button" onClick={() => { setSource(""); setTitle(""); }}>Clear</button><button type="button" disabled={!source.trim() || busy} onClick={previewRedaction}>Preview redacted plan</button><button type="button" onClick={() => fileRef.current?.click()}>Choose file</button><input ref={fileRef} className="file-input" type="file" accept=".json,.txt,application/json,text/plain" onChange={(event) => void readFile(event.target.files?.[0])} /></div></div>
         <div className="editor-case"><label htmlFor="case-title-v06">Case name <span>Optional</span></label><input id="case-title-v06" maxLength={200} value={title} onChange={(event) => setTitle(event.target.value)} placeholder="e.g. Monthly report before index review" /></div>

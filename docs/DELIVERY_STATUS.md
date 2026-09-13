@@ -17,13 +17,13 @@ Allowed status values: `NOT STARTED`, `IN PROGRESS`, `PARTIAL`, `BLOCKED`, `COMP
 
 ## Active slice
 
-- Workspace: Planner diagnostics quality pass (COMPLETE)
-- User-visible outcome: An engineer new to EXPLAIN can distinguish measured access-path work from planner cost, understand why a sequential or index path may have been chosen, and begin at the deepest first meaningful row-estimate divergence.
-- Evidence boundary: Runtime metrics are described as measured only when present. Access-method explanations and statistics causes remain bounded hypotheses until relation size, selectivity, statistics, visibility-map state, and competing indexes are supplied through Database Context.
-- Presentation: A compact three-step reading guide leads into ranked access-path review and estimate divergence. Expanded access paths separate measured interpretation, possible planner rationale, captured metrics, predicate evidence, and one next action. The application now uses an AWR-style Arial/Helvetica interface typeface globally; IBM Plex Mono remains for code and aligned numeric evidence.
-- QA evidence: 104/104 unit tests and production build passed. Fifteen focused navigation, typography, and Planner diagnostics workflows passed across Chromium, Firefox, WebKit, mobile Chromium, and mobile WebKit. Desktop Planner and Plan rendering were visually inspected with a representative sequential-scan/index-only-scan plan.
-- Security evidence: Explanations are deterministic local functions rendered as React text. No HTML/URL sink, secret, dependency, execution capability, or outbound behavior was added. Full release-gate evidence is recorded by the gate result for this source revision.
-- Known limitations: A pasted plan alone cannot prove whether a chosen access path is optimal or establish the cause of an estimate error. Database Context and representative repeated before/after execution remain required. The existing visualization bundle-size warning remains non-blocking.
+- Workspace: Sample-plan library expansion (COMPLETE)
+- User-visible outcome: A user can choose among six focused diagnostic examples or exercise Plan, Grid, and Raw with 100, 500, 1,000, or the supported 2,000 operations.
+- Evidence boundary: Diagnostic fixtures demonstrate captured plan patterns. Large-plan fixtures are explicitly labeled synthetic navigation checks and are not presented as production diagnoses or performance benchmarks.
+- Presentation: The former single sample action now opens a compact, keyboard-dismissable library with separate diagnostic and scale groups. It retains the approved AWR-style Arial/Helvetica interface and responsive one-column narrow layout.
+- QA evidence: 110/110 unit tests and production build passed. Ten focused sample loading and 500-node completeness workflows passed across Chromium, Firefox, WebKit, mobile Chromium, and mobile WebKit. Desktop and 390 px layouts were visually inspected without clipping or overlap.
+- Security evidence: Existing diagnostic samples load from same-origin static paths. Scale plans are deterministically generated in the browser with a hard 2,000-node boundary. No dependency, external request, HTML/URL sink, credential, or execution capability was added.
+- Known limitations: Synthetic scale fixtures validate rendering and navigation rather than realistic planner causality. Real diagnostic examples remain intentionally smaller and focused so their evidence is understandable.
 - Exact next workspace: Validate fix quality pass, preserving the approved Plan and Planner diagnostics workspaces.
 
 

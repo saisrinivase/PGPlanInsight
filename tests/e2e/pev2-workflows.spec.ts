@@ -25,7 +25,8 @@ async function analyze(page: import("@playwright/test").Page, source: string, ti
 
 test("PEV2 is the primary renderer with plan modes", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Load sample plan" }).click();
+  await page.getByRole("button", { name: "Sample plans" }).click();
+  await page.getByRole("button", { name: /Sort spill/ }).click();
   await expect(page.getByTestId("pev2-renderer")).toBeVisible();
   for (const name of ["Plan", "Grid new", "Raw", "Stats"]) await expect(page.getByRole("link", { name, exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: /PEV2 1\.23\.0/ })).toBeVisible();
@@ -39,6 +40,26 @@ test("PEV2 is the primary renderer with plan modes", async ({ page }) => {
   expect(iconSizes.every(({ width, height }) => width <= 32 && height <= 32)).toBe(true);
   await page.getByRole("link", { name: "Grid new" }).click();
   await expect(page.getByTestId("pev2-renderer")).toBeVisible();
+});
+
+test("sample library exposes diagnostic patterns and renders a 500-node plan completely", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Sample plans" }).click();
+  const library = page.getByRole("dialog", { name: "Choose a sample plan" });
+  await expect(library).toBeVisible();
+  await expect(library.getByRole("heading", { name: "Diagnostic examples" })).toBeVisible();
+  await expect(library.getByRole("heading", { name: "Large-plan examples" })).toBeVisible();
+  await expect(library.getByText(/not production diagnoses/i)).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(library).toBeHidden();
+  await page.getByRole("button", { name: "Sample plans" }).click();
+  await library.getByRole("button", { name: /500-node plan/ }).click();
+  const renderer = page.getByTestId("pev2-renderer");
+  await expect(renderer).toBeVisible({ timeout: 15_000 });
+  await page.getByRole("link", { name: /Grid/ }).click();
+  await expect(renderer.locator(".plan-grid tr.node")).toHaveCount(500, { timeout: 15_000 });
+  await page.getByRole("link", { name: "Raw", exact: true }).click();
+  await expect(renderer.locator(".tab-pane.active pre")).toContainText("events_p0499");
 });
 
 test("dense Grid labels its columns and keeps every operation reachable", async ({ page }) => {

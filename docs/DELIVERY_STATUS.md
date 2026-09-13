@@ -17,15 +17,14 @@ Allowed status values: `NOT STARTED`, `IN PROGRESS`, `PARTIAL`, `BLOCKED`, `COMP
 
 ## Active slice
 
-- Workspace: Workload triage (COMPLETE)
-- User-visible outcome: A DBA can identify the fingerprint consuming the most captured PostgreSQL execution time before opening a plan, understand the strongest counter-level review direction, and start a labeled plan investigation.
-- Evidence boundary: Calls, execution time, rows, shared/temp blocks, and WAL are observed; time share and rank are derived; root cause, tail latency, concurrency, locks, cache state, parameter skew, and remediation remain unknown until additional evidence is supplied.
-- PostgreSQL verification: The read-only collector executed on PostgreSQL 18.3 with `pg_stat_statements` 1.12. Its 1,056 aggregated fingerprints passed the exact product parser with zero duplicate fingerprints and no SQL-text field. PostgreSQL 14–18 compatibility is based on the stable collector catalog surface; only 18.3 was available for live execution.
-- QA evidence: 104/104 unit tests and 195 active browser workflows passed across Chromium, Firefox, WebKit, mobile Chromium, and mobile WebKit; 45 retired-renderer workflows remain intentionally skipped. Desktop import/results and narrow stacked-result layouts were visually inspected. Existing 2,000-node and 20-cycle stress tests passed.
-- Security evidence: Strict redacted provenance, exact-field validation, non-negative finite counters, duplicate rejection, ISO collection time, 2 MB and 5,000-statement limits, no browser persistence, no database connection, and no external transmission. The full static, dependency, SBOM, license, and artifact gate passed.
-- Documentation: `docs/WORKLOAD_TRIAGE.md` explains collection, privacy, interpretation, evidence limitations, plan capture, and repeated before/after validation.
-- Known limitations: Cumulative `pg_stat_statements` data is not a latency distribution and can combine parameter values. Equivalent snapshot windows are required for comparison. Bundle-size warnings remain non-blocking.
-- Exact next workspace: Repeated-run Fix Validation with median/variability evidence and an `improved`, `regressed`, or `inconclusive` verdict.
+- Workspace: Findings quality pass (COMPLETE)
+- User-visible outcome: A DBA can identify the highest-priority evidence-backed experiment without rereading the Plan workspace.
+- Evidence boundary: Observed, derived, suspected, unknown, and verified claims remain visibly distinct. A plan-only finding does not prove catalog state, workload recurrence, causality, or fix effectiveness.
+- Presentation: The first finding leads with its captured signal and one controlled action. Validation prerequisites, success criteria, and rollback are available in a compact disclosure. The shared analysis tab bar now follows the approved Plan workspace's 44 px, IBM Plex Sans rhythm without a large active-tab block.
+- QA evidence: 104/104 unit tests and production build passed. Fifteen focused Findings/typeface/progressive-disclosure workflows passed across Chromium, Firefox, WebKit, mobile Chromium, and mobile WebKit. Desktop rendering was visually inspected; mobile layout and overflow were exercised in both mobile browser profiles.
+- Security evidence: React text rendering remains the default; no HTML/URL sink, secret, dependency, or outbound behavior was added. Full release-gate evidence is recorded by the gate result for this source revision.
+- Known limitations: Candidate indexes remain controlled experiments and require Database Context plus representative before/after validation. The existing visualization bundle-size warning remains non-blocking.
+- Exact next workspace: Planner diagnostics quality pass, with access-path and first-divergence explanations optimized for engineers new to EXPLAIN.
 
 
 ## Security and privacy hardening — 2026-09-10

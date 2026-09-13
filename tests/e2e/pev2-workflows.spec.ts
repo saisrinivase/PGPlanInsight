@@ -288,7 +288,7 @@ test("Findings prioritizes one investigation and progressively discloses support
   await expect(page.getByRole("heading", { name: "Candidate indexes", exact: true })).toHaveCount(0);
 
   const second = investigations.nth(1);
-  await second.locator("summary").focus();
+  await second.locator(":scope > summary").focus();
   await page.keyboard.press("Enter");
   await expect(second).toHaveJSProperty("open", true);
 

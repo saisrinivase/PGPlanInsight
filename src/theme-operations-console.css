@@ -90,7 +90,7 @@ button, input, textarea { font-family:inherit; }
 .recommendations-workbench{width:min(1320px,100%);margin:0 auto;padding:14px 0 30px}
 .recommendations-heading{grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:center;padding-bottom:10px}
 .recommendations-heading .section-kicker{font-size:9px}
-.recommendations-heading h2{margin:3px 0 2px;font-size:26px;line-height:1.05;letter-spacing:-.03em}
+.recommendations-heading h2{margin:3px 0 2px;font-size:22px;line-height:1.1;letter-spacing:-.025em}
 .recommendations-heading .lede{max-width:720px;font-size:12px;line-height:1.45}
 .recommendations-heading aside{padding:8px 10px;border-left-width:2px;background:#eef3f3}
 .recommendations-heading aside strong{font-size:9px}
@@ -312,18 +312,19 @@ button, input, textarea { font-family:inherit; }
 .recommendations-workbench>.coercion-qualification{margin:8px 0 0}
 .finding-investigation{border-top:1px solid #dce3e4;background:#fff}
 .finding-investigation:first-child{border-top:0}
-.finding-investigation>summary{display:grid;grid-template-columns:32px 68px minmax(180px,.75fr) minmax(260px,1.25fr) 100px;align-items:center;gap:10px;min-height:44px;padding:7px 12px;list-style:none;cursor:pointer}
+.finding-investigation>summary{display:grid;grid-template-columns:32px 68px minmax(0,1fr) 72px;align-items:center;gap:10px;min-height:48px;padding:7px 12px;list-style:none;cursor:pointer}
 .finding-investigation>summary::-webkit-details-marker{display:none}
 .finding-investigation>summary:hover,.finding-investigation>summary:focus-visible{background:#f3f7f6;outline:0}
 .finding-investigation[open]>summary{box-shadow:inset 3px 0 #227d91;background:#f7f9f8}
 .finding-investigation .recommendation-rank{color:#71858d;font:700 11px "IBM Plex Mono",ui-monospace,monospace}
 .finding-investigation>summary>.severity{font-size:8px}
-.finding-investigation>summary>strong{font-size:11px;line-height:1.3}
-.finding-observed{min-width:0;color:#5a6e76;font-size:9px;line-height:1.35;overflow-wrap:anywhere}
+.finding-title{display:block;min-width:0}.finding-title strong,.finding-title small{display:block}.finding-title strong{color:#263f49;font-size:11px;line-height:1.3}.finding-title small{margin-top:2px;color:#61747c;font-size:9px;line-height:1.35;overflow-wrap:anywhere}
 .finding-disclosure{color:#227d91;font:700 8px "IBM Plex Mono",ui-monospace,monospace;text-align:right;text-transform:uppercase}
 .finding-investigation[open] .finding-disclosure{font-size:0}.finding-investigation[open] .finding-disclosure::after{content:"Hide evidence";font-size:8px}
-.finding-investigation-body{padding:0 12px 12px 122px;border-top:1px solid #e2e8e9}
-.finding-investigation-body dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 16px;margin:9px 0 0}
+.finding-investigation-body{padding:10px 12px 12px 122px;border-top:1px solid #e2e8e9}
+.finding-action{display:grid;grid-template-columns:72px minmax(0,1fr);gap:2px 12px;padding:9px 10px;border-left:3px solid #227d91;background:#eef5f4}.finding-action span{grid-row:1/3;color:#227d91;font:700 8px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.04em;text-transform:uppercase}.finding-action strong{color:#263f49;font-size:10px;line-height:1.4}.finding-action small{color:#65777e;font-size:8px;line-height:1.4}
+.finding-guardrails{margin-top:8px;border:1px solid #d8e0e2;background:#fafbfb}.finding-guardrails>summary{padding:7px 9px;color:#3d5963;font:700 8px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.04em;list-style:none;text-transform:uppercase;cursor:pointer}.finding-guardrails>summary::-webkit-details-marker{display:none}.finding-guardrails>summary::after{float:right;content:"Show";color:#227d91}.finding-guardrails[open]>summary::after{content:"Hide"}
+.finding-investigation-body dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 16px;margin:0;padding:0 9px 9px}
 .finding-investigation-body dl>div{padding-left:9px;border-left:1px solid #cbd8da}
 .finding-investigation-body dt{color:#657a83;font:700 8px "IBM Plex Mono",ui-monospace,monospace;text-transform:uppercase}
 .finding-investigation-body dd{margin:3px 0 0;color:#354e58;font-size:9px;line-height:1.4}
@@ -334,8 +335,8 @@ button, input, textarea { font-family:inherit; }
 .candidate-experiment-list>details>summary>span:first-child{color:#71858d;font:700 11px "IBM Plex Mono",ui-monospace,monospace}.candidate-experiment-list>details>summary small,.candidate-experiment-list>details>summary strong,.candidate-experiment-list>details>summary em{display:block}.candidate-experiment-list>details>summary small{color:#7c6a3d;font:700 8px "IBM Plex Mono",ui-monospace,monospace;text-transform:uppercase}.candidate-experiment-list>details>summary strong{margin-top:2px;color:#24475a;font:600 10px "IBM Plex Mono",ui-monospace,monospace;overflow-wrap:anywhere}.candidate-experiment-list>details>summary em{margin-top:2px;color:#687b83;font-size:8px;font-style:normal}.candidate-experiment-list>details>summary>b{color:#227d91;font:700 8px "IBM Plex Mono",ui-monospace,monospace;text-align:right;text-transform:uppercase}
 .candidate-experiment-body{padding:0 12px 12px 52px;border-top:1px solid #e2e8e9}.candidate-experiment-body .candidate-experiment-evidence{margin-top:10px}
 .recommendations-workbench>.captured-evidence{margin-top:8px}
-@media(max-width:850px){.finding-investigation>summary{grid-template-columns:28px 62px minmax(140px,1fr) 86px}.finding-observed{grid-column:3/5}.finding-investigation-body{padding-left:12px}.candidate-experiment-list>details>summary{grid-template-columns:28px minmax(0,1fr)}.candidate-experiment-list>details>summary>b{grid-column:2;text-align:left}.candidate-experiment-body{padding-left:12px}}
-@media(max-width:560px){.finding-investigation>summary{grid-template-columns:24px 58px 1fr}.finding-observed,.finding-disclosure{grid-column:3;text-align:left}.finding-investigation-body dl{grid-template-columns:1fr}.evidence-classifications{grid-template-columns:1fr}.candidate-experiment-list>details>summary{grid-template-columns:1fr}.candidate-experiment-list>details>summary>b{grid-column:1}.candidate-experiment-guardrails,.candidate-experiment-gates{grid-template-columns:1fr}}
+@media(max-width:850px){.finding-investigation>summary{grid-template-columns:28px 62px minmax(0,1fr) 64px}.finding-investigation-body{padding-left:12px}.candidate-experiment-list>details>summary{grid-template-columns:28px minmax(0,1fr)}.candidate-experiment-list>details>summary>b{grid-column:2;text-align:left}.candidate-experiment-body{padding-left:12px}}
+@media(max-width:560px){.finding-investigation>summary{grid-template-columns:24px 58px 1fr}.finding-disclosure{grid-column:3;text-align:left}.finding-action{grid-template-columns:1fr}.finding-action span{grid-row:auto}.finding-investigation-body dl{grid-template-columns:1fr}.evidence-classifications{grid-template-columns:1fr}.candidate-experiment-list>details>summary{grid-template-columns:1fr}.candidate-experiment-list>details>summary>b{grid-column:1}.candidate-experiment-guardrails,.candidate-experiment-gates{grid-template-columns:1fr}}
 
 .diagnosis-workspace,
 .workspace-panel,

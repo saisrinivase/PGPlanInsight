@@ -14,7 +14,9 @@ describe("index-only scan diagnosis", () => {
   });
 
   test("observes heap-fetch-heavy access", () => {
-    expect(indexOnlyScanDiagnosis(scan({ rows: 1_000, heapFetches: 700 }))).toMatchObject({ signal: "heap-fetch-heavy", classification: "observed", review: true });
+    const result = indexOnlyScanDiagnosis(scan({ rows: 1_000, heapFetches: 700, sharedReads: 120, loops: 2, totalTime: 240, timeShare: 65 }));
+    expect(result).toMatchObject({ signal: "heap-fetch-heavy", classification: "observed", review: true });
+    expect(result?.evidence).toMatch(/240 ms \(65\.0% of execution\).*2 loop.*2,000 returned row visits.*120 shared reads.*Heap Fetches 700/i);
   });
 
   test("observes substantial residual filtering", () => {
@@ -44,5 +46,20 @@ describe("index-only scan diagnosis", () => {
     expect(measured.findings.map((finding) => finding.id)).toContain("IOS-001");
     const estimated = analyzePlan(JSON.stringify([{ Plan: { "Node Type": "Index Only Scan", "Relation Name": "orders", "Index Name": "orders_customer_idx", "Plan Rows": 1000, "Total Cost": 999999 } }]));
     expect(estimated.findings.map((finding) => finding.id)).not.toContain("IOS-001");
+  });
+
+  test("does not duplicate an index-only loop root cause as a generic CPU finding", () => {
+    const result = analyzePlan(JSON.stringify([{ Plan: { "Node Type": "Index Only Scan", "Relation Name": "orders", "Index Name": "orders_customer_idx", "Plan Rows": 1, "Actual Rows": 1, "Actual Loops": 2_000, "Actual Total Time": 0.2, "Heap Fetches": 0, "Shared Read Blocks": 20 }, "Execution Time": 400 }]));
+    expect(result.findings.map((finding) => finding.id)).toContain("IOS-001");
+    expect(result.findings.map((finding) => finding.id)).not.toContain("CPU-001");
+    expect(result.primarySignal).toBe("Index-only access");
+  });
+
+  test("reports the highest-time index-only review when several scans qualify", () => {
+    const result = analyzePlan(JSON.stringify([{ Plan: { "Node Type": "Nested Loop", "Plan Rows": 1, "Actual Rows": 1, "Actual Loops": 1, "Actual Total Time": 500, Plans: [
+      { "Node Type": "Index Only Scan", "Relation Name": "small_lookup", "Plan Rows": 100, "Actual Rows": 100, "Actual Loops": 1, "Actual Total Time": 20, "Heap Fetches": 80 },
+      { "Node Type": "Index Only Scan", "Relation Name": "repeated_lookup", "Plan Rows": 1, "Actual Rows": 1, "Actual Loops": 2_000, "Actual Total Time": 0.2, "Heap Fetches": 0 },
+    ] }, "Execution Time": 500 }]));
+    expect(result.findings.find((finding) => finding.id === "IOS-001")?.evidence).toContain("operation 3");
   });
 });

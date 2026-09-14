@@ -20,7 +20,7 @@ Allowed status values: `NOT STARTED`, `IN PROGRESS`, `PARTIAL`, `BLOCKED`, `COMP
 - Workspace: Validate fix quality pass (COMPLETE)
 - User-visible outcome: The workspace now starts with the captured before-plan baseline, separates comparability declarations from measured evidence, and preserves blocker/warning/pass results before allowing an improvement claim.
 - Evidence boundary: Same SQL, representative parameters, comparable environment, and repetition are operator declarations and are explicitly labeled as not verified from the plan. Missing runtime or captured setting drift blocks the verdict.
-- Presentation: All analysis workspaces use one native system interface font with IBM Plex Mono reserved for evidence values. Navigation is compact, numbered, horizontally safe on narrow screens, and uses a restrained teal active indicator; the approved Plan geometry is unchanged.
+- Presentation: All analysis workspaces use bundled IBM Plex Sans, with IBM Plex Mono reserved for evidence values. Navigation is compact, numbered, horizontally safe on narrow screens, and uses a restrained teal active indicator; the approved Plan geometry is unchanged.
 - QA evidence: 112/112 unit tests; 20/20 focused cross-browser/mobile tests; and the complete release gate passed with 200 active browser tests across five profiles, 45 retired-renderer tests skipped, plus 100–2,000-node performance and repeated-navigation stress coverage.
 - Security evidence: Static checks passed 50 source files; dependency install reported zero vulnerabilities; CSP, referrer, same-origin behavior, SBOM, licenses, and all 24 artifact hashes passed.
 - Known limitations: Manual declarations cannot prove cache state, concurrency, parameter representativeness, or workload-wide benefit. Production approval still requires representative repeated execution.
@@ -53,7 +53,8 @@ Implementation complete for the reviewed code risks. The previous offline-gate c
 
 ## Dense DBA Workbench theme — 2026-09-14
 
-- Applied one restrained system typeface and dense navy/gray visual system across Plan, Findings, Planner diagnostics, Validate fix, and Database context without changing diagnostic behavior.
+- Applied bundled IBM Plex Sans and a dense navy/gray visual system across Plan, Findings, Planner diagnostics, Validate fix, and Database context without changing diagnostic behavior.
+- Corrected the final theme override so workspaces use the available canvas with 12 px desktop and 8 px narrow gutters instead of retaining the earlier centered appearance.
 - Removed excessive desktop gutters and improved compact/mobile readability; the Plan renderer uses the same typeface inside its shadow DOM.
 - Passed 112 unit tests, production build, 200 active cross-browser workflows, stress/2,000-node coverage, static security checks, and release-artifact verification.
 - Automated fixture conformance is complete. Real-world diagnostic accuracy is not represented as a percentage until an independent DBA-labelled benchmark exists; the measurement contract is documented in `docs/DIAGNOSTIC_ACCURACY.md`.

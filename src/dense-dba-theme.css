@@ -1,6 +1,6 @@
 /* Dense DBA Workbench: full-width, calm operational density, one blue accent. */
 :root{
-  font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  font-family:"IBM Plex Sans","Segoe UI",Arial,sans-serif;
   --blue:#245f96;
   --navy:#152f49;
   --soft:#e4edf6;
@@ -10,18 +10,19 @@
   --reference-canvas:#e9edf2;
   --reference-line:#c7d1dc;
 }
+html,body,button,input,textarea,select{font-family:"IBM Plex Sans","Segoe UI",Arial,sans-serif!important}
 html,body{background:#e9edf2;color:#15273b}
 .shell>header{background:#fff;border-bottom-color:#c7d1dc;box-shadow:none}
 .shell>header .brand,.shell>header .brand b{color:#174d7d}
 .shell>header .brand-mark{background:#1f4f7d}
 .intake-console,.shell:has(.command-nav)>main{background:#e9edf2!important}
 .shell:has(.command-nav)>.command-nav{padding-inline:16px!important;background:#eef3f7!important;border-bottom-color:#c7d1dc!important}
-.shell:has(.command-nav)>.command-nav>button{font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif!important;color:#425c73!important}
+.shell:has(.command-nav)>.command-nav>button{font-family:"IBM Plex Sans","Segoe UI",Arial,sans-serif!important;color:#425c73!important}
 .shell:has(.command-nav)>.command-nav>button:hover{background:#e5edf4!important;color:#174d7d!important}
 .shell:has(.command-nav)>.command-nav>button.active{border-bottom-color:#245f96!important;color:#174d7d!important}
 .command-nav button.active .nav-index{color:#245f96}
-.shell:has(.command-nav)>main{padding-inline:16px!important;background:#e9edf2!important}
-.recommendations-workbench,.planner-diagnostics,.validation-workbench,.context-workbench{width:100%;max-width:none;margin-inline:0}
+.shell:has(.command-nav)>main{padding-inline:12px!important;background:#e9edf2!important}
+.shell:has(.command-nav)>main>.recommendations-workbench,.shell:has(.command-nav)>main>.planner-diagnostics,.shell:has(.command-nav)>main>.validation-workbench,.shell:has(.command-nav)>main>.context-workbench{width:100%!important;max-width:none!important;margin-inline:0!important}
 .environment-drift{width:100%;max-width:none;margin-inline:0}
 .workspace-panel,.diagnosis-workspace{color:#15273b}
 .workspace-panel h1,.workspace-panel h2,.workspace-panel h3,.diagnosis-workspace h1,.diagnosis-workspace h2,.diagnosis-workspace h3{color:#152f49}
@@ -38,4 +39,4 @@ html,body{background:#e9edf2;color:#15273b}
 .recommendations-heading .lede,.planner-heading .lede,.validation-heading .lede,.context-heading .lede{font-size:13px}
 .planner-access-item .planner-operation strong,.validation-stage>header h3{font-size:12px}
 button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible{outline-color:rgba(36,95,150,.3)}
-@media(max-width:760px){.shell:has(.command-nav)>main{padding-inline:10px!important}.shell:has(.command-nav)>.command-nav{padding-inline:8px!important}}
+@media(max-width:760px){.shell:has(.command-nav)>main{padding-inline:8px!important}.shell:has(.command-nav)>.command-nav{padding-inline:8px!important}}

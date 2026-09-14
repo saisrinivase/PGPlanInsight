@@ -133,25 +133,25 @@ test("analysis workspaces share one native interface typeface", async ({ page })
   const planFont = await renderer.evaluate((host) =>
     getComputedStyle(host.shadowRoot!.querySelector<HTMLElement>(".plan-container")!).fontFamily,
   );
-  expect(planFont).toContain("Segoe UI");
+  expect(planFont).toContain("IBM Plex Sans");
 
   await page.getByRole("button", { name: "Findings", exact: true }).click();
   const findingsFont = await page.getByRole("heading", { name: "Findings" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(findingsFont).toContain("Segoe UI");
+  expect(findingsFont).toContain("IBM Plex Sans");
 
   await page.getByRole("button", { name: "Planner diagnostics", exact: true }).click();
   const plannerFont = await page.getByRole("heading", { name: "Planner diagnostics" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(plannerFont).toContain("Segoe UI");
+  expect(plannerFont).toContain("IBM Plex Sans");
   expect(findingsFont).toBe(plannerFont);
 
   await page.getByRole("button", { name: "Validate fix", exact: true }).click();
   const validationFont = await page.getByRole("heading", { name: "Validate fix" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(validationFont).toContain("Segoe UI");
+  expect(validationFont).toContain("IBM Plex Sans");
   expect(validationFont).toBe(plannerFont);
 
   await page.getByRole("button", { name: "Database context", exact: true }).click();
   const contextFont = await page.getByRole("heading", { name: "Database context" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(contextFont).toContain("Segoe UI");
+  expect(contextFont).toContain("IBM Plex Sans");
   expect(contextFont).toBe(validationFont);
 });
 

@@ -133,25 +133,25 @@ test("analysis workspaces share one native interface typeface", async ({ page })
   const planFont = await renderer.evaluate((host) =>
     getComputedStyle(host.shadowRoot!.querySelector<HTMLElement>(".plan-container")!).fontFamily,
   );
-  expect(planFont).toContain("system-ui");
+  expect(planFont).toContain("Segoe UI");
 
   await page.getByRole("button", { name: "Findings", exact: true }).click();
   const findingsFont = await page.getByRole("heading", { name: "Findings" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(findingsFont).toContain("system-ui");
+  expect(findingsFont).toContain("Segoe UI");
 
   await page.getByRole("button", { name: "Planner diagnostics", exact: true }).click();
   const plannerFont = await page.getByRole("heading", { name: "Planner diagnostics" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(plannerFont).toContain("system-ui");
+  expect(plannerFont).toContain("Segoe UI");
   expect(findingsFont).toBe(plannerFont);
 
   await page.getByRole("button", { name: "Validate fix", exact: true }).click();
   const validationFont = await page.getByRole("heading", { name: "Validate fix" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(validationFont).toContain("system-ui");
+  expect(validationFont).toContain("Segoe UI");
   expect(validationFont).toBe(plannerFont);
 
   await page.getByRole("button", { name: "Database context", exact: true }).click();
   const contextFont = await page.getByRole("heading", { name: "Database context" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(contextFont).toContain("system-ui");
+  expect(contextFont).toContain("Segoe UI");
   expect(contextFont).toBe(validationFont);
 });
 
@@ -303,6 +303,8 @@ test("Findings exposes the complete evidence classification contract without hor
   await expect(ledger).toContainText("unknown");
   await expect(ledger).toContainText("verified");
   await expect(ledger).toContainText("Not verified");
+  const workbenchWidth = await page.locator(".recommendations-workbench").evaluate((element) => element.getBoundingClientRect().width);
+  expect(workbenchWidth).toBeGreaterThanOrEqual(page.viewportSize()!.width - 40);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
 });
 

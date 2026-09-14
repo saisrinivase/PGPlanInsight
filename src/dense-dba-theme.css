@@ -1,0 +1,41 @@
+/* Dense DBA Workbench: full-width, calm operational density, one blue accent. */
+:root{
+  font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  --blue:#245f96;
+  --navy:#152f49;
+  --soft:#e4edf6;
+  --muted:#5d6d80;
+  --line:#c7d1dc;
+  --reference-blue:#245f96;
+  --reference-canvas:#e9edf2;
+  --reference-line:#c7d1dc;
+}
+html,body{background:#e9edf2;color:#15273b}
+.shell>header{background:#fff;border-bottom-color:#c7d1dc;box-shadow:none}
+.shell>header .brand,.shell>header .brand b{color:#174d7d}
+.shell>header .brand-mark{background:#1f4f7d}
+.intake-console,.shell:has(.command-nav)>main{background:#e9edf2!important}
+.shell:has(.command-nav)>.command-nav{padding-inline:16px!important;background:#eef3f7!important;border-bottom-color:#c7d1dc!important}
+.shell:has(.command-nav)>.command-nav>button{font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif!important;color:#425c73!important}
+.shell:has(.command-nav)>.command-nav>button:hover{background:#e5edf4!important;color:#174d7d!important}
+.shell:has(.command-nav)>.command-nav>button.active{border-bottom-color:#245f96!important;color:#174d7d!important}
+.command-nav button.active .nav-index{color:#245f96}
+.shell:has(.command-nav)>main{padding-inline:16px!important;background:#e9edf2!important}
+.recommendations-workbench,.planner-diagnostics,.validation-workbench,.context-workbench{width:100%;max-width:none;margin-inline:0}
+.environment-drift{width:100%;max-width:none;margin-inline:0}
+.workspace-panel,.diagnosis-workspace{color:#15273b}
+.workspace-panel h1,.workspace-panel h2,.workspace-panel h3,.diagnosis-workspace h1,.diagnosis-workspace h2,.diagnosis-workspace h3{color:#152f49}
+.section-kicker,.eyebrow{color:#245f96}
+.lede,.view-heading p{color:#5d6d80}
+.recommendations-heading aside,.context-boundary,.validation-heading aside,.statistics-qualification>header{background:#e4edf6;border-color:#6f98bd}
+.evidence-editor,.plan-preview,.console-history,.recommendation-section,.planner-section,.planner-explain,.statistics-qualification,.context-diagnostic-boundary,.context-preview,.environment-drift,.validation-stage,.validation-verdict{border-color:#c7d1dc;box-shadow:none}
+.editor-toolbar,.environment-drift>header,.estimate-head,.context-collector,.planner-summary,.context-state,.validation-stage>header{background:#eef3f7}
+.finding-investigation>summary{min-height:52px}
+.finding-title strong{font-size:13px}
+.finding-title small,.finding-investigation-body dd,.evidence-classifications p,.finding-action small,.candidate-experiment-list>details>summary em{font-size:11px}
+.finding-investigation>summary>.severity,.finding-disclosure,.finding-investigation[open] .finding-disclosure::after,.finding-action span,.finding-guardrails>summary,.finding-investigation-body dt,.evidence-classifications span,.candidate-experiment-list>details>summary small,.candidate-experiment-list>details>summary>b{font-size:9px}
+.finding-action strong,.evidence-classifications strong,.candidate-experiment-list>details>summary strong{font-size:12px}
+.recommendations-heading .lede,.planner-heading .lede,.validation-heading .lede,.context-heading .lede{font-size:13px}
+.planner-access-item .planner-operation strong,.validation-stage>header h3{font-size:12px}
+button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible{outline-color:rgba(36,95,150,.3)}
+@media(max-width:760px){.shell:has(.command-nav)>main{padding-inline:10px!important}.shell:has(.command-nav)>.command-nav{padding-inline:8px!important}}

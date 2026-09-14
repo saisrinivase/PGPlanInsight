@@ -49,4 +49,5 @@ import "./workload-triage.css";
 import "./workload-triage-mobile.css";
 
 import "./privacy-controls.css";
+import "./dense-dba-theme.css";
 createRoot(document.getElementById("app")!).render(<StrictMode><App /></StrictMode>);

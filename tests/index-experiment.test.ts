@@ -25,8 +25,24 @@ describe("controlled candidate-index experiments", () => {
     expect(result.unknowns).toContain("Workload frequency and concurrency");
   });
   test("blocks duplicate and overlapping shapes", () => {
-    expect(candidateIndexExperiment(scan(), context([{ name: "orders_customer_created", columns: ["customer_id", "created_at"], valid: true }]))).toMatchObject({ status: "existing-index", confidence: "Low" });
+    expect(candidateIndexExperiment(scan(), context([{ name: "orders_customer_created", columns: ["customer_id", "created_at"], valid: true, ready: true, accessMethod: "btree", hasPredicate: false, hasExpressions: false }]))).toMatchObject({ status: "existing-index", confidence: "Low" });
     expect(candidateIndexExperiment(scan(), context([{ name: "orders_customer_status", columns: ["customer_id", "status"], valid: true }]))).toMatchObject({ status: "overlap-review", confidence: "Low" });
+  });
+  test.each(["customer_id::numeric = 42", "customer_id = 42 AND abs(created_at) = 0", "customer_id != 42", "customer_id = other_id", "customer_id() = 42", "customer_id = 42 /* ignored */"])("abstains for unsupported predicate %s", (predicate) => {
+    expect(indexCandidate(scan({ predicate }))).toBeNull();
+  });
+  test("does not parse operators inside string literals", () => {
+    expect(indexCandidate(scan({ predicate: "customer_id = 'x OR fake = 3'" }))?.columns).toEqual(["customer_id"]);
+    expect(indexCandidate(scan({ predicate: "((customer_id = 42) AND (created_at > 0))" }))?.columns).toEqual(["customer_id", "created_at"]);
+  });
+  test.each([{ hasPredicate: true }, { hasExpressions: true }, { valid: false }, { ready: false }, { accessMethod: "hash" }, { ready: undefined }])("does not claim coverage with incompatible or missing metadata %j", (override) => {
+    const index = { name: "idx", columns: ["customer_id", "created_at"], valid: true, ready: true, accessMethod: "btree", hasPredicate: false, hasExpressions: false, ...override };
+    expect(candidateIndexExperiment(scan(), context([index]))?.status).toBe("overlap-review");
+  });
+  test("unavailable inventory is not evidence of missing indexes", () => {
+    const pack = context();
+    pack.availability.indexStats.status = "unavailable";
+    expect(candidateIndexExperiment(scan(), pack)?.status).toBe("context-incomplete");
   });
   test("qualifies a context-checked shape and supplies reversible HypoPG gates", () => {
     const result = candidateIndexExperiment(scan(), context())!;

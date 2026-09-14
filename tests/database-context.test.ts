@@ -63,7 +63,7 @@ describe("sanitized Database Context Pack", () => {
     expect(parseDatabaseContext(databaseContextExample).version).toBe(2);
     const context = parseDatabaseContext(legacySource);
     const result = qualifyIndexCandidate({ sql: "CREATE INDEX CONCURRENTLY ON public.orders (customer_id);", relation: "public.orders", columns: ["customer_id"], qualification: "plan only", predicateEvidence: "customer_id = 42", keyRationale: "equality first" }, context);
-    expect(result.status).toBe("existing-index");
+    expect(result.status).toBe("overlap-review");
     expect(result.detail).toContain("idx_orders_customer");
   });
 

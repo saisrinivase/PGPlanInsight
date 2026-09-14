@@ -23,7 +23,7 @@ export function candidateIndexExperiment(node: PlanVisualNode, context: Database
   const qualification = qualifyIndexCandidate(candidate, context);
   const relation = findContextRelation(context, candidate.relation);
   const shape = `ON ${candidate.relation} (${candidate.columns.join(", ")})`;
-  const blocked = ["existing-index", "overlap-review", "relation-missing", "column-mismatch"].includes(qualification.status);
+  const blocked = ["existing-index", "overlap-review", "relation-missing", "column-mismatch", "context-incomplete"].includes(qualification.status);
   return {
     candidate,
     status: qualification.status,

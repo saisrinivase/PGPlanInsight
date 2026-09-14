@@ -58,3 +58,4 @@ Implementation complete for the reviewed code risks. The previous offline-gate c
 - Removed excessive desktop gutters and improved compact/mobile readability; the Plan renderer uses the same typeface inside its shadow DOM.
 - Passed 112 unit tests, production build, 200 active cross-browser workflows, stress/2,000-node coverage, static security checks, and release-artifact verification.
 - Automated fixture conformance is complete. Real-world diagnostic accuracy is not represented as a percentage until an independent DBA-labelled benchmark exists; the measurement contract is documented in `docs/DIAGNOSTIC_ACCURACY.md`.
+- Findings and Planner diagnostics now use the dense workbench rhythm: compact headings, 32–40 px evidence rows, reduced disclosure padding, full-width canvas use, and IBM Plex Sans/Mono hierarchy. Diagnostic ordering, evidence boundaries, and controls are unchanged.

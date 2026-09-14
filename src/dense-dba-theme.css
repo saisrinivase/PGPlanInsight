@@ -40,3 +40,31 @@ html,body{background:#e9edf2;color:#15273b}
 .planner-access-item .planner-operation strong,.validation-stage>header h3{font-size:12px}
 button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible{outline-color:rgba(36,95,150,.3)}
 @media(max-width:760px){.shell:has(.command-nav)>main{padding-inline:0!important}.shell:has(.command-nav)>.command-nav{padding-inline:8px!important}}
+
+/* Dense workbench treatment: compact scan order, stronger hierarchy, no decorative space. */
+.recommendations-workbench,.planner-diagnostics{padding:10px 12px 24px!important}
+.recommendations-heading,.planner-heading{gap:12px!important;padding-bottom:8px!important;align-items:center!important}
+.recommendations-heading{grid-template-columns:minmax(0,1fr) minmax(260px,360px)!important}
+.planner-heading{grid-template-columns:minmax(0,1fr) 250px!important}
+.recommendations-heading h2,.planner-heading h2{margin:2px 0!important;font-size:20px!important;line-height:1.1!important}
+.recommendations-heading .lede,.planner-heading .lede{max-width:105ch!important;font-size:11px!important;line-height:1.4!important}
+.recommendations-heading aside{padding:7px 9px!important}
+.recommendation-section,.planner-section,.planner-reading-guide,.planner-qualification{margin-top:6px!important}
+.recommendation-section>header,.planner-section>header{min-height:32px!important;padding-inline:10px!important}
+.finding-investigation>summary{min-height:40px!important;padding:5px 10px!important}
+.finding-investigation-body{padding:7px 10px 8px 108px!important}
+.finding-action{padding:6px 8px!important}
+.evidence-classifications{margin:6px 0!important}
+.evidence-classifications>div{padding:7px 8px!important}
+.finding-guardrails{margin-top:6px!important}
+.finding-guardrails>summary{padding:6px 8px!important}
+.planner-summary div{padding:6px 8px!important}
+.planner-summary strong{font-size:13px!important}
+.planner-reading-guide>div{padding:7px 9px!important}
+.planner-access-item>summary{min-height:40px!important;padding:5px 10px!important}
+.planner-access-body>div{padding:7px 9px!important}
+.planner-access-body dl>div{padding:7px 9px!important}
+.planner-qualification>header,.planner-qualification .statistics-qualification-grid>div{padding:7px 9px!important}
+.estimate-head,.estimate-row{min-height:30px!important}
+.estimate-head span,.estimate-row span{padding:6px 8px!important}
+@media(max-width:850px){.recommendations-heading,.planner-heading{grid-template-columns:1fr!important}.recommendations-workbench,.planner-diagnostics{padding:8px!important}.finding-investigation-body{padding-left:8px!important}}

@@ -21,7 +21,7 @@ html,body{background:#e9edf2;color:#15273b}
 .shell:has(.command-nav)>.command-nav>button:hover{background:#e5edf4!important;color:#174d7d!important}
 .shell:has(.command-nav)>.command-nav>button.active{border-bottom-color:#245f96!important;color:#174d7d!important}
 .command-nav button.active .nav-index{color:#245f96}
-.shell:has(.command-nav)>main{padding-inline:12px!important;background:#e9edf2!important}
+.shell:has(.command-nav)>main{padding-inline:0!important;background:#e9edf2!important}
 .shell:has(.command-nav)>main>.recommendations-workbench,.shell:has(.command-nav)>main>.planner-diagnostics,.shell:has(.command-nav)>main>.validation-workbench,.shell:has(.command-nav)>main>.context-workbench{width:100%!important;max-width:none!important;margin-inline:0!important}
 .environment-drift{width:100%;max-width:none;margin-inline:0}
 .workspace-panel,.diagnosis-workspace{color:#15273b}
@@ -39,4 +39,4 @@ html,body{background:#e9edf2;color:#15273b}
 .recommendations-heading .lede,.planner-heading .lede,.validation-heading .lede,.context-heading .lede{font-size:13px}
 .planner-access-item .planner-operation strong,.validation-stage>header h3{font-size:12px}
 button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible{outline-color:rgba(36,95,150,.3)}
-@media(max-width:760px){.shell:has(.command-nav)>main{padding-inline:8px!important}.shell:has(.command-nav)>.command-nav{padding-inline:8px!important}}
+@media(max-width:760px){.shell:has(.command-nav)>main{padding-inline:0!important}.shell:has(.command-nav)>.command-nav{padding-inline:8px!important}}

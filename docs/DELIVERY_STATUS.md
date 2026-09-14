@@ -54,7 +54,7 @@ Implementation complete for the reviewed code risks. The previous offline-gate c
 ## Dense DBA Workbench theme — 2026-09-14
 
 - Applied bundled IBM Plex Sans and a dense navy/gray visual system across Plan, Findings, Planner diagnostics, Validate fix, and Database context without changing diagnostic behavior.
-- Corrected the final theme override so workspaces use the available canvas with 12 px desktop and 8 px narrow gutters instead of retaining the earlier centered appearance.
+- Corrected the final theme override so analysis workspaces use the complete canvas without the earlier outer side gutters.
 - Removed excessive desktop gutters and improved compact/mobile readability; the Plan renderer uses the same typeface inside its shadow DOM.
 - Passed 112 unit tests, production build, 200 active cross-browser workflows, stress/2,000-node coverage, static security checks, and release-artifact verification.
 - Automated fixture conformance is complete. Real-world diagnostic accuracy is not represented as a percentage until an independent DBA-labelled benchmark exists; the measurement contract is documented in `docs/DIAGNOSTIC_ACCURACY.md`.

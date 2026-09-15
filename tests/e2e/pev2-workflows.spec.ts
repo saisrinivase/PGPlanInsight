@@ -133,26 +133,32 @@ test("analysis workspaces share one native interface typeface", async ({ page })
   const planFont = await renderer.evaluate((host) =>
     getComputedStyle(host.shadowRoot!.querySelector<HTMLElement>(".plan-container")!).fontFamily,
   );
-  expect(planFont).toContain("IBM Plex Sans");
+  expect(planFont).toContain("Verdana");
 
   await page.getByRole("button", { name: "Findings", exact: true }).click();
   const findingsFont = await page.getByRole("heading", { name: "Findings" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(findingsFont).toContain("IBM Plex Sans");
+  expect(findingsFont).toContain("Verdana");
 
   await page.getByRole("button", { name: "Planner diagnostics", exact: true }).click();
   const plannerFont = await page.getByRole("heading", { name: "Planner diagnostics" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(plannerFont).toContain("IBM Plex Sans");
+  expect(plannerFont).toContain("Verdana");
   expect(findingsFont).toBe(plannerFont);
 
   await page.getByRole("button", { name: "Validate fix", exact: true }).click();
   const validationFont = await page.getByRole("heading", { name: "Validate fix" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(validationFont).toContain("IBM Plex Sans");
+  expect(validationFont).toContain("Verdana");
   expect(validationFont).toBe(plannerFont);
 
   await page.getByRole("button", { name: "Database context", exact: true }).click();
   const contextFont = await page.getByRole("heading", { name: "Database context" }).evaluate((element) => getComputedStyle(element).fontFamily);
-  expect(contextFont).toContain("IBM Plex Sans");
+  expect(contextFont).toContain("Verdana");
   expect(contextFont).toBe(validationFont);
+  for (const name of ["Findings", "Planner diagnostics", "Validate fix", "Database context"]) {
+    await page.getByRole("button", { name, exact: true }).click();
+    const overflow = await page.evaluate(() => [...document.querySelectorAll("main *")].filter(el => el.getBoundingClientRect().right > innerWidth + 1).slice(0,8).map(el => el.className));
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), `${name}: ${overflow.join(", ")}`).toBeLessThanOrEqual(1);
+    if (test.info().project.name === "chromium") await page.screenshot({ path: test.info().outputPath(`classic-${name.replaceAll(" ", "-")}.png`), fullPage: true });
+  }
 });
 
 test("deep Plan outline and duration tooltip remain readable", async ({ page }) => {

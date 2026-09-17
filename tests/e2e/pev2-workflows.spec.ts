@@ -436,7 +436,7 @@ test("Fix Validation blocks a one-run improvement and exposes complete proof evi
 test("sanitized context qualifies an existing index without a database connection", async ({ page }) => {
   await analyze(page, quotedParallelPlan, "Context-qualified index");
   await page.getByRole("button", { name: "Database context", exact: true }).click();
-  const context = { version: 1, relations: [{ schema: "ds_local", name: "wam_index_eis", columns: [{ name: "aamc_id", type: "bigint" }], indexes: [{ name: "existing_aamc_idx", columns: ["aamc_id"], valid: true }] }] };
+  const context = { version: 1, relations: [{ schema: "ds_local", name: "wam_index_eis", columns: [{ name: "aamc_id", type: "bigint" }], indexes: [{ name: "existing_aamc_idx", columns: ["aamc_id"], valid: true, ready: true, accessMethod: "btree", hasPredicate: false, hasExpressions: false }] }] };
   await page.getByLabel("Sanitized database context").fill(JSON.stringify(context));
   await page.getByRole("button", { name: "Preview sanitized context" }).click();
   await expect(page.getByRole("region", { name: "Sanitized context preview" })).toContainText("Source v1 normalized locally");

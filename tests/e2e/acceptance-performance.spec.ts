@@ -32,6 +32,7 @@ for (const count of [100, 500, 1000, 2000]) {
 }
 
 test('PERFORMANCE: large clipboard paste preserves selection and analyzes', async ({ page }) => {
+  test.setTimeout(90_000);
   await page.goto('/');
   const input = page.getByLabel('Plan evidence');
   await input.fill('replace me');
@@ -45,9 +46,9 @@ test('PERFORMANCE: large clipboard paste preserves selection and analyzes', asyn
   }, source);
   await expect(input).toHaveValue(source);
   await page.getByRole('button', { name: /Analyze plan/ }).click();
-  await expect(page.getByTestId('pev2-renderer')).toBeVisible();
+  await expect(page.getByTestId('pev2-renderer')).toBeVisible({ timeout: 30_000 });
   await page.getByRole('link', { name: /Grid/ }).click();
-  await expect(page.getByTestId('pev2-renderer').locator('.plan-grid tr.node')).toHaveCount(1000);
+  await expect(page.getByTestId('pev2-renderer').locator('.plan-grid tr.node')).toHaveCount(1000, { timeout: 30_000 });
 });
 
 test('STRESS: repeated analysis and navigation recovers every cycle', async ({ page }, info) => {

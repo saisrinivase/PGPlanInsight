@@ -4,7 +4,8 @@ export default defineConfig({
   testDir: "./tests/e2e",
   timeout: 30_000,
   fullyParallel: false,
-  workers: 2,
+  // Hosted runners share CPU: do not overlap rendering benchmarks with other tests.
+  workers: process.env.CI ? 1 : 2,
   reporter: [["list"]],
   use: { baseURL: "http://127.0.0.1:4178", trace: "retain-on-failure" },
   webServer: { command: "npx vite preview --host 127.0.0.1 --port 4178", url: "http://127.0.0.1:4178", reuseExistingServer: false },

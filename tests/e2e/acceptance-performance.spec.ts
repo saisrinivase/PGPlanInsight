@@ -1,5 +1,10 @@
 import { test, expect } from '@playwright/test';
 
+// Do not include repeated serialization of thousands of DOM nodes in runtime
+// budgets. Retain action logs and failure screenshots; functional suites retain
+// full traces. This changes measurement instrumentation, not the runtime limit.
+test.use({ trace: { mode: 'retain-on-failure', snapshots: false, screenshots: false }, screenshot: 'only-on-failure' });
+
 function plan(count: number) {
   const leaf = (i: number) => ({ 'Node Type': 'Seq Scan', 'Relation Name': `synthetic_${i}`, 'Startup Cost': 0, 'Total Cost': 10, 'Plan Rows': 10, 'Plan Width': 8, 'Actual Startup Time': 0.01, 'Actual Total Time': 0.1, 'Actual Rows': 10, 'Actual Loops': 1, 'Shared Hit Blocks': 1 });
   return JSON.stringify([{ Plan: { ...leaf(0), 'Node Type': 'Append', 'Actual Total Time': count * 0.1, Plans: Array.from({ length: count - 1 }, (_, i) => leaf(i + 1)) }, 'Execution Time': count * 0.1 + 1 }], null, 2);
@@ -25,9 +30,9 @@ for (const count of [100, 500, 1000, 2000]) {
     await page.getByRole('link', { name: 'Raw', exact: true }).click();
     await expect(renderer.locator('.tab-pane.active pre')).toContainText(`synthetic_${count - 1}`);
     expect(errors).toEqual([]);
-    expect(elapsed).toBeLessThan(30_000);
     await info.attach('performance', { body: JSON.stringify({ count, elapsedMs: elapsed, profile: info.project.name }), contentType: 'application/json' });
     console.log(`PERF ${info.project.name}: ${count} nodes ${elapsed}ms`);
+    expect(elapsed).toBeLessThan(30_000);
   });
 }
 

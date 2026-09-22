@@ -279,9 +279,9 @@ test("quoted parallel plan preserves guarded index experiments", async ({ page }
   await expect(experiments).toContainText("ON ds_local.wam_index_eis (aamc_id)");
   await expect(experiments).toContainText("context missing");
   await expect(experiments).toContainText("Low confidence");
-  await expect(experiments).toContainText("HypoPG experiment");
-  await expect(experiments).toContainText("hypopg_create_index");
-  await expect(experiments).toContainText("hypopg_reset");
+  await expect(experiments).toContainText("New-index SQL withheld");
+  await expect(experiments).not.toContainText("hypopg_create_index");
+  await expect(experiments).toContainText("Runtime improvement: unknown");
   await expect(experiments).toContainText("Nothing is executed");
   await expect(page.getByText(/CREATE INDEX CONCURRENTLY ON ds_local\.wam_index_eis \(aamc_id\)/)).toHaveCount(0);
 });
@@ -447,7 +447,23 @@ test("sanitized context qualifies an existing index without a database connectio
   const experiments = page.getByRole("region", { name: "Controlled candidate index experiments" });
   await expect(experiments).toContainText("existing_aamc_idx already begins with");
   await expect(experiments).toContainText("existing index");
+  await expect(experiments).toContainText("Investigate the existing index before creating another");
+  await expect(experiments.locator("code")).not.toContainText(["CREATE INDEX ON"]);
   await expect(experiments).toContainText("Nothing is executed");
+});
+
+test("qualified index sample uses the captured relation and discloses unknown benefit", async ({ page }) => {
+  await analyze(page, quotedParallelPlan, "Index test sample");
+  await page.getByRole("button", { name: "Database context", exact: true }).click();
+  await page.getByLabel("Sanitized database context").fill(JSON.stringify({ version: 1, relations: [{ schema: "ds_local", name: "wam_index_eis", columns: [{ name: "aamc_id", type: "bigint" }], indexes: [] }] }));
+  await page.getByRole("button", { name: "Preview sanitized context" }).click();
+  await page.getByRole("button", { name: "Apply to this analysis" }).click();
+  await page.getByRole("button", { name: "Findings", exact: true }).click();
+  const experiments = page.getByRole("region", { name: "Controlled candidate index experiments" });
+  await expect(experiments).toContainText("CREATE INDEX ON ds_local.wam_index_eis USING btree (aamc_id);");
+  await expect(experiments).toContainText("Runtime improvement: unknown");
+  await expect(experiments).toContainText("can block writes");
+  await expect(experiments.getByRole("button", { name: "Create index", exact: true })).toHaveCount(0);
 });
 
 test("Context Pack v2 previews redaction, provenance, completeness, and the read-only collector", async ({ page }) => {

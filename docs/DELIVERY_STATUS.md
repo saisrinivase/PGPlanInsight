@@ -1,5 +1,11 @@
 # PGPlan Insight delivery status
 
+## Index recommendation sample SQL — current incremental slice
+
+- Implemented a Findings decision explaining whether to investigate existing coverage or test a candidate. Physical sample SQL requires a schema-qualified relation and qualified imported catalog evidence; duplicate/overlap/incomplete states withhold it. No database execution or promised speedup.
+- Validation: 129 unit tests, production build, static security scan, and 15 focused browser checks across all five profiles passed. `git diff --check` passed. Restored dependencies with locked `npm ci --ignore-scripts --prefer-offline` after duplicate type-library folders caused the first build to fail.
+- PARTIAL release acceptance: full release gate and manual visual inspection not rerun for this slice. No push performed. Deeper operator-class/collation matching and DBA-labelled runtime validation remain pending; this is not completion of the broader access-path roadmap.
+
 Updated: 2026-09-13
 
 | Stage | Status | Implementation evidence | Test evidence | Security evidence | Remaining risk |

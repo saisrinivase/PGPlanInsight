@@ -25,3 +25,8 @@ HypoPG does not prove runtime improvement because it does not build or execute t
 Success requires representative planner adoption, fewer reads or filtered rows in a controlled physical test, repeated runtime improvement, and no material write, WAL, storage, lock, or concurrency regression. Reset HypoPG after planning tests. Remove only an explicitly approved test index if the physical-test gates fail; PGPlan Insight never executes that change.
 
 Candidate analysis remains local in the browser. No database connection, credential, dependency, or outbound request is introduced. Existing input validation and size limits remain in force, and evidence is rendered as text.
+# Evidence-qualified physical test SQL
+
+Findings offers sample `CREATE INDEX ... USING btree` SQL only for a schema-qualified, context-qualified candidate. Matching existing indexes, overlaps, unavailable inventory, and plan-only evidence withhold the physical SQL. HypoPG controls in this view follow the same qualification boundary. No SQL is executed by the browser.
+
+The statement is for a DBA-reviewed non-production test: regular index creation can block writes. Runtime benefit remains unknown; no speedup percentage is inferred from planner cost. Imported snapshots do not prove operator-class/collation compatibility, selectivity, current catalog state, or workload impact.

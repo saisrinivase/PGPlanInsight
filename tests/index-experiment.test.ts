@@ -22,6 +22,7 @@ describe("controlled candidate-index experiments", () => {
     const result = candidateIndexExperiment(scan(), null)!;
     expect(result).toMatchObject({ status: "context-missing", confidence: "Low", candidateShape: "ON public.orders (customer_id, created_at)" });
     expect(result.candidateShape).not.toMatch(/^\s*(CREATE|DROP)\b/i);
+    expect(result.testSql).toBeNull();
     expect(result.unknowns).toContain("Workload frequency and concurrency");
   });
   test("blocks duplicate and overlapping shapes", () => {
@@ -47,9 +48,19 @@ describe("controlled candidate-index experiments", () => {
   test("qualifies a context-checked shape and supplies reversible HypoPG gates", () => {
     const result = candidateIndexExperiment(scan(), context())!;
     expect(result).toMatchObject({ status: "qualified-candidate", confidence: "Medium" });
+    expect(result.testSql).toBe("CREATE INDEX ON public.orders USING btree (customer_id, created_at);");
     expect(result.hypopg.create).toContain("hypopg_create_index");
     expect(result.hypopg.inspect).toMatch(/without ANALYZE.*does not prove runtime/i);
     expect(result.hypopg.rollback).toBe("SELECT hypopg_reset();");
     expect(result.successCriteria.join(" ")).toMatch(/shared reads.*write.*WAL.*concurrency/i);
+  });
+  test("withholds physical SQL for duplicate, overlap, and incomplete context", () => {
+    for (const indexes of [[{ name: "idx", columns: ["customer_id", "created_at"], valid: true, ready: true, accessMethod: "btree", hasPredicate: false, hasExpressions: false }], [{ name: "idx", columns: ["customer_id"] }]]) {
+      expect(candidateIndexExperiment(scan(), context(indexes))?.testSql).toBeNull();
+    }
+    const pack = context();
+    pack.availability.indexStats.status = "unavailable";
+    expect(candidateIndexExperiment(scan(), pack)?.testSql).toBeNull();
+    expect(candidateIndexExperiment(scan({ relation: "orders" }), context())?.testSql).toBeNull();
   });
 });

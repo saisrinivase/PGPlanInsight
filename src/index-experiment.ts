@@ -9,6 +9,8 @@ export interface CandidateIndexExperiment {
   confidence: "Low" | "Medium";
   candidateShape: string;
   overlap: string;
+  testSql: string | null;
+  decision: string;
   unknowns: string[];
   risks: string[];
   prerequisites: string[];
@@ -30,6 +32,14 @@ export function candidateIndexExperiment(node: PlanVisualNode, context: Database
     confidence: qualification.status === "qualified-candidate" ? "Medium" : "Low",
     candidateShape: shape,
     overlap: qualification.detail,
+    testSql: qualification.status === "qualified-candidate" && candidate.relation.includes(".")
+      ? `CREATE INDEX ON ${candidate.relation} USING btree (${candidate.columns.join(", ")});`
+      : null,
+    decision: qualification.status === "existing-index"
+      ? "Investigate the existing index before creating another. A matching key prefix does not prove operator, collation, or predicate compatibility."
+      : qualification.status === "qualified-candidate"
+        ? "Candidate for an approved test—not a proven performance improvement."
+        : "New-index SQL withheld: resolve missing catalog evidence, schema identity, or index overlap first.",
     unknowns: ["Predicate selectivity and parameter distribution", "Workload frequency and concurrency", "Existing expression/partial-index semantics", "Whether the planner will choose this shape"],
     risks: [`Every additional index adds write, vacuum, WAL, backup, and storage work${relation ? `; ${relation.indexes.length} index(es) are already captured on this relation` : ""}.`, relation?.totalSizeBytes ? `The relation currently occupies approximately ${(relation.totalSizeBytes / 1024 / 1024).toFixed(1)} MiB including indexes; candidate size is not known.` : "Candidate storage size is not established."],
     prerequisites: ["Use the same SQL and representative parameters.", "Confirm column types, operator classes, partial predicates, expression indexes, table size, and write rate.", blocked ? "Resolve the overlap or context blocker before testing a new shape." : "Use a non-production or approved session for the hypothetical experiment."],

@@ -1,5 +1,11 @@
 # PGPlan Insight delivery status
 
+## Windows release validation — 2026-09-22
+
+- Replaced direct npm process spawning with the npm JavaScript entry invoked through `process.execPath`, without a shell. Added Windows paths-with-spaces, POSIX audit and missing-entry tests.
+- Added Windows alongside Ubuntu to the full release CI matrix; failure artifacts are OS-specific. Existing test coverage and performance thresholds are unchanged.
+- Local verification: 132 unit tests, static security and diff checks passed. Windows release acceptance remains PARTIAL until the hosted Windows gate passes; local macOS tests are not proof of Windows behavior.
+
 ## Index recommendation sample SQL — current incremental slice
 
 - Implemented a Findings decision explaining whether to investigate existing coverage or test a candidate. Physical sample SQL requires a schema-qualified relation and qualified imported catalog evidence; duplicate/overlap/incomplete states withhold it. No database execution or promised speedup.

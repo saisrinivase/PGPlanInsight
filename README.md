@@ -72,3 +72,8 @@ Serve only the built `dist` directory. A sample Nginx configuration is in `deplo
 The release gate performs its own locked install and online audits. Missing advisory data fails the gate. Standalone artifact generation cannot claim PASS without fresh matching gate evidence. Evidence includes the commit, source hash, lockfile hash, timestamp and both audit reports.
 
 EXPLAIN ANALYZE executes its SQL. Prefer a safe test environment, least privilege and a statement timeout. Transaction rollback cannot undo every side effect (for example sequence advancement or external functions).
+# Operating-system validation
+
+PGPlan Insight is a browser application, not a macOS-only executable. Serve the production `dist` directory over HTTP; do not open its HTML directly through `file://`. Development uses Node.js 24 and `npm ci`, then `npm run dev`, including from Windows PowerShell.
+
+The release workflow runs the same full gate on Ubuntu and Windows: unit tests, production build, Playwright browser workflows, security checks, dependency audits and artifact verification. Windows support is only verified for a release after its Windows job passes. The release runner invokes npm through Node without a shell, supporting installation paths containing spaces.

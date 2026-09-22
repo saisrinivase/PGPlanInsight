@@ -2,10 +2,13 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { sourceDigest } from "./release-evidence.mjs";
+import { npmCommand } from "./npm-command.mjs";
 
 const run = (command, args) => {
   console.log(`[release gate] ${command} ${args.join(" ")}`);
-  const result = spawnSync(command, args, { stdio: "inherit", shell: false });
+  const [executable, parameters] = command === "npm" ? npmCommand(args) : [command === "node" ? process.execPath : command, args];
+  const result = spawnSync(executable, parameters, { stdio: "inherit", shell: false });
+  if (result.error) console.error(result.error.message);
   if (result.status !== 0) process.exit(result.status ?? 1);
 };
 // Discard earlier success before any command can fail.
@@ -19,7 +22,8 @@ run("node", ["scripts/security-static.mjs"]);
 const audits = {};
 for (const scope of ["production", "all"]) {
   const args = ["audit", "--json", ...(scope === "production" ? ["--omit=dev"] : [])];
-  const result = spawnSync("npm", args, { encoding: "utf8", maxBuffer: 10_000_000 });
+  const [executable, parameters] = npmCommand(args);
+  const result = spawnSync(executable, parameters, { encoding: "utf8", maxBuffer: 10_000_000, shell: false });
   let report;
   try { report = JSON.parse(result.stdout); } catch { throw new Error("Online advisory audit unavailable; release is not verified."); }
   if (result.status !== 0 || report.error || report.metadata?.vulnerabilities?.total !== 0) throw new Error(`Unresolved ${scope} dependency findings or unavailable audit; review before release.`);

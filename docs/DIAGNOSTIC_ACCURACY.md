@@ -1,6 +1,14 @@
 # Diagnostic accuracy status
 
-PGPlan Insight currently has **100% conformance on its maintained automated corpus**: every implemented deterministic rule, negative fixture, incomplete-evidence case, and browser workflow in the release gate passes.
+Automated regression conformance must be established for each commit; it is not a standing claim that every diagnostic rule or browser workflow passes.
+
+## Reproducible scoring harness
+
+Run `npm run test:accuracy`. The report is `test-results/diagnostic-score.json`; ordinary `npm test` also executes the benchmark and fails on any decision mismatch. The initial five synthetic cases cover selected index-only and missing-runtime decisions, not the whole diagnostic engine. No UI or database access is involved.
+
+Precision, recall, false-positive rate, safe-abstention rate and decision coverage include counts. Undefined ratios are `null`, never 100%. Unknown predictions for positive labels count as missed detections. Unknown-evidence cases have a separate abstention score. Scores are grouped by family; the report explicitly marks production accuracy as unknown and independent DBA review as false.
+
+This is a development corpus, not an unseen evaluation set. Next: independently label anonymized cast, spill, estimate and index-coverage plans, separating plan-only and context-assisted cases. Keep a held-out corpus and reviewer disagreement records before publishing any real-world accuracy claim.
 
 This is not the same as real-world root-cause accuracy. A production percentage is **not established** because the project does not yet have an independent, DBA-labelled benchmark corpus with agreed expected findings.
 

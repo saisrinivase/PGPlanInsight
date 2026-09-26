@@ -1,5 +1,11 @@
 # PGPlan Insight delivery status
 
+## Diagnostic scoring harness — 2026-09-25
+
+- Added `npm run test:accuracy`: five explicitly synthetic plan-only finding decisions, per-family confusion counts, precision/recall, false positives, abstention and decision coverage. Unknown denominators stay null; any expected-decision mismatch fails CI. Reports are archived separately for Windows/Linux before browser tests can clear test-results.
+- Passed 134 unit tests, including scoring failure/invalid-input tests, static security and diff checks. No runtime UI or diagnostic rule changed; browser testing is delegated to the existing hosted release gate.
+- PARTIAL benchmark coverage: independent DBA labels, holdout evaluation, cast/spill/estimate/index-coverage cases, context-assisted cohorts and recommendation-safety scoring remain outstanding. No production accuracy percentage claimed.
+
 ## Windows release validation — 2026-09-22
 
 - Replaced direct npm process spawning with the npm JavaScript entry invoked through `process.execPath`, without a shell. Added Windows paths-with-spaces, POSIX audit and missing-entry tests.

@@ -25,6 +25,15 @@ jobs:
           cache: npm
       - name: Locked install
         run: npm ci
+      - name: Score synthetic diagnostic regression corpus
+        run: npm run test:accuracy
+      - name: Preserve diagnostic scoring report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-score-${{ matrix.os }}
+          path: test-results/diagnostic-score.json
+          if-no-files-found: error
       - name: Install supported browser engines
         run: npx playwright install --with-deps chromium firefox webkit
       - name: Run release gate

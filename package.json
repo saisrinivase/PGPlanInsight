@@ -8,6 +8,7 @@
     "prebuild": "node scripts/clean-dist.mjs",
     "build": "tsc && vite build",
     "test": "vitest run",
+    "test:accuracy": "vitest run tests/diagnostic-benchmark.test.ts",
     "test:e2e": "playwright test",
     "test:all": "npm test && npm run test:e2e",
     "security:static": "node scripts/security-static.mjs",

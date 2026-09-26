@@ -266,6 +266,7 @@ test("production quoted TEXT renders and retains root-cause evidence", async ({ 
   await page.getByRole("button", { name: "Findings", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Findings" })).toBeVisible();
   await expect(page.getByText(/Direct spill at Sort/).first()).toBeVisible();
+  await expect(page.getByLabel("Why investigate Direct spill at Sort")).toContainText("temp blocks");
   await expect(page.getByText(/verify direct temp blocks/i)).toBeVisible();
 });
 

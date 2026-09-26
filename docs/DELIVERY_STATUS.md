@@ -1,5 +1,12 @@
 # PGPlan Insight delivery status
 
+## End-user quality skill and first Findings improvement — 2026-09-26
+
+- Created `skills/pgplan-end-user-quality/SKILL.md` and installed an identical personal skill. Prioritizes investigation clarity, exact evidence navigation, targeted context requests, comparable validation and handoff export; preserves Classic DBA styling and requires genuine human usability evidence.
+- Findings now exposes the existing diagnostic detail as "Why investigate" before the controlled action, without another tab or duplicate summary. Existing first-open/secondary-collapsed behavior is retained. Exact node navigation is the next slice and remains unimplemented here.
+- Passed 134 unit tests, production build, static security and five focused browser profiles. Locked dependency reinstall repaired duplicate type folders. Manual visual acceptance/full release gate remain pending.
+- Skill frontmatter/content manually reviewed; bundled quick_validate could not run because both Python environments lack PyYAML. No dependency installed merely to bypass that prerequisite. Human pilot results remain unavailable.
+
 ## Cast benchmark expansion — 2026-09-25
 
 - Expanded from 11 to 18 synthetic decisions through the actual plan parser/analyzer and coercion diagnosis. Seven cases cover column/constant casts, plain/missing predicates, output conversion and Append-branch hypotheses. Signal, classification and uncertainty wording are checked separately from detection.

@@ -1,5 +1,10 @@
 # PGPlan Insight delivery status
 
+## Cast benchmark expansion — 2026-09-25
+
+- Expanded from 11 to 18 synthetic decisions through the actual plan parser/analyzer and coercion diagnosis. Seven cases cover column/constant casts, plain/missing predicates, output conversion and Append-branch hypotheses. Signal, classification and uncertainty wording are checked separately from detection.
+- Passed accuracy harness and all 134 unit tests; static security and diff checks passed. No runtime logic or UI changed. No independent DBA labels, production impact proof or verified source-type lineage claimed. This is regression coverage, not new semantic cast analysis.
+
 ## Existing-index benchmark expansion — 2026-09-25
 
 - Expanded synthetic scoring from 5 to 11 decisions with an existing-index cohort: material and harmless repetition, residual filters, missing heap capture, and read-counter interpretation. Exact diagnostic signals and explanation fragments are separately gated.

@@ -3,6 +3,17 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { analyzePlan } from "../src/analyzer.ts";
 import { scoreDecisions } from "../scripts/diagnostic-score.mjs";
 import { indexOnlyScanDiagnosis } from "../src/index-only-scan-diagnosis.ts";
+import { typeCoercionDiagnosis } from "../src/type-coercion-diagnosis.ts";
+
+const castCases = [
+  { id: "join-column-double", fields: { "Hash Cond": "((a.id)::double precision = b.id)" }, signal: "predicate-coercion", classification: "observed", boundary: "does not prove" },
+  { id: "filter-column-numeric", fields: { Filter: "((id)::numeric = 42)" }, signal: "predicate-coercion", classification: "observed", boundary: "does not prove" },
+  { id: "typed-constant-only", fields: { Filter: "id = '42'::bigint" }, signal: "none", classification: "observed", boundary: "may still contain" },
+  { id: "plain-equality", fields: { "Hash Cond": "a.id = b.id" }, signal: "none", classification: "observed", boundary: "may still contain" },
+  { id: "missing-expressions", fields: {}, signal: "none", classification: "observed", boundary: "may still contain" },
+  { id: "output-only-cast", fields: { Output: ["(id)::double precision"] }, signal: "output-coercion", classification: "observed", boundary: "does not establish" },
+  { id: "append-output-hypothesis", fields: { Output: ["(id)::double precision"] }, append: true, signal: "set-operation-output", classification: "suspected", boundary: "does not identify" },
+] as const;
 
 const accessCases = [
   { id: "repeated-expensive-probes", expected: "positive", signal: "loop-amplified", execution: 400, fields: { "Actual Rows": 1, "Actual Loops": 2000, "Actual Total Time": 0.2, "Heap Fetches": 0 }, explanation: "do not create another index" },
@@ -38,10 +49,20 @@ test("synthetic diagnostic benchmark remains conformant", () => {
       expectedSignal: c.signal, signal: diagnosis.signal, explanationMatches: `${diagnosis.summary} ${diagnosis.evidence} ${diagnosis.nextAction}`.includes(c.explanation) };
   });
   decisions.push(...accessResults);
-  const report = { schemaVersion: 1, corpus: "synthetic-regression-v2", independentDbaReviewed: false, productionAccuracy: null,
+  const castResults = castCases.map(c => {
+    const leaf = { "Node Type": "Seq Scan", "Relation Name": "orders", "Plan Rows": 10, ...c.fields };
+    const plan = "append" in c ? { "Node Type": "Append", "Plan Rows": 10, Plans: [leaf] } : leaf;
+    const result = analyzePlan(JSON.stringify([{ Plan: plan }]));
+    const diagnosis = typeCoercionDiagnosis(result.planMap, null);
+    return { id: c.id, family: "visible-cast-detection", expected: c.signal === "none" ? "negative" : "positive", actual: diagnosis.signal === "none" ? "negative" : "positive",
+      expectedSignal: c.signal, signal: diagnosis.signal,
+      explanationMatches: diagnosis.classification === c.classification && diagnosis.unknown.includes(c.boundary) };
+  });
+  decisions.push(...castResults);
+  const report = { schemaVersion: 1, corpus: "synthetic-regression-v3", independentDbaReviewed: false, productionAccuracy: null,
     scope: "Selected finding decisions only; not whole-plan correctness or recommendation safety", total: scoreDecisions(decisions),
     families: Object.fromEntries([...new Set(decisions.map(d => d.family))].map(f => [f, scoreDecisions(decisions.filter(d => d.family === f))])), decisions,
-    explanationFailures: accessResults.filter(r => r.signal !== r.expectedSignal || !r.explanationMatches).map(r => r.id) };
+    explanationFailures: [...accessResults, ...castResults].filter(r => r.signal !== r.expectedSignal || !r.explanationMatches).map(r => r.id) };
   mkdirSync("test-results", { recursive: true });
   writeFileSync("test-results/diagnostic-score.json", JSON.stringify(report, null, 2));
   expect(report.total.mismatches).toEqual([]);

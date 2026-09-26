@@ -1,5 +1,10 @@
 # PGPlan Insight delivery status
 
+## Existing-index benchmark expansion — 2026-09-25
+
+- Expanded synthetic scoring from 5 to 11 decisions with an existing-index cohort: material and harmless repetition, residual filters, missing heap capture, and read-counter interpretation. Exact diagnostic signals and explanation fragments are separately gated.
+- Accuracy command, all 134 unit tests and static security passed. No application behavior/UI changes. Independent DBA review, holdout corpus and full root-cause accuracy remain unestablished. Hosted Windows/Linux validation was still running during inspection; no production-ready claim.
+
 ## Diagnostic scoring harness — 2026-09-25
 
 - Added `npm run test:accuracy`: five explicitly synthetic plan-only finding decisions, per-family confusion counts, precision/recall, false positives, abstention and decision coverage. Unknown denominators stay null; any expected-decision mismatch fails CI. Reports are archived separately for Windows/Linux before browser tests can clear test-results.

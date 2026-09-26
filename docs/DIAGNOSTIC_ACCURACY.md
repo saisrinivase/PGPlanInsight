@@ -4,7 +4,9 @@ Automated regression conformance must be established for each commit; it is not 
 
 ## Reproducible scoring harness
 
-Run `npm run test:accuracy`. The report is `test-results/diagnostic-score.json`; ordinary `npm test` also executes the benchmark and fails on any decision mismatch. The initial five synthetic cases cover selected index-only and missing-runtime decisions, not the whole diagnostic engine. No UI or database access is involved.
+Run `npm run test:accuracy`. The report is `test-results/diagnostic-score.json`; ordinary `npm test` also executes the benchmark and fails on any decision mismatch. The eleven synthetic cases cover selected index-only and missing-runtime decisions, not the whole diagnostic engine. No UI or database access is involved.
+
+The existing-index access cohort checks expensive versus harmless repeated probes, residual filtering, missing heap evidence, and read counters. It also gates the specific diagnostic signal and key explanation text, so an unrelated warning cannot satisfy a positive label. High reads without heap fetches must not become a heap-access diagnosis; this does not establish that the scan is fast or optimal. These are developer-labelled regression examples, not independent DBA judgements.
 
 Precision, recall, false-positive rate, safe-abstention rate and decision coverage include counts. Undefined ratios are `null`, never 100%. Unknown predictions for positive labels count as missed detections. Unknown-evidence cases have a separate abstention score. Scores are grouped by family; the report explicitly marks production accuracy as unknown and independent DBA review as false.
 

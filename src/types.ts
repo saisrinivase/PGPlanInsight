@@ -64,6 +64,7 @@ export interface PlanEnvelope {
 }
 
 export interface Finding {
+  nodePath?: string;
   id: string;
   title: string;
   detail: string;

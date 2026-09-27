@@ -23,6 +23,23 @@ async function analyze(page: import("@playwright/test").Page, source: string, ti
   await expect(page.getByTestId("pev2-renderer")).toBeVisible({ timeout: 15_000 });
 }
 
+test("finding navigation selects its exact operation and retains disclosure on return", async ({ page }) => {
+  const source = JSON.stringify([{ Plan: { "Node Type": "Nested Loop", "Plan Rows": 1000, "Actual Rows": 1000, "Actual Loops": 1, "Actual Total Time": 50, Plans: [
+    { "Node Type": "Index Only Scan", "Relation Name": "healthy", "Plan Rows": 1000, "Actual Rows": 1000, "Actual Loops": 1, "Actual Total Time": 1, "Heap Fetches": 0 },
+    { "Node Type": "Index Only Scan", "Relation Name": "needs_review", "Plan Rows": 1000, "Actual Rows": 1000, "Actual Loops": 1, "Actual Total Time": 40, "Heap Fetches": 700 }
+  ] }, "Execution Time": 51 }]);
+  await analyze(page, source, "Exact evidence mapping");
+  await page.getByRole("button", { name: "Findings", exact: true }).click();
+  const action = page.getByRole("button", { name: "View operation 3: Index Only Scan on needs_review", exact: true });
+  await action.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByTestId("pev2-renderer")).toBeVisible();
+  await expect(page).toHaveURL(/#plan\/node\/3$/);
+  await expect(page.getByTestId("pev2-renderer").locator(".plan-node.selected")).toContainText("needs_review");
+  await page.getByRole("button", { name: "Findings", exact: true }).click();
+  await expect(action).toBeVisible();
+});
+
 test("PEV2 is the primary renderer with plan modes", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Sample plans" }).click();

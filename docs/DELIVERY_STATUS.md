@@ -1,5 +1,12 @@
 # PGPlan Insight delivery status
 
+## Findings-to-operation navigation — 2026-09-27
+
+- Added explicit analyzer node paths for direct spill, index-only access and visible coercion findings. Findings resolves paths against the current plan and offers a type/relation-labelled operation button. Unmapped findings display an unavailable-attribution message; no title matching or guessed node.
+- Keyboard activation opens PEV2 at the supporting operation. Findings remains mounted but hidden on other tabs, preserving disclosure state when users return through navigation.
+- Passed 134 unit tests, production build, static security and five focused browser profiles. Browser regression uses two same-type scans and asserts that PEV2 actually selects the supporting relation at operation 3, then confirms the Findings control remains visible on return.
+- Partial UX acceptance: scroll/focus restoration, remaining finding families, manual visual review and full release gate are not completed in this slice. No broad production-readiness claim. Duplicate local type folders required locked dependency reinstall before the build.
+
 ## End-user quality skill and first Findings improvement — 2026-09-26
 
 - Created `skills/pgplan-end-user-quality/SKILL.md` and installed an identical personal skill. Prioritizes investigation clarity, exact evidence navigation, targeted context requests, comparable validation and handoff export; preserves Classic DBA styling and requires genuine human usability evidence.

@@ -446,8 +446,9 @@ test("Fix Validation blocks a one-run improvement and exposes complete proof evi
   await expect(measured).toContainText("Root actual rows");
   await expect(measured).toContainText("Root planned rows");
   await expect(page.locator(".validation-stage").filter({ has: page.getByRole("heading", { name: "Structural plan changes" }) })).toContainText("not ordinal alone");
-  await expect(page.getByText("Success gate", { exact: true })).toBeVisible();
-  await expect(page.getByText("Rollback boundary", { exact: true })).toBeVisible();
+  const validation = page.locator(".validation-workbench");
+  await expect(validation.getByText("Success gate", { exact: true })).toBeVisible();
+  await expect(validation.getByText("Rollback boundary", { exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
 });
 

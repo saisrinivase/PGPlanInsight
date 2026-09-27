@@ -1,5 +1,11 @@
 # PGPlan Insight delivery status
 
+## Release CI repair and pilot preparation — 2026-09-27
+
+- Run 36340015937: both Windows and Ubuntu had 205 passing browser tests and five failures from one unscoped Fix Validation text locator. Preserved hidden Findings added matching labels; assertions now target the validation workspace. No checks removed or thresholds relaxed.
+- CI targets changed to Windows/macOS per user release scope. Prepared `docs/V1_PILOT.md`; actual participants and pilot acceptance remain pending after green hosted validation.
+- Hosted rerun required before claiming a green release candidate.
+
 ## Findings-to-operation navigation — 2026-09-27
 
 - Added explicit analyzer node paths for direct spill, index-only access and visible coercion findings. Findings resolves paths against the current plan and offers a type/relation-labelled operation button. Unmapped findings display an unavailable-attribution message; no title matching or guessed node.

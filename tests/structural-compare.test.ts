@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { analyzePlan } from "../src/analyzer.ts";
-import { compareAnalyses } from "../src/compare.ts";
+import { buildComparisonReport, compareAnalyses } from "../src/compare.ts";
 
 const envelope = (plan: object, time: number) => JSON.stringify([{ Plan: plan, "Execution Time": time, Settings: {} }]);
 const scan = { "Node Type": "Seq Scan", "Relation Name": "orders", "Actual Total Time": 80, "Actual Rows": 1000, "Actual Loops": 1, "Plan Rows": 1000 };
@@ -48,4 +48,16 @@ test("captured setting drift overrides an environment declaration", () => {
   expect(comparison.verdict).toBe("Inconclusive");
   expect(comparison.comparability.find((check) => check.id === "environment")).toMatchObject({ status: "blocker" });
   expect(comparison.comparability.find((check) => check.id === "environment")?.detail).toContain("work_mem");
+});
+
+test("comparison report treats hostile plan labels as plain Markdown text", () => {
+  const hostile = { ...scan, "Node Type": "Seq Scan\n\n![proof](https://example.invalid/pixel)\n<script>alert(1)</script>" };
+  const before = analyzePlan(envelope(hostile, 100));
+  const after = analyzePlan(envelope({ ...scan, "Node Type": "Index Scan" }, 20));
+  const comparison = compareAnalyses(before, after, { sameStatement: true, sameParameters: true, comparableEnvironment: true, repeatedCapture: true });
+  const report = buildComparisonReport(before, after, comparison);
+
+  expect(report).not.toContain("![proof](https://example.invalid/pixel)");
+  expect(report).not.toContain("<script>");
+  expect(report).toContain(String.raw`Seq Scan \!\[proof\]\(https\:\/\/example\.invalid\/pixel\) \<script\>`);
 });

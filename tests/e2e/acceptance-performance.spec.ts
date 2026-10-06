@@ -22,6 +22,8 @@ for (const count of [100, 500, 1000, 2000]) {
     await page.getByRole('button', { name: /Analyze plan/ }).click();
     const renderer = page.getByTestId('pev2-renderer');
     await expect(renderer).toBeVisible({ timeout: 30_000 });
+    const rendererReadyMs = Date.now() - start;
+    console.log(`PERF_PHASE ${info.project.name}: ${count} nodes renderer ${rendererReadyMs}ms`);
     await page.getByRole('link', { name: /Grid/ }).click();
     await expect(renderer.locator('.plan-grid tr.node')).toHaveCount(count, { timeout: 30_000 });
     const elapsed = Date.now() - start;
@@ -30,7 +32,7 @@ for (const count of [100, 500, 1000, 2000]) {
     await page.getByRole('link', { name: 'Raw', exact: true }).click();
     await expect(renderer.locator('.tab-pane.active pre')).toContainText(`synthetic_${count - 1}`);
     expect(errors).toEqual([]);
-    await info.attach('performance', { body: JSON.stringify({ count, elapsedMs: elapsed, profile: info.project.name }), contentType: 'application/json' });
+    await info.attach('performance', { body: JSON.stringify({ count, rendererReadyMs, gridReadyMs: elapsed - rendererReadyMs, elapsedMs: elapsed, profile: info.project.name }), contentType: 'application/json' });
     console.log(`PERF ${info.project.name}: ${count} nodes ${elapsed}ms`);
     expect(elapsed).toBeLessThan(30_000);
   });

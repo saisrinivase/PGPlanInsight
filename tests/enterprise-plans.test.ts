@@ -37,8 +37,10 @@ describe("enterprise pgbench diagnosis gate", () => {
 
     expect(finding?.nodePath).toBe("1.2");
     expect(finding?.detail).toContain("more_filtered recorded 80,000 rows removed");
-    expect(finding?.detail).toContain("prioritized by filtered-row count, then captured shared reads and node time to break ties");
-    expect(finding?.detail).toContain("investigation-priority signals, not a runtime-cost ranking");
+    expect(finding?.detail).toContain("prioritized among 2 qualifying scans");
+    expect(finding?.detail).toContain("the other qualifying scans remain visible in the plan");
+    expect(finding?.detail).toContain("prioritized among 2 qualifying scans by filtered-row count, then captured shared reads and node time to break ties");
+    expect(finding?.detail).toContain("This is an investigation priority, not a runtime-cost ranking");
   });
 
   test("uses captured reads then node time as deterministic tie-breakers for equal filter counts", () => {

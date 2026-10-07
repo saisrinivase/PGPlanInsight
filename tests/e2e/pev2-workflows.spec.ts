@@ -439,6 +439,25 @@ test("Planner diagnostics prioritizes measured access work and the first estimat
   const navButtons = page.getByRole("navigation", { name: "Analysis views" }).locator(":scope > button");
   const boxes = await navButtons.evaluateAll((buttons) => buttons.map((button) => { const box = button.getBoundingClientRect(); return { left: box.left, right: box.right }; }));
   expect(boxes.every((box, index) => index === 0 || box.left >= boxes[index - 1].right - 1)).toBe(true);
+
+  const accessJump = accessItems.first().getByRole("button", { name: /^View operation \d+:/ });
+  const accessJumpName = await accessJump.innerText();
+  const accessRank = accessJumpName.match(/View operation (\d+):/)?.[1];
+  const accessRelation = accessJumpName.split(" on ").at(-1);
+  expect(accessRank).toBeTruthy();
+  await accessJump.click();
+  await expect(page).toHaveURL(new RegExp(`#plan\\/node\\/${accessRank}$`));
+  await expect(page.getByTestId("pev2-renderer").locator(".plan-node.selected")).toContainText(accessRelation ?? "");
+
+  await page.getByRole("button", { name: "Planner diagnostics", exact: true }).click();
+  const estimateJump = workspace.locator(".estimate-row.origin .planner-view-node");
+  const estimateJumpName = await estimateJump.innerText();
+  const estimateRank = estimateJumpName.match(/View operation (\d+):/)?.[1];
+  const estimateOperation = estimateJumpName.split(": ").slice(1).join(": ").split(" on ")[0];
+  expect(estimateRank).toBeTruthy();
+  await estimateJump.click();
+  await expect(page).toHaveURL(new RegExp(`#plan\\/node\\/${estimateRank}$`));
+  await expect(page.getByTestId("pev2-renderer").locator(".plan-node.selected")).toContainText(estimateOperation);
 });
 
 test("Fix Validation compares structurally different plans", async ({ page }) => {

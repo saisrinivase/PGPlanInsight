@@ -21,7 +21,7 @@ function likelyNode(nodes: PlanVisualNode[], finding: Finding): PlanVisualNode |
 
 function investigation(result: Analysis): string[] {
   return result.findings.flatMap((finding, index) => {
-    const node = likelyNode(result.planMap, finding);
+    const node = finding.nodePath ? result.planMap.find((item) => item.path === finding.nodePath) ?? null : likelyNode(result.planMap, finding);
     const trace = node ? rootCauseTrace(result.planMap, node) : null;
     const experiment = controlledExperiment(finding);
     const claims = evidenceClaims(result, finding);

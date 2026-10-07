@@ -26,6 +26,35 @@ describe("enterprise pgbench diagnosis gate", () => {
     expect(plan("04_missing_history_index_join").findings.map((finding) => finding.id)).toContain("PATH-001");
   });
 
+  test("prioritizes the qualifying scan with the most measured rows removed, not first tree order", () => {
+    const result = analyzePlan(JSON.stringify([{ Plan: {
+      "Node Type": "Append", "Actual Total Time": 120, "Actual Rows": 1000, "Actual Loops": 1, Plans: [
+        { "Node Type": "Seq Scan", "Relation Name": "first_scan", "Actual Total Time": 100, "Actual Rows": 1000, "Actual Loops": 1, "Rows Removed by Filter": 12000, "Plan Rows": 1000, "Shared Read Blocks": 2000 },
+        { "Node Type": "Seq Scan", "Relation Name": "more_filtered", "Actual Total Time": 10, "Actual Rows": 100, "Actual Loops": 1, "Rows Removed by Filter": 80000, "Plan Rows": 100, "Shared Read Blocks": 10 },
+      ],
+    }, "Execution Time": 120 }]));
+    const finding = result.findings.find((item) => item.id === "PATH-001");
+
+    expect(finding?.nodePath).toBe("1.2");
+    expect(finding?.detail).toContain("more_filtered recorded 80,000 rows removed");
+    expect(finding?.detail).toContain("prioritized by filtered-row count, then captured shared reads and node time to break ties");
+    expect(finding?.detail).toContain("investigation-priority signals, not a runtime-cost ranking");
+  });
+
+  test("uses captured reads then node time as deterministic tie-breakers for equal filter counts", () => {
+    const result = analyzePlan(JSON.stringify([{ Plan: {
+      "Node Type": "Append", "Actual Total Time": 100, "Actual Rows": 1000, "Actual Loops": 1, Plans: [
+        { "Node Type": "Seq Scan", "Relation Name": "more_reads", "Actual Total Time": 20, "Actual Rows": 100, "Actual Loops": 1, "Rows Removed by Filter": 20000, "Plan Rows": 100, "Shared Read Blocks": 300 },
+        { "Node Type": "Seq Scan", "Relation Name": "less_reads", "Actual Total Time": 30, "Actual Rows": 100, "Actual Loops": 1, "Rows Removed by Filter": 20000, "Plan Rows": 100, "Shared Read Blocks": 10 },
+        { "Node Type": "Seq Scan", "Relation Name": "same_reads_slower", "Actual Total Time": 40, "Actual Rows": 100, "Actual Loops": 1, "Rows Removed by Filter": 20000, "Plan Rows": 100, "Shared Read Blocks": 300 },
+      ],
+    }, "Execution Time": 100 }]));
+    const finding = result.findings.find((item) => item.id === "PATH-001");
+
+    expect(finding?.nodePath).toBe("1.3");
+    expect(finding?.detail).toContain("same_reads_slower recorded 20,000 rows removed");
+  });
+
   test("twenty correlated rescans qualify as measured loop amplification", () => {
     const result = plan("05_correlated_loop_amplification");
     expect(result.primarySignal).toBe("CPU loop amplification");

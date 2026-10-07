@@ -40,6 +40,36 @@ test("finding navigation selects its exact operation and retains disclosure on r
   await expect(action).toBeVisible();
 });
 
+test("sequential-scan finding opens the exact scan that crossed its filter threshold", async ({ page }) => {
+  const source = JSON.stringify([{ Plan: {
+    "Node Type": "Append", "Actual Total Time": 120, "Actual Rows": 1000, "Actual Loops": 1, Plans: [
+      { "Node Type": "Seq Scan", "Relation Name": "other_scan", "Actual Total Time": 100, "Actual Rows": 1000, "Actual Loops": 1, "Rows Removed by Filter": 0, "Plan Rows": 1000 },
+      { "Node Type": "Seq Scan", "Relation Name": "filtered_table", "Actual Total Time": 10, "Actual Rows": 100, "Actual Loops": 1, "Rows Removed by Filter": 50000, "Plan Rows": 100 },
+    ],
+  }, "Execution Time": 120 }]);
+  await analyze(page, source, "Exact high-volume filter evidence");
+  await page.getByRole("button", { name: "Findings", exact: true }).click();
+  const action = page.getByRole("button", { name: "View operation 3: Seq Scan on filtered_table", exact: true });
+  await expect(action).toBeVisible();
+  await action.click();
+  await expect(page).toHaveURL(/#plan\/node\/3$/);
+  await expect(page.getByTestId("pev2-renderer").locator(".plan-node.selected")).toContainText("filtered_table");
+  await page.getByRole("button", { name: "Findings", exact: true }).click();
+  await expect(action).toBeVisible();
+});
+
+test("broad sequential scan without material filtering does not suggest an index investigation", async ({ page }) => {
+  const source = JSON.stringify([{ Plan: {
+    "Node Type": "Seq Scan", "Relation Name": "broad_report", "Actual Total Time": 80,
+    "Actual Rows": 100_000, "Actual Loops": 1, "Rows Removed by Filter": 2_000, "Plan Rows": 100_000,
+  }, "Execution Time": 81 }]);
+  await analyze(page, source, "Broad scan with low filtering");
+  await page.getByRole("button", { name: "Findings", exact: true }).click();
+
+  await expect(page.getByText("No high-confidence risk crossed the current thresholds")).toBeVisible();
+  await expect(page.getByRole("button", { name: /View operation .*Seq Scan on broad_report/ })).toHaveCount(0);
+});
+
 test("PEV2 is the primary renderer with plan modes", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Sample plans" }).click();

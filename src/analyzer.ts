@@ -138,13 +138,19 @@ export function analyzePlan(source: string): Analysis {
   const spillSource = planMap.find((node) => node.spillRole === "direct");
   const spill = spillSource ?? (temp ? planMap.find((node) => node.tempBlocks > 0) : undefined);
   const badEstimate = hotspots.find((item) => (item.estimateRatio ?? 0) >= 10);
-  const seqScan = nodes.find((node) => {
-    if (!/Seq Scan$/i.test(text(node["Node Type"]))) return false;
+  const seqScans = nodes.flatMap((node, index) => {
+    if (!/Seq Scan$/i.test(text(node["Node Type"]))) return [];
     const loops = Math.max(1, number(node["Actual Loops"]));
     const removed = number(node["Rows Removed by Filter"]) * loops;
     const returned = number(node["Actual Rows"]) * loops;
-    return removed >= 10000 && removed >= Math.max(10000, returned * 5);
-  });
+    if (removed < 10000 || removed < Math.max(10000, returned * 5)) return [];
+    return [{ node, removed, visualNode: planMap[index], treeOrder: index }];
+  }).sort((left, right) => right.removed - left.removed
+    || right.visualNode.sharedReads - left.visualNode.sharedReads
+    || right.visualNode.totalTime - left.visualNode.totalTime
+    || left.treeOrder - right.treeOrder);
+  const seqScan = seqScans[0]?.node;
+  const seqScanPath = seqScans[0]?.visualNode.path;
   const highLoops = hotspots.find((item) => item.loops >= 10 && (item.sharedReads * item.loops >= 10000 || item.totalTime >= Math.max(50, (executionTime ?? 0) * 0.2)));
   const parallelSuppressed = settings.some((setting) => setting.name === "max_parallel_workers_per_gather" && setting.value === "0") && nodes.some((node) => node["Node Type"] === "Seq Scan" && number(node["Actual Rows"]) >= 100000);
   const writeWal = /ModifyTable|Insert|Update|Delete/.test(text(root["Node Type"])) && (metrics.rootWalRecords >= 1000 || metrics.rootWalBytes >= 1048576);
@@ -167,7 +173,7 @@ export function analyzePlan(source: string): Analysis {
     findings.push({ id: "MEM-001", nodePath: spillSource?.path, title: spillSource ? `Direct spill at ${spillSource.nodeType}` : "Temporary I/O requires source attribution", detail: spillSource ? `${spillSource.nodeType} operation ${spillSource.rank} recorded ${spillSource.tempReadBlocks.toLocaleString()} temp blocks read and ${spillSource.tempWrittenBlocks.toLocaleString()} written${spillSource.spillMethod ? ` using ${spillSource.spillMethod}` : ""}${maxHashBatches > 1 ? ` with ${maxHashBatches.toLocaleString()} hash batches` : ""}${ioTime > 0 ? `. Captured temp I/O time was ${ioTime.toFixed(2)} ms; compare that with total runtime before calling the spill dominant.` : "."}` : `The root reports ${metrics.rootTempBlocks.toLocaleString()} inclusive temporary block operations, but this capture does not expose a direct spill-capable source.`, severity: "warning", evidence: spillSource ? `Direct ${spillSource.nodeType} spill evidence at operation ${spillSource.rank}` : "Inclusive root temp counters only", nextAction: "Test one memory or query-shape change and verify direct temp blocks/batches and runtime fall without unsafe session memory." });
   }
   if (badEstimate) findings.push({ id: "EST-001", title: "Cardinality estimate drift", detail: `${badEstimate.nodeType} differs from its estimate by ${badEstimate.estimateRatio?.toFixed(1)}×.`, severity: "warning", evidence: `Plan Rows vs Actual Rows at ${badEstimate.nodeType}`, nextAction: "Inspect column statistics and correlation; refresh targeted statistics, then compare the new plan." });
-  if (seqScan) findings.push({ id: "PATH-001", title: "High-volume sequential scan filtering", detail: `${text(seqScan["Relation Name"]) || "A relation"} recorded ${(number(seqScan["Rows Removed by Filter"]) * Math.max(1, number(seqScan["Actual Loops"]))).toLocaleString()} rows removed by the filter relative to its returned rows.`, severity: "warning", evidence: "Rows Removed by Filter is at least 5× returned rows and at least 10,000", nextAction: "Validate predicate selectivity and indexability before proposing an index." });
+  if (seqScan) findings.push({ id: "PATH-001", nodePath: seqScanPath, title: "High-volume sequential scan filtering", detail: `${text(seqScan["Relation Name"]) || "A relation"} recorded ${(number(seqScan["Rows Removed by Filter"]) * Math.max(1, number(seqScan["Actual Loops"]))).toLocaleString()} rows removed by the filter relative to its returned rows. This is prioritized by filtered-row count, then captured shared reads and node time to break ties; these are investigation-priority signals, not a runtime-cost ranking.`, severity: "warning", evidence: "Rows Removed by Filter is at least 5× returned rows and at least 10,000", nextAction: "Validate predicate selectivity and indexability before proposing an index." });
   if (indexOnlyReview?.diagnosis) findings.push({ id: "IOS-001", nodePath: indexOnlyReview.node.path, title: indexOnlyReview.diagnosis.summary, detail: indexOnlyReview.diagnosis.evidence, severity: "warning", evidence: `${indexOnlyReview.diagnosis.classification}: ${indexOnlyReview.node.nodeType} at operation ${indexOnlyReview.node.rank}`, nextAction: indexOnlyReview.diagnosis.nextAction });
   if (highLoops && !genericLoopDuplicatesIndexOnly) findings.push({ id: "CPU-001", title: "Loop amplification", detail: `${highLoops.nodeType} executed ${highLoops.loops.toLocaleString()} times. Small inner-node costs may be multiplying into material CPU time.`, severity: "warning", evidence: `Actual Loops = ${highLoops.loops}`, nextAction: "Check join cardinality and whether the inner access path can be reduced or materialized." });
   if (parallelSuppressed) findings.push({ id: "PAR-001", title: "Parallel execution was explicitly suppressed", detail: "A high-volume scan ran with max_parallel_workers_per_gather=0.", severity: "warning", evidence: "Settings.max_parallel_workers_per_gather = 0 with a high-volume Seq Scan", nextAction: "Compare under normal parallel settings; verify workers launch and runtime improves before changing production policy." });

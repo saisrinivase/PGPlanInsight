@@ -29,9 +29,35 @@ test("SMOKE: brand explains the product without discarding the current plan", as
   const dialog = page.getByRole("dialog", { name: "Understand the evidence. Test the fix." });
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText("Your plan stays in this browser");
-  await dialog.getByRole("button", { name: "Continue analysis" }).click();
+  await expect(dialog).toContainText("Nothing is sent to an AI provider or external service");
+  await dialog.getByRole("button", { name: "Close product information" }).click();
   await expect(dialog).toHaveCount(0);
   await expect(page.getByTestId("pev2-renderer")).toBeVisible();
+});
+
+test("appearance switch persists and updates PEV2 without resetting its selected view", async ({ page }) => {
+  await page.goto("/");
+  const appearance = page.getByRole("switch", { name: "Dark appearance" });
+  await expect(appearance).toHaveAttribute("aria-checked", "true");
+  await appearance.click();
+  await expect(appearance).toHaveAttribute("aria-checked", "false");
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("pgplan-appearance"))).toBe("light");
+  await page.reload();
+  await expect(page.getByRole("switch", { name: "Dark appearance" })).toHaveAttribute("aria-checked", "false");
+
+  await page.getByLabel("Plan evidence").fill(textPlan);
+  await page.getByRole("button", { name: /Analyze plan/ }).click();
+  const renderer = page.getByTestId("pev2-renderer");
+  await expect(renderer).toBeVisible();
+  await renderer.getByRole("link", { name: "Grid new" }).click();
+  const root = renderer.locator("#pev2-root");
+  await expect(root).toHaveAttribute("data-appearance", "light");
+  await root.evaluate((element) => { (element as HTMLElement).dataset.preservedDuringThemeChange = "yes"; });
+
+  await page.getByRole("switch", { name: "Dark appearance" }).click();
+  await expect(root).toHaveAttribute("data-appearance", "dark");
+  await expect(root).toHaveAttribute("data-preserved-during-theme-change", "yes");
+  await expect(renderer.getByRole("link", { name: "Grid new" })).toHaveClass(/active/);
 });
 
 test("S1: plan analysis makes no request outside the local application origin", async ({ page }) => {

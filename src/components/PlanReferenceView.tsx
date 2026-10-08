@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const topics = ["All", "Scans", "I/O", "Memory", "Timing"] as const;
+const topics = ["All", "Scans", "I/O", "Memory", "Timing", "Types"] as const;
 type Topic = typeof topics[number];
 
 const referenceItems: Array<{ topic: Exclude<Topic, "All">; title: string; meaning: string; read: string; caution: string; source: string; href: string }> = [
@@ -121,6 +121,42 @@ const referenceItems: Array<{ topic: Exclude<Topic, "All">; title: string; meani
     source: "Using EXPLAIN: interpreting estimates and cost",
     href: "https://www.postgresql.org/docs/current/using-explain.html",
   },
+  {
+    topic: "Types",
+    title: "Common PostgreSQL data types",
+    meaning: "PostgreSQL types define the values an expression can represent and how comparisons, arithmetic, storage, and indexes behave. Integer, numeric, floating-point, character, date/time, and network types are not interchangeable just because their values look similar.",
+    read: "Confirm the declared column and parameter types, expression result type, precision or range requirements, and the operator used. Use sanitized Database Context when catalog metadata is needed.",
+    caution: "Do not change a type to address a plan symptom alone. Preserve range, precision, timezone, comparison, and application-interface semantics, then validate a representative after plan.",
+    source: "PostgreSQL data types",
+    href: "https://www.postgresql.org/docs/current/datatype.html",
+  },
+  {
+    topic: "Types",
+    title: "Casts in predicates and index access",
+    meaning: "An explicit or implicit cast changes an expression's type. A cast around a column can affect which operator and index expression match, but a visible cast is not proof that it caused a scan or slower execution.",
+    read: "Inspect the plan predicate and operation, then compare column, parameter, and expression types with the query definition and existing index expressions. Check actual rows, filtering, loops, and measured work.",
+    caution: "Removing or moving a cast can change results, precision, timezone behavior, or operator semantics. Confirm the intended types first and require a comparable after plan before accepting a rewrite.",
+    source: "Type conversion and casts",
+    href: "https://www.postgresql.org/docs/current/typeconv.html",
+  },
+  {
+    topic: "Types",
+    title: "Operator resolution and implicit casts",
+    meaning: "PostgreSQL resolves an operator using operand types and may apply implicit conversions when selecting a candidate. Ambiguous or unexpected types can change which comparison or arithmetic operator is used.",
+    read: "Check both operand types and the resolved expression type, especially for overloaded operators, prepared-statement parameters, domains, and mixed numeric or text expressions.",
+    caution: "An implicit cast in an expression does not by itself establish a performance problem. Verify semantics and index compatibility with the schema and a measured plan.",
+    source: "Operator type resolution",
+    href: "https://www.postgresql.org/docs/current/typeconv-oper.html",
+  },
+  {
+    topic: "Types",
+    title: "Collation and text comparisons",
+    meaning: "A collation controls locale-aware comparison and ordering for collatable values such as text. Expressions can inherit or explicitly select a collation, and indexes record the collation used for indexed values.",
+    read: "Compare the column, expression, and index collations when investigating text equality, ordering, or a plan-visible collation expression. Consider collation provider and version when reviewing deployment differences.",
+    caution: "Do not switch collations or rebuild indexes based only on a plan label. Collation changes can alter ordering and equality behavior; verify application expectations and PostgreSQL's collation-version guidance.",
+    source: "Collation support",
+    href: "https://www.postgresql.org/docs/current/collation.html",
+  },
 ];
 
 export function PlanReferenceView() {
@@ -129,7 +165,7 @@ export function PlanReferenceView() {
   const normalizedQuery = query.trim().toLocaleLowerCase();
   const filtered = referenceItems.filter((item) => {
     if (topic !== "All" && item.topic !== topic) return false;
-    return !normalizedQuery || `${item.title} ${item.meaning} ${item.read} ${item.caution} ${item.source}`.toLocaleLowerCase().includes(normalizedQuery);
+    return !normalizedQuery || `${item.topic} ${item.title} ${item.meaning} ${item.read} ${item.caution} ${item.source}`.toLocaleLowerCase().includes(normalizedQuery);
   });
 
   return <section className="workspace-panel plan-reference" aria-labelledby="plan-reference-title">
@@ -150,14 +186,19 @@ export function PlanReferenceView() {
     </div>
 
     <div className="reference-results">
-      {filtered.map((item) => <article className="reference-entry" key={item.title}>
+      {filtered.map((item, index) => <article className="reference-entry" key={item.title}>
         <header><span>{item.topic}</span><h3>{item.title}</h3></header>
-        <dl>
-          <div><dt>Meaning</dt><dd>{item.meaning}</dd></div>
-          <div><dt>How to read it</dt><dd>{item.read}</dd></div>
-          <div className="reference-caution"><dt>Do not infer</dt><dd>{item.caution}</dd></div>
-        </dl>
-        <a href={item.href} target="_blank" rel="noreferrer">{item.source}<span aria-hidden="true"> ↗</span></a>
+        <details className="reference-detail" open={filtered.length === 1 || (!normalizedQuery && index === 0)}>
+          <summary>Reference details</summary>
+          <div className="reference-detail-body">
+            <dl>
+              <div><dt>Meaning</dt><dd>{item.meaning}</dd></div>
+              <div><dt>How to read it</dt><dd>{item.read}</dd></div>
+              <div className="reference-caution"><dt>Do not infer</dt><dd>{item.caution}</dd></div>
+            </dl>
+            <a href={item.href} target="_blank" rel="noreferrer">{item.source}<span aria-hidden="true"> ↗</span></a>
+          </div>
+        </details>
       </article>)}
       {filtered.length === 0 && <p className="reference-empty">No reference matches that search. Try a field name such as “Buffers”, “Heap Fetches”, or “work_mem”.</p>}
     </div>

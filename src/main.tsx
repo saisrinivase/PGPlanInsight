@@ -55,4 +55,5 @@ import "./workload-triage-mobile.css";
 import "./privacy-controls.css";
 import "./dense-dba-theme.css";
 import "./workspace-clarity.css";
+import "./workspace-night-operations.css";
 createRoot(document.getElementById("app")!).render(<StrictMode><App /></StrictMode>);

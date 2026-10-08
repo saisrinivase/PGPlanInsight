@@ -302,7 +302,7 @@ test("Planning opens as one focused detail view and returns cleanly", async ({ p
   expect(focusedLayout).not.toBeNull();
   expect(focusedLayout!.widthDifference).toBeLessThan(2);
   expect(focusedLayout!.heightDifference).toBeLessThan(2);
-  expect(focusedLayout!.background).toBe("rgb(248, 250, 249)");
+  expect(focusedLayout!.background).toBe("rgb(23, 35, 46)");
   await renderer.locator(".stat-dropdown-container .btn-close").click();
   await expect(panel).toBeHidden();
   await expect(renderer.locator(".plan-container")).toBeVisible();
@@ -436,7 +436,34 @@ test("Plan reference searches PostgreSQL field guidance and official sources", a
   await reference.getByRole("button", { name: "Memory", exact: true }).click();
   await expect(reference.locator(".reference-entry")).toHaveCount(2);
   await expect(reference.getByRole("heading", { name: "Buffers: hit and read" })).toHaveCount(0);
+
+  await reference.getByRole("button", { name: "Types", exact: true }).click();
+  await expect(reference.locator(".reference-entry")).toHaveCount(4);
+  const collation = reference.locator(".reference-entry").filter({ hasText: "Collation and text comparisons" });
+  await expect(collation.locator("details")).not.toHaveAttribute("open", "");
+  await collation.locator("summary").click();
+  await expect(collation).toContainText("collation-version guidance");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
+});
+
+test("dark theme gives Planner and Findings detail panels readable surfaces", async ({ page }) => {
+  await analyze(page, coercionPlan, "Dark detail surfaces");
+  await expect(page.getByRole("switch", { name: "Dark appearance" })).toHaveAttribute("aria-checked", "true");
+  await page.getByRole("button", { name: "Planner diagnostics", exact: true }).click();
+  const plannerSurfaces = await page.locator(".planner-diagnostics").evaluate((root) => [
+    ".planner-qualification > header",
+    ".statistics-qualification-grid > div",
+    ".planner-access-body > div",
+    ".planner-access-body dl > div",
+  ].map((selector) => getComputedStyle(root.querySelector(selector)!).backgroundColor));
+  expect(plannerSurfaces).toEqual(Array(4).fill("rgb(32, 47, 60)"));
+
+  await page.getByRole("button", { name: "Findings", exact: true }).click();
+  const findingsSurfaces = await page.locator(".recommendations-workbench").evaluate((root) => [
+    ".coercion-qualification > header",
+    ".evidence-classifications > div",
+  ].map((selector) => getComputedStyle(root.querySelector(selector)!).backgroundColor));
+  expect(findingsSurfaces).toEqual(Array(2).fill("rgb(32, 47, 60)"));
 });
 
 test("Planner diagnostics prioritizes measured access work and the first estimate divergence", async ({ page }) => {

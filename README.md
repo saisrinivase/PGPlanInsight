@@ -1,84 +1,92 @@
-# pgplan_v0
+# PGPlan Insight
 
-Modern modular rebuild of PGPlan Insight. Version `0.6.0` combines the maintained PEV2 execution-plan renderer with PGPlan Insight's deterministic evidence, root-cause tracing, controlled tuning experiments, optional sanitized database context, local case history, and guarded before/after validation, with a clearer evidence-first analysis workflow.
+**An evidence-first PostgreSQL plan review workspace for DBAs, developers, and database architects.** Paste an execution plan, inspect measured work, follow findings to relevant plan operations, and validate a proposed change with a comparable after-plan.
 
-## Architecture
+[![PGPlan Insight release gate](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml/badge.svg)](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml)
 
-- React 19 application shell with focused feature components
-- Framework-independent TypeScript analysis engine
-- Zod validation only at the untrusted plan-input boundary
-- Web Worker execution for parsing and deterministic analysis
-- Vitest domain-rule coverage
-- Official PEV2 1.23 renderer, isolated from the React shell
-- Bootstrap styling scoped to the PEV2 surface (no global theme leakage)
-- Browser-local analysis with a restrictive Content Security Policy
-- No Java backend and no plan upload path
-- Temporary analysis by default; optional IndexedDB history with 1/7/30-day retention and individual deletion
-- Light enterprise diagnosis workspace
+> **Version 0.6.0 candidate.** Source is available on `main`; this is not release approval. A tagged release should wait for both Windows and macOS release-gate jobs to pass. Check the [live release-gate runs](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml).
 
-## Run
+## What it does
 
-Full installation, deployment, usage, privacy, and troubleshooting instructions are in [INSTALLATION_AND_USER_GUIDE.md](./INSTALLATION_AND_USER_GUIDE.md).
+PGPlan Insight analyzes PostgreSQL `EXPLAIN` output locally in your browser. It combines the PEV2 plan renderer with deterministic diagnostics and separates captured facts, derived signals, hypotheses, and conclusions that still require validation.
+
+It does not connect to a database, execute SQL, upload plans, or send plan content to an AI service. Optional case history is stored in the browser profile you choose.
+
+## Workflow
+
+1. **Plan** — inspect the execution tree and metrics in PEV2 Plan, Grid, Raw, Query, and Stats views.
+2. **Findings** — review ranked evidence, uncertainty, controlled next tests, and available operation links.
+3. **Planner diagnostics** — review access-path work and row-estimate drift, with links to matching plan operations.
+4. **Validate fix** — compare before and after plans; missing comparability evidence blocks a confident verdict.
+5. **Database context** — optionally import a sanitized metadata pack to qualify catalog and planner hypotheses. No database connection is made.
+6. **Plan reference** — search explanations for scans, heap fetches, buffers, temporary I/O, timing, and `work_mem`, with cautions and links to the official PostgreSQL manual.
+
+## Quick Start
+
+Requirements: Node.js 24 and npm. A downloaded ZIP does not contain `node_modules`. Install dependencies from the extracted repository root before starting Vite.
+
+**Windows PowerShell**
+
+```powershell
+cd "$HOME\Downloads\PGPlanInsight-main (1)\PGPlanInsight-main"
+npm ci
+npm run dev -- --host 127.0.0.1 --port 5176
+```
+
+If your extracted folder has a different name or is not nested, adjust the `cd` path so it opens the folder containing `package.json`. Run `npm ci` once after extracting the ZIP (the ZIP does not contain `node_modules`), then open `http://127.0.0.1:5176/`. Keep PowerShell open while using the local server; stop it with `Ctrl+C`.
+
+**macOS or Linux**
 
 ```bash
-npm install
+cd /path/to/PGPlanInsight
+npm ci
 npm run dev
 ```
 
-## Release gate
+Open the local URL printed by Vite. For installation, plan capture, privacy, deployment, and troubleshooting, see the [Installation and User Guide](INSTALLATION_AND_USER_GUIDE.md).
 
-Use a locked installation and run the complete local quality/security gate before releasing:
+## Capture a Useful Plan
+
+For detailed runtime evidence, capture a representative execution with:
+
+```sql
+EXPLAIN (ANALYZE, BUFFERS, VERBOSE, SETTINGS, WAL, FORMAT JSON)
+SELECT ...;
+```
+
+`ANALYZE` executes the statement, including writes. Use a safe test environment, suitable privileges, and a statement timeout. A transaction rollback cannot undo every side effect.
+
+The tool also accepts standard PostgreSQL TEXT plans, but some evidence may be unavailable. Planner cost is a relative estimate, not milliseconds. Node time and buffer counts are inclusive of descendants, and per-loop values must be interpreted with `Actual Loops`.
+
+## Interpretation Boundaries
+
+- A sequential scan is not automatically a problem; consider relation size, selectivity, returned rows, filtering, and measured work.
+- Index use does not guarantee low cost. Heap visits, loops, and surrounding joins can dominate.
+- Buffer reads do not prove physical device reads; the operating-system cache may satisfy them. Missing I/O timing is not proof of zero wait.
+- `work_mem` is a base limit per eligible operation, not a query-wide or server-wide memory budget. Concurrent operations, sessions, and parallel workers can multiply demand.
+- Temporary I/O should be attributed to the node that reports it. Root counters may include descendant work.
+- Findings are signals and hypotheses, not causal proof. Test one change and compare representative plans before accepting a tuning decision.
+
+## Privacy and Deployment
+
+Analysis runs in the browser. Plans are temporary by default; if you opt to save one, it stays in that browser profile and may contain SQL, identifiers, and expressions. Use **Preview redacted plan** before saving or sharing sensitive evidence. Redaction reduces detail but does not guarantee anonymity.
+
+For shared use, build and serve the static `dist/` output from an HTTPS host. No application backend is required. Configure and verify response security headers at the hosting origin; a sample is in [deploy/nginx.conf](deploy/nginx.conf). See the [Installation and User Guide](INSTALLATION_AND_USER_GUIDE.md) for deployment details.
+
+## Development and Release Checks
 
 ```bash
 npm ci
+npm test
+npm run build
+npm run test:e2e
+npm run security:static
+```
+
+The full release gate also performs online dependency audits, license and release-artifact checks, and desktop/mobile browser tests on Windows and macOS:
+
+```bash
 npm run release:gate
 ```
 
-The gate runs unit tests, a production TypeScript/Vite build, Chromium/Firefox/WebKit desktop and mobile workflows, static secret and unsafe-sink checks, current online production and development dependency advisory audits, license policy, SBOM generation, and SHA-256 artifact hashing. Local evidence is written to `dist/release/`; CI verifies it but does not upload it.
-
-## Primary workflow
-
-1. Paste an `EXPLAIN (ANALYZE, BUFFERS, VERBOSE, SETTINGS, WAL, FORMAT JSON)` plan.
-2. Review the top deterministic diagnosis and its evidence confidence.
-3. Use PEV2 **Plan** for the connected tree and metric outline, or **Grid** for dense evidence.
-4. Open an evidence finding to see the measured signal and controlled next test.
-5. Compare the after plan in **Validate fix**.
-
-## Current capability
-
-- PostgreSQL `FORMAT JSON` intake
-- Evidence-quality scoring
-- Deterministic primary-signal selection
-- Ranked findings with evidence and validation actions
-- Searchable Plan reference for scan methods, buffer/temp I/O, timing, memory, and PostgreSQL documentation links
-- PEV2 Plan, Grid, Raw, Query, and Stats views
-- Proven / suspected / unknown evidence classification
-- “Observed at” versus deepest evidenced root-cause tracing
-- Experiment prerequisites, success criteria, and rollback boundaries
-- Optional browser-session database context for index/column qualification
-- Fix Validation comparability blockers for SQL, parameters, settings/environment, and runtime evidence
-- Settings and evidence ledger
-
-The primary workflow is **Plan**, **Findings**, **Planner diagnostics**, **Validate fix**, **Database context**, and **Plan reference**. The reference pane explains common plan fields and links to the official PostgreSQL manual without leaving the analysis workflow.
-
-Evidence-specific Access Paths, Parallel Workers, and Bad Estimates are available under **More tools** only when the plan supports them.
-
-Implemented in v0.4: PostgreSQL-version normalization, TEXT-plan parsing, graphical plan rendering, structural Fix Validation matching, committed Playwright workflows, and Markdown/JSON report exports.
-
-Version 0.6 adds clearer purpose labels across the analysis workflow, improved Findings and Planner Diagnostics readability, and exact operation navigation from planner evidence. Windows ZIP users should install locked dependencies with `npm ci` before running the development server.
-
-
-### Privacy controls and deployment hardening
-
-Use **Preview redacted plan** before saving sensitive input. It replaces identifiers and removes SQL, expressions, settings and unknown fields, then lets you inspect the JSON before choosing **Use redacted plan**. Metrics remain and can still be sensitive. Redaction reduces diagnostic evidence; it is not a guarantee of anonymity. The original input is unchanged until you accept the preview.
-
-Serve only the built `dist` directory. A sample Nginx configuration is in `deploy/nginx.conf`; configure HTTPS at your reverse proxy. Set CSP `frame-ancestors 'none'`, `X-Content-Type-Options: nosniff` and `Referrer-Policy: no-referrer` at the actual host. The preview server supplies these headers for tests, but your production host must be verified separately. Do not expose Vite's development server.
-
-The release gate performs its own locked install and online audits. Missing advisory data fails the gate. Standalone artifact generation cannot claim PASS without fresh matching gate evidence. Evidence includes the commit, source hash, lockfile hash, timestamp and both audit reports.
-
-EXPLAIN ANALYZE executes its SQL. Prefer a safe test environment, least privilege and a statement timeout. Transaction rollback cannot undo every side effect (for example sequence advancement or external functions).
-# Operating-system validation
-
-PGPlan Insight is a browser application, not a macOS-only executable. Serve the production `dist` directory over HTTP; do not open its HTML directly through `file://`. Development uses Node.js 24 and `npm ci`, then `npm run dev`, including from Windows PowerShell.
-
-The release workflow runs the same full gate on Ubuntu and Windows: unit tests, production build, Playwright browser workflows, security checks, dependency audits and artifact verification. Windows support is only verified for a release after its Windows job passes. The release runner invokes npm through Node without a shell, supporting installation paths containing spaces.
+The v0.6.0 candidate has passed local unit, build, static-security, and focused desktop workflow checks. The hosted release gate is still pending; follow the [live Actions page](https://github.com/saisrinivase/PGPlanInsight/actions).

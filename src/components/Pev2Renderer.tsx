@@ -15,7 +15,7 @@ function rendererSource(source: string) {
   }
 }
 
-export function Pev2Renderer({ planSource }: { planSource: string }) {
+export function Pev2Renderer({ planSource, appearance }: { planSource: string; appearance: "light" | "dark" }) {
   const hostRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -142,9 +142,38 @@ export function Pev2Renderer({ planSource }: { planSource: string }) {
         .plan-stats .stat-dropdown-container { padding:18px !important; }
       }
       @media (min-width: 700px) and (max-width: 800px) { #pev2-root { height:720px; } }
+      #pev2-root[data-appearance="dark"] { color-scheme:dark; background:#111a22 !important; color:#dce6ed; }
+      #pev2-root[data-appearance="dark"] .plan-container,
+      #pev2-root[data-appearance="dark"] .plan-container .tab-content,
+      #pev2-root[data-appearance="dark"] .tab-pane,
+      #pev2-root[data-appearance="dark"] .plan-diagram,
+      #pev2-root[data-appearance="dark"] .diagram-container,
+      #pev2-root[data-appearance="dark"] .plan-grid,
+      #pev2-root[data-appearance="dark"] .plan-stats { background:#17232e !important; color:#dce6ed !important; }
+      #pev2-root[data-appearance="dark"] .nav-tabs { background:#121c25 !important; border-color:#405363 !important; }
+      #pev2-root[data-appearance="dark"] .nav-link { color:#a9bac6 !important; }
+      #pev2-root[data-appearance="dark"] .nav-link.active { background:#203b4d !important; color:#8bd0ef !important; border-color:#405363 #405363 #17232e !important; }
+      #pev2-root[data-appearance="dark"] table,
+      #pev2-root[data-appearance="dark"] .table,
+      #pev2-root[data-appearance="dark"] .table > :not(caption) > * > * { --bs-table-bg:#17232e; --bs-table-color:#dce6ed; background-color:#17232e !important; color:#dce6ed !important; border-color:#405363 !important; }
+      #pev2-root[data-appearance="dark"] .plan-grid thead,
+      #pev2-root[data-appearance="dark"] .plan-grid thead th { background:#202f3c !important; color:#e1eaf0 !important; }
+      #pev2-root[data-appearance="dark"] .plan-grid tbody tr.node:hover { background:#243b49 !important; }
+      #pev2-root[data-appearance="dark"] .pgplan-grid-note,
+      #pev2-root[data-appearance="dark"] .pgplan-io-note { background:#203341 !important; border-color:#405363 !important; color:#c1cdd5 !important; }
+      #pev2-root[data-appearance="dark"] .pgplan-io-note strong { color:#e1eaf0 !important; }
+      #pev2-root[data-appearance="dark"] .stat-dropdown-container { background:#17232e !important; color:#dce6ed !important; border-color:#405363 !important; }
+      #pev2-root[data-appearance="dark"] .stat-dropdown-container :where(h1,h2,h3,h4,p,span,dt,dd,th,td,label) { color:#dce6ed !important; }
+      #pev2-root[data-appearance="dark"] svg text { fill:#dce6ed !important; }
+      #pev2-root[data-appearance="dark"] svg .plan-node rect,
+      #pev2-root[data-appearance="dark"] svg rect.node { fill:#203341 !important; stroke:#7590a1 !important; }
+      #pev2-root[data-appearance="dark"] svg .plan-node.selected rect,
+      #pev2-root[data-appearance="dark"] svg rect.node.selected { fill:#24495a !important; stroke:#65b5dc !important; }
+      #pev2-root[data-appearance="dark"] svg path { stroke:#8298a7; }
     `;
     const mount = document.createElement("div");
     mount.id = "pev2-root";
+    mount.dataset.appearance = appearance;
     shadow.append(style, mount);
     const app = createApp({ render: () => h(Plan, { planSource: rendererSource(planSource), planQuery: "" }) });
     app.mount(mount);
@@ -224,5 +253,9 @@ export function Pev2Renderer({ planSource }: { planSource: string }) {
     };
   }, [planSource]);
 
-  return <div className="pev2-renderer" ref={hostRef} data-testid="pev2-renderer" />;
+  useEffect(() => {
+    hostRef.current?.shadowRoot?.querySelector<HTMLElement>("#pev2-root")?.setAttribute("data-appearance", appearance);
+  }, [appearance]);
+
+  return <div className="pev2-renderer" ref={hostRef} data-testid="pev2-renderer" data-appearance={appearance} />;
 }

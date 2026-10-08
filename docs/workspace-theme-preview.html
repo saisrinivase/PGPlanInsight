@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en" data-appearance="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PGPlan Insight · Workspace theme concepts</title>
+  <style>
+    :root{font-family:"Segoe UI",Arial,sans-serif;color:#203144;background:#e9eef2;font-synthesis:none;text-rendering:optimizeLegibility}
+    *{box-sizing:border-box}
+    body{margin:0;background:#e9eef2;color:#203144;transition:background .2s,color .2s}
+    .page{max-width:1500px;margin:auto;padding:28px 32px 56px}
+    .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid #c7d2db}
+    .eyebrow{margin:0 0 6px;color:#24698e;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{margin:0;color:#18354e;font-size:30px;line-height:1.15}
+    .intro{max-width:730px;margin:9px 0 0;color:#526679;font-size:14px;line-height:1.5}
+    .appearance-control{display:flex;align-items:center;gap:8px;padding:5px;border:1px solid #c3d0da;background:#f8fafc}
+    .appearance-control span{padding:0 6px;color:#53697b;font-size:12px;font-weight:600}
+    .appearance-control button{min-height:34px;padding:6px 12px;border:1px solid transparent;background:transparent;color:#415a6f;font:600 12px "Segoe UI",Arial,sans-serif;cursor:pointer}
+    .appearance-control button[aria-pressed="true"]{border-color:#1e5e87;background:#1e5e87;color:#fff}
+    .theme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+    .theme-option{min-width:0;padding:14px;border:1px solid #c7d2db;background:#f8fafb;box-shadow:0 2px 7px #1c34430d}
+    .option-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:11px}
+    .option-no{display:inline-block;margin-right:7px;color:#698094;font:700 11px/1.4 Consolas,monospace}
+    .option-head h2{display:inline;margin:0;color:#1b3a55;font-size:15px;line-height:1.35}
+    .option-head p{margin:4px 0 0 31px;color:#607486;font-size:11px;line-height:1.4}
+    .option-tag{flex:none;padding:3px 7px;border:1px solid #c6d4de;color:#526b7d;font-size:9px;font-weight:700;text-transform:uppercase}
+    .mock{--bg:#fff;--surface:#f6f8fa;--ink:#20384d;--muted:#617488;--line:#d6e0e7;--accent:#286c93;--accent-soft:#eaf3f8;--warn:#94620c;--warn-bg:#fff5db;--good:#26704b;--good-bg:#e9f5ee;min-width:0;min-height:232px;overflow:hidden;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:10px}
+    .mock *{box-sizing:border-box}
+    .mock-top{height:25px;display:flex;align-items:center;justify-content:space-between;padding:0 9px;border-bottom:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:9px}
+    .mock-brand{font-weight:750;color:var(--ink)}
+    .mock-nav{display:flex;gap:0;min-height:34px;padding:0 7px;border-bottom:1px solid var(--line);background:var(--bg)}
+    .mock-nav span{display:flex;align-items:center;gap:4px;padding:0 8px;border-bottom:2px solid transparent;color:var(--muted);font-size:8px;white-space:nowrap}
+    .mock-nav .selected{border-bottom-color:var(--accent);color:var(--accent);font-weight:750}
+    .mock-content{padding:11px}
+    .mock-title{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:9px}
+    .mock-title h3{margin:0;color:var(--ink);font-size:13px;line-height:1.25}
+    .mock-title p{margin:3px 0 0;color:var(--muted);font-size:9px;line-height:1.4}
+    .mock-state{flex:none;padding:4px 6px;background:var(--warn-bg);color:var(--warn);font-size:8px;font-weight:750}
+    .mock-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:8px}
+    .mock-panel{min-width:0;border:1px solid var(--line);background:var(--bg)}
+    .mock-panel-head{padding:6px 7px;border-bottom:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:9px;font-weight:750}
+    .mock-panel-body{padding:7px;color:var(--muted);font-size:8px;line-height:1.45}
+    .mock-panel-body strong{color:var(--ink)}
+    .mock-statline{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:6px}
+    .mock-stat{padding:5px;background:var(--surface)}
+    .mock-stat b,.mock-stat small{display:block}
+    .mock-stat b{color:var(--ink);font:700 10px/1.2 Consolas,monospace}
+    .mock-stat small{margin-top:2px;color:var(--muted);font-size:7px}
+    .mock-action{margin-top:7px;padding:7px;border-left:3px solid var(--accent);background:var(--accent-soft);color:var(--ink);font-size:8px;line-height:1.4}
+    .mock-action b{display:block;margin-bottom:2px;color:var(--accent);font-size:7px;text-transform:uppercase}
+    .mock-queue-head,.mock-queue-row{display:grid;grid-template-columns:54px minmax(0,1fr) 54px;gap:5px;padding:5px 7px;color:var(--muted);font-size:8px}
+    .mock-queue-head{background:var(--surface);font-size:7px;font-weight:750;text-transform:uppercase}
+    .mock-queue-row{grid-template-columns:22px 74px minmax(0,1fr) 52px;align-items:center;min-height:28px;border-top:1px solid var(--line)}
+    .mock-queue-row strong,.mock-queue-row b{color:var(--ink)}
+    .mock-queue-row b{font-family:Consolas,monospace}
+    .mock-label{display:inline-block;padding:2px 4px;background:var(--warn-bg);color:var(--warn);font-size:7px;font-weight:750;text-transform:uppercase}
+    .mock-small{color:var(--muted);font-size:7px}
+
+    .t1 .mock-title{padding-bottom:7px;border-bottom:1px solid var(--line)}
+    .t1 .mock-grid{grid-template-columns:1fr .88fr}
+    .t2{font-family:Consolas,monospace}.t2 .mock-nav{background:var(--surface)}.t2 .mock-content{padding:8px}.t2 .mock-title h3,.t2 .mock-title p,.t2 .mock-panel-body,.t2 .mock-row{font-family:"Segoe UI",Arial,sans-serif}.t2 .mock-grid{grid-template-columns:1.35fr .65fr;gap:6px}
+    .t3 .mock-top{height:30px;padding-inline:12px}.t3 .mock-nav{justify-content:center}.t3 .mock-content{max-width:650px;margin:auto;padding:14px 18px}.t3 .mock-title{padding-bottom:10px;border-bottom:2px solid var(--accent)}.t3 .mock-grid{grid-template-columns:1fr}.t3 .mock-panel-head{background:var(--bg);border-bottom:0}.t3 .mock-action{border:1px solid var(--line);border-left:4px solid var(--accent)}
+    .t4 .mock{display:grid;grid-template-columns:72px minmax(0,1fr);grid-template-rows:25px minmax(0,1fr)}.t4 .mock-top{grid-column:1/-1}.t4 .mock-nav{grid-row:2;grid-column:1;flex-direction:column;align-items:stretch;padding:5px 0;border-right:1px solid var(--line);border-bottom:0}.t4 .mock-nav span{min-height:27px;padding:0 6px;white-space:normal}.t4 .mock-content{grid-row:2;grid-column:2;padding:9px}.t4 .mock-grid{grid-template-columns:.75fr 1.25fr}
+    .t5 .mock-title{align-items:center;padding:7px;background:var(--surface)}.t5 .mock-grid{grid-template-columns:1fr}
+    .t6 .mock-nav{background:var(--surface)}.t6 .mock-content{max-width:660px;margin:auto;padding:12px 18px}.t6 .mock-grid{grid-template-columns:30px minmax(0,1fr)}.t6 .mock-panel:first-child,.t6 .mock-panel:nth-child(2){grid-column:2}.t6 .mock-step{grid-column:1;grid-row:1/3;color:var(--accent);font:700 11px Consolas,monospace}.t6 .mock-panel-body{font-size:9px}
+    .t7 .mock-title{padding-bottom:7px;border-bottom:1px solid var(--line)}.t7 .mock-grid{grid-template-columns:1fr 1fr}.t7 .mock-panel{border:0;border-top:2px solid var(--accent)}.t7 .mock-panel-head{background:var(--bg)}.t7 .mock-link{display:block;margin-top:6px;color:var(--accent);font-size:7px;text-decoration:underline}
+    .t8 .mock{--bg:#17232e;--surface:#202f3c;--ink:#e1eaf0;--muted:#a9bac6;--line:#405363;--accent:#65b5dc;--accent-soft:#203b4d;--warn:#f0c36a;--warn-bg:#40351f;--good:#82d0a5;--good-bg:#193a2d}.t8 .mock-top,.t8 .mock-nav{background:#121c25}.t8 .mock-title h3{color:#eef4f7}
+
+    html[data-appearance="dark"] body{background:#111a22;color:#e0e8ed}
+    html[data-appearance="dark"] .page-head{border-color:#394955}
+    html[data-appearance="dark"] h1{color:#edf3f6}
+    html[data-appearance="dark"] .eyebrow{color:#86c8e8}
+    html[data-appearance="dark"] .intro{color:#afbdc7}
+    html[data-appearance="dark"] .appearance-control{border-color:#485b69;background:#202d37}
+    html[data-appearance="dark"] .appearance-control span{color:#c0cbd2}
+    html[data-appearance="dark"] .appearance-control button{color:#c3cfd6}
+    html[data-appearance="dark"] .appearance-control button[aria-pressed="true"]{border-color:#73bde2;background:#24536c;color:#f5fbff}
+    html[data-appearance="dark"] .theme-option{border-color:#394b58;background:#1a2630;box-shadow:none}
+    html[data-appearance="dark"] .option-head h2{color:#e6eef3}
+    html[data-appearance="dark"] .option-head p{color:#aab9c4}
+    html[data-appearance="dark"] .option-no{color:#94aab9}
+    html[data-appearance="dark"] .option-tag{border-color:#465a68;color:#bcc8cf}
+    html[data-appearance="dark"] .mock{--bg:#17232e;--surface:#202f3c;--ink:#e1eaf0;--muted:#a9bac6;--line:#405363;--accent:#65b5dc;--accent-soft:#203b4d;--warn:#f0c36a;--warn-bg:#40351f;--good:#82d0a5;--good-bg:#193a2d}
+    html[data-appearance="dark"] .mock-top,html[data-appearance="dark"] .mock-nav{background:#121c25}
+    html[data-appearance="dark"] .mock-title h3{color:#eef4f7}
+
+    @media(max-width:980px){.page{padding:22px 18px 40px}.theme-grid{grid-template-columns:1fr}.page-head{align-items:flex-start;flex-direction:column}.appearance-control{align-self:flex-start}}
+    @media(max-width:560px){.page{padding:16px 10px 28px}.page-head h1{font-size:24px}.theme-option{padding:10px}.mock-nav span{padding-inline:5px;font-size:7px}.mock-content{padding:8px}.mock-grid{grid-template-columns:1fr}.mock{min-height:250px}.t4 .mock{grid-template-columns:58px minmax(0,1fr)}.t5 .mock-queue-row{grid-template-columns:18px 60px minmax(0,1fr) 44px}}
+    @media(prefers-reduced-motion:reduce){body{transition:none}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="page-head">
+      <div><p class="eyebrow">PGPlan Insight · interaction design review</p><h1>Choose the analysis workspace</h1><p class="intro">Eight desktop-oriented concepts, showing the same plan signal in different information structures. Switch appearance to compare light and dark treatments. These are visual proposals, not changes to the running app.</p></div>
+      <div class="appearance-control" role="group" aria-label="Preview appearance"><span>Appearance</span><button type="button" data-mode="light" aria-pressed="true">Light</button><button type="button" data-mode="dark" aria-pressed="false">Dark</button></div>
+    </header>
+    <section class="theme-grid" aria-label="Eight workspace theme concepts">
+      <article class="theme-option"><header class="option-head"><div><span class="option-no">01</span><h2>Evidence Workbench</h2><p>Measured fact → interpretation → uncertainty → next action</p></div><span class="option-tag">Recommended</span></header><div class="mock t1"><div class="mock-top"><span class="mock-brand">PGPlan Insight</span><span>Local analysis · Sample plan</span></div><nav class="mock-nav"><span>Plan</span><span class="selected">Findings</span><span>Planner</span><span>Validate</span></nav><div class="mock-content"><div class="mock-title"><div><h3>Filtered sequential work</h3><p>Operation 12 · invoices · captured predicate</p></div><span class="mock-state">Review</span></div><div class="mock-grid"><section class="mock-panel"><div class="mock-panel-head">Observed work</div><div class="mock-panel-body">Rows removed by filter compared with rows returned.<div class="mock-statline"><div class="mock-stat"><b>48,210</b><small>Removed</small></div><div class="mock-stat"><b>9,440</b><small>Returned</small></div><div class="mock-stat"><b>4.1×</b><small>Ratio</small></div></div></div></section><section class="mock-panel"><div class="mock-panel-head">Evidence boundary</div><div class="mock-panel-body"><span class="mock-label">Review</span><br>Check predicate selectivity and existing indexes. The plan alone does not establish a better access path.</div></section></div><div class="mock-action"><b>Test next</b>Compare one selective-predicate change with a representative after-plan.</div></div></div></article>
+      <article class="theme-option"><header class="option-head"><div><span class="option-no">02</span><h2>DBA Operations Console</h2><p>Dense scan surface with sortable, aligned operational values</p></div><span class="option-tag">High density</span></header><div class="mock t2"><div class="mock-top"><span class="mock-brand">PGPI / PLAN REVIEW</span><span>CASE 00482 · JSON</span></div><nav class="mock-nav"><span>01 Plan</span><span class="selected">02 Findings</span><span>03 Planner</span><span>04 Validate</span></nav><div class="mock-content"><div class="mock-title"><div><h3>Access-path review queue</h3><p>3 checks · sorted by measured work</p></div><span class="mock-small">FILTER: ALL</span></div><div class="mock-queue-head"><span>Rank</span><span>Signal</span><span>Operation</span><span>Loops</span></div><div class="mock-queue-row"><b>01</b><span class="mock-label">Review</span><strong>Seq Scan · invoices</strong><b>12,404</b></div><div class="mock-queue-row"><b>02</b><span>Info</span><strong>Index Scan · accounts</strong><b>1</b></div><div class="mock-queue-row"><b>03</b><span>Good</span><strong>Index Only · regions</strong><b>1</b></div><div class="mock-statline"><div class="mock-stat"><b>48,210</b><small>Rows removed</small></div><div class="mock-stat"><b>1,104</b><small>Shared reads</small></div><div class="mock-stat"><b>18.4%</b><small>Time share</small></div></div></div></div></article>
+      <article class="theme-option"><header class="option-head"><div><span class="option-no">03</span><h2>Assurance Review Dossier</h2><p>Formal evidence record with provenance and decision controls</p></div><span class="option-tag">Governance</span></header><div class="mock t3"><div class="mock-top"><span class="mock-brand">PGPlan Insight · Review record</span><span>Draft · not approved</span></div><nav class="mock-nav"><span>Plan</span><span class="selected">Finding</span><span>Evidence</span><span>Validation</span></nav><div class="mock-content"><div class="mock-title"><div><h3>Finding PATH-001 · High-volume filtering</h3><p>Plan: monthly invoice extract · captured 09:42 UTC</p></div><span class="mock-state">Review</span></div><div class="mock-grid"><section class="mock-panel"><div class="mock-panel-head">Basis and limitation</div><div class="mock-panel-body"><strong>Observed:</strong> 48,210 rows removed. <strong>Unknown:</strong> relation size, competing indexes, recurrence.<br><span class="mock-small">Source: EXPLAIN ANALYZE · BUFFERS · operation 12</span></div></section><section class="mock-panel"><div class="mock-panel-head">Acceptance record</div><div class="mock-panel-body">Owner ______ · Environment ______<br>Comparable capture ☐ · Repeated result ☐</div></section></div><div class="mock-action"><b>Controlled test</b>One change · representative parameters · documented rollback.</div></div></div></article>
+      <article class="theme-option"><header class="option-head"><div><span class="option-no">04</span><h2>Plan Investigation Studio</h2><p>Plan structure remains central; findings inspect the selected node</p></div><span class="option-tag">Plan-centric</span></header><div class="mock t4"><div class="mock-top"><span class="mock-brand">Plan investigation</span><span>Operation 12 selected</span></div><nav class="mock-nav"><span>Plan</span><span class="selected">Findings</span><span>Metrics</span><span>Context</span></nav><div class="mock-content"><div class="mock-title"><div><h3>Node inspector</h3><p>Append → Seq Scan · invoices</p></div><span class="mock-state">Review</span></div><div class="mock-grid"><section class="mock-panel"><div class="mock-panel-head">Node evidence</div><div class="mock-panel-body">Actual rows <b>9,440</b><br>Removed <b>48,210</b><br>Loops <b>1</b><br>Shared read <b>1,104</b></div></section><section class="mock-panel"><div class="mock-panel-head">Investigation</div><div class="mock-panel-body">Filter work is material. Verify selectivity and existing indexes before proposing an alternative.<div class="mock-action"><b>Open in plan</b>Selected node 12</div></div></section></div></div></div></article>
+      <article class="theme-option"><header class="option-head"><div><span class="option-no">05</span><h2>Triage Queue</h2><p>Prioritized signals first, operation and next test at a glance</p></div><span class="option-tag">Team triage</span></header><div class="mock t5"><div class="mock-top"><span class="mock-brand">PGPlan Insight · Work queue</span><span>1 of 3 findings</span></div><nav class="mock-nav"><span>Plan</span><span class="selected">Findings</span><span>Planner</span><span>Validate</span></nav><div class="mock-content"><div class="mock-title"><div><h3>Prioritized investigations</h3><p>Rank reflects evidence priority, not causal proof</p></div></div><div class="mock-queue-head"><span>No.</span><span>Priority</span><span>Signal / operation</span><span>Next</span></div><div class="mock-queue-row"><b>01</b><span class="mock-label">Review</span><strong>Filter work · invoices #12</strong><b>Inspect</b></div><div class="mock-queue-row"><b>02</b><span>Info</span><strong>Nested loop · accounts #19</strong><b>Compare</b></div><div class="mock-queue-row"><b>03</b><span>Good</span><strong>Index only · regions #22</strong><b>Retain</b></div><div class="mock-action"><b>Selected investigation</b>Show observed evidence, unknowns, and one bounded test below the queue.</div></div></div></article>
+      <article class="theme-option"><header class="option-head"><div><span class="option-no">06</span><h2>Guided Interpretation</h2><p>Sequential reading path for mixed-skill teams</p></div><span class="option-tag">Guided</span></header><div class="mock t6"><div class="mock-top"><span class="mock-brand">Plan review · Step 2 of 4</span><span>Findings</span></div><nav class="mock-nav"><span>1 Capture</span><span class="selected">2 Interpret</span><span>3 Context</span><span>4 Validate</span></nav><div class="mock-content"><div class="mock-title"><div><h3>Why is this scan being reviewed?</h3><p>Start with measured signal, then check the limits.</p></div></div><div class="mock-grid"><span class="mock-step">01</span><section class="mock-panel"><div class="mock-panel-head">What happened</div><div class="mock-panel-body">The node rejected 48,210 rows while returning 9,440. That is observed filter activity, not proof that an index is better.</div></section><span class="mock-step">02</span><section class="mock-panel"><div class="mock-panel-head">What to check next</div><div class="mock-panel-body">Review selectivity and existing indexes. Test one change with representative parameters and compare the resulting plan.</div></section></div></div></div></article>
+      <article class="theme-option"><header class="option-head"><div><span class="option-no">07</span><h2>Vendor-neutral Reference Desk</h2><p>Definitions and source material alongside measured evidence</p></div><span class="option-tag">Reference-led</span></header><div class="mock t7"><div class="mock-top"><span class="mock-brand">Plan review · Evidence library</span><span>PostgreSQL 16</span></div><nav class="mock-nav"><span>Plan</span><span>Findings</span><span class="selected">Reference</span><span>Context</span></nav><div class="mock-content"><div class="mock-title"><div><h3>Understand this plan field</h3><p>Search: buffers read · matching references 2</p></div></div><div class="mock-grid"><section class="mock-panel"><div class="mock-panel-head">Buffer read</div><div class="mock-panel-body">The block was loaded into shared buffers. This does not prove a physical device read; the OS cache may satisfy it.<span class="mock-link">PostgreSQL EXPLAIN documentation ↗</span></div></section><section class="mock-panel"><div class="mock-panel-head">Use in this finding</div><div class="mock-panel-body"><strong>Measured:</strong> 1,104 shared reads<br><strong>Unknown:</strong> device latency without I/O timing<br><strong>Next:</strong> compare representative captures</div></section></div></div></div></article>
+      <article class="theme-option"><header class="option-head"><div><span class="option-no">08</span><h2>Night Operations Console</h2><p>Low-light palette with high-contrast evidence classes</p></div><span class="option-tag">Dark-first</span></header><div class="mock t8"><div class="mock-top"><span class="mock-brand">PGPlan Insight · Local</span><span>08:42:16 · Analysis</span></div><nav class="mock-nav"><span>Plan</span><span class="selected">Findings</span><span>Planner</span><span>Validate</span></nav><div class="mock-content"><div class="mock-title"><div><h3>Filtered sequential work</h3><p>Operation 12 · invoices</p></div><span class="mock-state">Review</span></div><div class="mock-grid"><section class="mock-panel"><div class="mock-panel-head">Captured measurements</div><div class="mock-panel-body"><div class="mock-statline"><div class="mock-stat"><b>48,210</b><small>Removed</small></div><div class="mock-stat"><b>9,440</b><small>Returned</small></div><div class="mock-stat"><b>1,104</b><small>Reads</small></div></div></div></section><section class="mock-panel"><div class="mock-panel-head">Boundary</div><div class="mock-panel-body">Indexability and relation size remain unknown.<div class="mock-action"><b>Test next</b>Inspect predicate and catalog context.</div></div></section></div></div></div></article>
+    </section>
+  </main>
+  <script>
+    const root = document.documentElement;
+    document.querySelectorAll("[data-mode]").forEach((button) => button.addEventListener("click", () => {
+      const mode = button.dataset.mode;
+      root.dataset.appearance = mode;
+      document.querySelectorAll("[data-mode]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+    }));
+  </script>
+</body>
+</html>

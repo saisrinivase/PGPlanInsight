@@ -390,10 +390,11 @@ test("Findings prioritizes one investigation and progressively discloses support
 test("core workflow navigation preserves the full-width analysis canvas", async ({ page }) => {
   await analyze(page, fixture("02_non_sargable_expression"), "Navigation audit");
   const navigation = page.getByRole("navigation", { name: "Analysis views" });
-  await expect(navigation.locator(":scope > button")).toHaveCount(5);
-  for (const name of ["Plan", "Findings", "Planner diagnostics", "Validate fix", "Database context"]) await expect(navigation.getByRole("button", { name, exact: true })).toBeVisible();
+  await expect(navigation.locator(":scope > button")).toHaveCount(6);
+  for (const name of ["Plan", "Findings", "Planner diagnostics", "Validate fix", "Database context", "Plan reference"]) await expect(navigation.getByRole("button", { name, exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Findings", exact: true })).toHaveAttribute("aria-description", "Ranked signals and next tests");
   await expect(navigation.getByRole("button", { name: "Database context", exact: true })).toHaveAttribute("aria-description", "Qualify catalog hypotheses");
+  await expect(navigation.getByRole("button", { name: "Plan reference", exact: true })).toHaveAttribute("aria-description", "Fields and PostgreSQL guidance");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
   await expect(navigation.getByRole("button", { name: "AI Review", exact: true })).toHaveCount(0);
   await expect(navigation.getByRole("button", { name: /More tools/ })).toHaveCount(0);
@@ -414,6 +415,28 @@ test("core workflow navigation preserves the full-width analysis canvas", async 
   const mainBox = await page.locator("main").boundingBox();
   expect(navigationBox?.width).toBeGreaterThan(page.viewportSize()!.width * 0.9);
   expect(mainBox?.width).toBeGreaterThan(page.viewportSize()!.width * 0.9);
+});
+
+test("Plan reference searches PostgreSQL field guidance and official sources", async ({ page }) => {
+  await analyze(page, fixture("02_non_sargable_expression"), "Reference guide");
+  const navigation = page.getByRole("navigation", { name: "Analysis views" });
+  await navigation.getByRole("button", { name: "Plan reference", exact: true }).click();
+
+  const reference = page.locator(".plan-reference");
+  await expect(reference.getByRole("heading", { name: "Plan reference" })).toBeVisible();
+  await expect(reference.getByRole("heading", { name: "Index-only scan and Heap Fetches" })).toBeVisible();
+  await expect(reference).toContainText("Do not infer");
+
+  await reference.getByRole("searchbox", { name: "Search reference" }).fill("work_mem");
+  await expect(reference.getByRole("heading", { name: "work_mem and hash_mem_multiplier" })).toBeVisible();
+  await expect(reference.getByRole("link", { name: /Resource consumption: work_mem/ })).toHaveAttribute("href", "https://www.postgresql.org/docs/current/runtime-config-resource.html#GUC-WORK-MEM");
+  await expect(reference.getByText(/can multiply memory demand/i)).toBeVisible();
+
+  await reference.getByRole("searchbox", { name: "Search reference" }).clear();
+  await reference.getByRole("button", { name: "Memory", exact: true }).click();
+  await expect(reference.locator(".reference-entry")).toHaveCount(2);
+  await expect(reference.getByRole("heading", { name: "Buffers: hit and read" })).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
 });
 
 test("Planner diagnostics prioritizes measured access work and the first estimate divergence", async ({ page }) => {

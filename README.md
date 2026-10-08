@@ -50,6 +50,7 @@ The gate runs unit tests, a production TypeScript/Vite build, Chromium/Firefox/W
 - Evidence-quality scoring
 - Deterministic primary-signal selection
 - Ranked findings with evidence and validation actions
+- Searchable Plan reference for scan methods, buffer/temp I/O, timing, memory, and PostgreSQL documentation links
 - PEV2 Plan, Grid, Raw, Query, and Stats views
 - Proven / suspected / unknown evidence classification
 - “Observed at” versus deepest evidenced root-cause tracing
@@ -58,7 +59,9 @@ The gate runs unit tests, a production TypeScript/Vite build, Chromium/Firefox/W
 - Fix Validation comparability blockers for SQL, parameters, settings/environment, and runtime evidence
 - Settings and evidence ledger
 
-The primary product surface is **Plan**, **Findings**, **Validate fix**, and **Evidence**. Evidence-specific Access Paths, Parallel Workers, and Bad Estimates are available under **More tools** only when the plan supports them.
+The primary workflow is **Plan**, **Findings**, **Planner diagnostics**, **Validate fix**, **Database context**, and **Plan reference**. The reference pane explains common plan fields and links to the official PostgreSQL manual without leaving the analysis workflow.
+
+Evidence-specific Access Paths, Parallel Workers, and Bad Estimates are available under **More tools** only when the plan supports them.
 
 Implemented in v0.4: PostgreSQL-version normalization, TEXT-plan parsing, graphical plan rendering, structural Fix Validation matching, committed Playwright workflows, and Markdown/JSON report exports.
 

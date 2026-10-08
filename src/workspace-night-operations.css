@@ -173,5 +173,11 @@ body:has(.shell[data-appearance="dark"]) { background: #111a22 !important; }
 .shell[data-appearance="dark"] .plan-reference .reference-detail { border-color:#405363; }
 .shell[data-appearance="dark"] .plan-reference .reference-detail > summary { color:#c5d6e0; }
 .shell[data-appearance="dark"] .plan-reference .reference-detail > summary::after { border-color:#526777; background:#20313e; color:#c5d6e0; }
+.shell[data-appearance="dark"] .plan-reference > .reference-heading,
+.shell[data-appearance="dark"] .plan-reference .reference-entry > header { background:#17232e!important; color:#dce6ed!important; }
+.shell[data-appearance="dark"] .plan-reference .reference-heading h2,
+.shell[data-appearance="dark"] .plan-reference .reference-entry h3 { color:#edf4f7!important; }
+.shell[data-appearance="dark"] .plan-reference .reference-heading .lede { color:#bac8d1!important; }
+.shell[data-appearance="dark"] .plan-reference .reference-search { color:#c5d6e0!important; }
 
 @media(prefers-reduced-motion:reduce){.appearance-switch-track i{transition:none}}

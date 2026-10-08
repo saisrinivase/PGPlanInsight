@@ -464,6 +464,18 @@ test("dark theme gives Planner and Findings detail panels readable surfaces", as
     ".evidence-classifications > div",
   ].map((selector) => getComputedStyle(root.querySelector(selector)!).backgroundColor));
   expect(findingsSurfaces).toEqual(Array(2).fill("rgb(32, 47, 60)"));
+
+  await page.getByRole("button", { name: "Plan reference", exact: true }).click();
+  const referenceHeader = page.locator(".reference-heading");
+  const referenceEntryHeader = page.locator(".reference-entry > header").first();
+  await expect.poll(() => referenceHeader.evaluate((element) => getComputedStyle(element).backgroundColor)).toBe("rgb(23, 35, 46)");
+  await expect.poll(() => referenceEntryHeader.evaluate((element) => getComputedStyle(element).backgroundColor)).toBe("rgb(23, 35, 46)");
+  await expect.poll(() => page.locator("#plan-reference-title").evaluate((element) => getComputedStyle(element).color)).toBe("rgb(237, 244, 247)");
+  await page.getByRole("switch", { name: "Dark appearance" }).click();
+  await expect.poll(() => referenceHeader.evaluate((element) => getComputedStyle(element).backgroundColor)).toBe("rgb(255, 255, 255)");
+  await expect.poll(() => page.locator("#plan-reference-title").evaluate((element) => getComputedStyle(element).color)).toBe("rgb(23, 59, 88)");
+  await page.getByRole("switch", { name: "Dark appearance" }).click();
+  await expect(page.getByRole("switch", { name: "Dark appearance" })).toHaveAttribute("aria-checked", "true");
 });
 
 test("Planner diagnostics prioritizes measured access work and the first estimate divergence", async ({ page }) => {

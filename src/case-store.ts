@@ -7,7 +7,7 @@ export interface StoredCase {
   analysis: Analysis;
   createdAt: string;
   expiresAt?: string;
-  build: "pgplan_v0.2.0" | "pgplan_v0.2.1" | "pgplan_v0.3.0" | "pgplan_v0.4.0" | "pgplan_v0.5.0";
+  build: "pgplan_v0.2.0" | "pgplan_v0.2.1" | "pgplan_v0.3.0" | "pgplan_v0.4.0" | "pgplan_v0.5.0" | "pgplan_v0.6.0";
 }
 
 const DB_NAME = "pgplan-insight";

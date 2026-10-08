@@ -1,6 +1,6 @@
 # pgplan_v0
 
-Modern modular rebuild of PGPlan Insight. Version `0.5.0` combines the maintained PEV2 execution-plan renderer with PGPlan Insight's deterministic evidence, root-cause tracing, controlled tuning experiments, optional sanitized database context, local case history, and guarded before/after validation.
+Modern modular rebuild of PGPlan Insight. Version `0.6.0` combines the maintained PEV2 execution-plan renderer with PGPlan Insight's deterministic evidence, root-cause tracing, controlled tuning experiments, optional sanitized database context, local case history, and guarded before/after validation, with a clearer evidence-first analysis workflow.
 
 ## Architecture
 
@@ -61,6 +61,8 @@ The gate runs unit tests, a production TypeScript/Vite build, Chromium/Firefox/W
 The primary product surface is **Plan**, **Findings**, **Validate fix**, and **Evidence**. Evidence-specific Access Paths, Parallel Workers, and Bad Estimates are available under **More tools** only when the plan supports them.
 
 Implemented in v0.4: PostgreSQL-version normalization, TEXT-plan parsing, graphical plan rendering, structural Fix Validation matching, committed Playwright workflows, and Markdown/JSON report exports.
+
+Version 0.6 adds clearer purpose labels across the analysis workflow, improved Findings and Planner Diagnostics readability, and exact operation navigation from planner evidence. Windows ZIP users should install locked dependencies with `npm ci` before running the development server.
 
 
 ### Privacy controls and deployment hardening

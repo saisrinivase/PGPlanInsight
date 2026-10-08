@@ -29,10 +29,11 @@ const parseRequiredJson = (path) => {
   catch (error) { fail(`${relative(dist, path)} is not valid JSON: ${error instanceof Error ? error.message : "parse error"}`); }
 };
 
+const application = parseRequiredJson(join(root, "package.json"));
 const reportPath = join(release, "release-report.json");
 const report = parseRequiredJson(reportPath);
 if (report.result !== "PASS") fail("release-report.json does not report PASS.");
-if (report.version !== "0.5.0") fail(`release-report.json has unexpected version ${String(report.version)}.`);
+if (report.version !== application.version) fail(`release-report.json has unexpected version ${String(report.version)}.`);
 if (JSON.stringify(report.gates) !== JSON.stringify(expectedGates)) fail("release-report.json does not contain the ten canonical gates in order.");
 const evidence = parseRequiredJson(join(release, "gate-evidence.json"));
 if (report.sourceHash !== evidence.sourceHash || report.lockHash !== evidence.lockHash || report.checkedAt !== evidence.checkedAt) fail("Report does not match gate evidence.");

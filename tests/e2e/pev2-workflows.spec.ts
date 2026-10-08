@@ -390,7 +390,11 @@ test("Findings prioritizes one investigation and progressively discloses support
 test("core workflow navigation preserves the full-width analysis canvas", async ({ page }) => {
   await analyze(page, fixture("02_non_sargable_expression"), "Navigation audit");
   const navigation = page.getByRole("navigation", { name: "Analysis views" });
+  await expect(navigation.locator(":scope > button")).toHaveCount(5);
   for (const name of ["Plan", "Findings", "Planner diagnostics", "Validate fix", "Database context"]) await expect(navigation.getByRole("button", { name, exact: true })).toBeVisible();
+  await expect(navigation.getByRole("button", { name: "Findings", exact: true })).toHaveAttribute("aria-description", "Ranked signals and next tests");
+  await expect(navigation.getByRole("button", { name: "Database context", exact: true })).toHaveAttribute("aria-description", "Qualify catalog hypotheses");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
   await expect(navigation.getByRole("button", { name: "AI Review", exact: true })).toHaveCount(0);
   await expect(navigation.getByRole("button", { name: /More tools/ })).toHaveCount(0);
   await expect(navigation.getByRole("button", { name: "Evidence", exact: true })).toHaveCount(0);
@@ -437,8 +441,8 @@ test("Planner diagnostics prioritizes measured access work and the first estimat
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
 
   const navButtons = page.getByRole("navigation", { name: "Analysis views" }).locator(":scope > button");
-  const boxes = await navButtons.evaluateAll((buttons) => buttons.map((button) => { const box = button.getBoundingClientRect(); return { left: box.left, right: box.right }; }));
-  expect(boxes.every((box, index) => index === 0 || box.left >= boxes[index - 1].right - 1)).toBe(true);
+  const boxes = await navButtons.evaluateAll((buttons) => buttons.map((button) => { const box = button.getBoundingClientRect(); return { left: box.left, right: box.right, top: box.top, bottom: box.bottom }; }));
+  expect(boxes.every((box, index) => boxes.slice(index + 1).every((other) => box.right <= other.left + 1 || other.right <= box.left + 1 || box.bottom <= other.top + 1 || other.bottom <= box.top + 1))).toBe(true);
 
   const accessJump = accessItems.first().getByRole("button", { name: /^View operation \d+:/ });
   const accessJumpName = await accessJump.innerText();

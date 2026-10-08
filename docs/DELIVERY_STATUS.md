@@ -1,5 +1,11 @@
 # PGPlan Insight delivery status
 
+## Windows release packaging repair — 2026-10-07
+
+- Latest hosted run 37683606902: macOS passed; Windows passed all 220 active browser checks, static checks and dependency audits, then failed creating `D:\D:\a\...\dist\release`.
+- Replaced URL pathname with `fileURLToPath` in the artifact generator. Added an isolated packaging regression under a native path containing spaces and `%`, checking missing evidence rejection, report/manifest generation and tampering detection. Synthetic fixture evidence never enters production output.
+- Local validation: 139 unit tests, static security and `git diff --check` passed. Hosted Windows/macOS validation remains pending; old failed runs are historical and are not proof of the new revision's status.
+
 ## Release CI repair and pilot preparation — 2026-09-27
 
 - Run 36340015937: both Windows and Ubuntu had 205 passing browser tests and five failures from one unscoped Fix Validation text locator. Preserved hidden Findings added matching labels; assertions now target the validation workspace. No checks removed or thresholds relaxed.

@@ -3,8 +3,9 @@ const gateEvidence = verifiedEvidence();
 import { createHash, randomUUID } from "node:crypto";
 import { mkdirSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from "node:fs";
 import { basename, join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = fileURLToPath(new URL("../", import.meta.url));
 const dist = join(root, "dist");
 const evidence = join(dist, "release");
 mkdirSync(evidence, { recursive: true });

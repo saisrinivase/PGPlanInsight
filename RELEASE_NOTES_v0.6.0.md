@@ -18,5 +18,5 @@ Plan visualization is provided by [PEV2](https://github.com/dalibo/pev2) v1.23.0
 - 139 unit tests passed.
 - Production TypeScript/Vite build passed; the existing large-bundle warning remains.
 - Focused Chromium Playwright regressions passed for appearance persistence, PEV2 state preservation, reference filtering/disclosures, and dark/light contrast.
-- Hosted desktop release-gate run #52 passed both Windows and macOS jobs on commit `015d031`, producing two CI artifacts. Any subsequent source change requires a fresh gate on that exact commit. This candidate is not a published or release-approved build.
+- Hosted desktop release-gate run #53 passed both Windows and macOS jobs on commit `3547197`, producing diagnostic-score artifacts for both platforms. Any subsequent source change requires a fresh gate on that exact commit. This candidate is not a published or release-approved build.
 - Release holds: complete the uncoached human pilot in [V1_PILOT.md](docs/V1_PILOT.md), verify HTTP security headers at the selected deployment origin, then freeze and gate the final release commit before tagging.

@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "capturedAt": "2026-10-08T12:00:00Z",
+  "postgresVersion": "16.4",
+  "relations": [
+    {
+      "schema": "public",
+      "name": "orders",
+      "columns": [
+        { "name": "customer_id", "type": "integer" },
+        { "name": "id", "type": "bigint" }
+      ],
+      "indexes": [
+        {
+          "name": "orders_customer_id_idx",
+          "columns": ["customer_id"],
+          "accessMethod": "btree",
+          "valid": true,
+          "ready": true,
+          "hasPredicate": false,
+          "hasExpressions": false
+        }
+      ]
+    }
+  ]
+}

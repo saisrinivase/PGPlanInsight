@@ -110,7 +110,7 @@ npm run test:e2e
 npm run security:static
 ```
 
-The full release gate also performs online dependency audits, license and release-artifact checks, and desktop/mobile browser tests on Windows and macOS:
+The full release gate also performs online dependency audits, license and release-artifact checks, and desktop Chromium, Firefox, and WebKit tests on Windows and macOS. Mobile-browser validation is outside the release scope:
 
 ```bash
 npm run release:gate

@@ -57,8 +57,8 @@ Initial budgets: 5,000-node analysis under 3 seconds on the reference machine, i
 ### Compatibility
 
 - Desktop Chromium, Firefox, and WebKit.
-- Mobile Chromium and Mobile WebKit.
-- Viewports: 360×800, 768×1024, 1366×768, 1440×900, and 1920×1080.
+- Release browser checks are desktop-only; mobile browser validation is out of scope.
+- Viewports: 1366×768, 1440×900, and 1920×1080.
 - 125% and 200% browser zoom; long identifiers and system font fallback.
 
 ### Accessibility
@@ -68,13 +68,14 @@ Initial budgets: 5,000-node analysis under 3 seconds on the reference machine, i
 
 ### Visual regression
 
-- Reference screenshots for empty intake, shallow plan, deeply nested plan, expanded node details, expert navigation, validation verdict, and mobile layouts.
+- Reference screenshots for desktop empty intake, shallow plan, deeply nested plan, expanded node details, expert navigation, and validation verdict.
+- Mobile layout screenshots and mobile-browser visual regression are outside the release gate.
 - Pixel comparison is a warning gate; node/column geometry assertions are blockers.
 
 ## Current automated evidence
 
 - Vitest domain rules and enterprise golden plans.
-- Playwright complete workflows on Chromium, Firefox, WebKit, Mobile Chromium, and Mobile WebKit.
+- Playwright complete workflows on desktop Chromium, Firefox, and WebKit.
 - Production TEXT parsing, deep-tree geometry, node serial numbering, structural fix comparison, export, conditional expert navigation, privacy boundary, persistence, and malformed-input recovery.
 
 ## Remaining release gaps

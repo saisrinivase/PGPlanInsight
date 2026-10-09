@@ -4,7 +4,7 @@ PGPlan Insight is a browser-local PostgreSQL execution-plan diagnostic tool. The
 
 ## 1. Requirements and quick start
 
-Requirements: Node.js 24, npm, and a current desktop browser. The downloaded ZIP does not contain `node_modules`. After extracting it, open PowerShell in the folder containing `package.json` and install the locked dependencies:
+Requirements: Node.js 24, npm, and a current desktop browser. Mobile browsers are not part of the supported release-validation matrix. The downloaded ZIP does not contain `node_modules`. After extracting it, open PowerShell in the folder containing `package.json` and install the locked dependencies:
 
 ```powershell
 cd "$HOME\Downloads\PGPlanInsight-main"

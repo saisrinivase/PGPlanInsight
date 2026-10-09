@@ -75,9 +75,11 @@ test('STRESS: repeated analysis and navigation recovers every cycle', async ({ p
     await page.getByLabel('Plan evidence').fill(plan(100));
     const start = Date.now();
     await page.getByRole('button', { name: /Analyze plan/ }).click();
-    await expect(page.getByTestId('pev2-renderer')).toBeVisible();
-    await page.getByRole('link', { name: /Grid/ }).click();
-    await expect(page.getByTestId('pev2-renderer').locator('.plan-grid tr.node')).toHaveCount(100);
+    const renderer = page.getByTestId('pev2-renderer');
+    await expect(renderer).toBeVisible();
+    const gridTab = renderer.locator('a[href="#grid"]');
+    if (!await gridTab.evaluate(element => element.classList.contains('active'))) await gridTab.click();
+    await expect(renderer.locator('.plan-grid tr.node')).toHaveCount(100);
     durations.push(Date.now() - start);
   }
   expect(errors).toEqual([]);

@@ -1,10 +1,10 @@
-# PGPlan Insight v0.6 — Installation and User Guide
+# PGPlan Insight v0.6.0 — Installation and User Guide
 
 PGPlan Insight is a browser-local PostgreSQL execution-plan diagnostic tool. The core application has no Java backend and does not upload plans.
 
-## 1. Quick start on Windows
+## 1. Requirements and quick start
 
-After downloading and extracting the GitHub ZIP, open PowerShell in the extracted `PGPlanInsight-main` folder. Install the project dependencies before starting Vite; the ZIP does not include `node_modules`.
+Requirements: Node.js 24, npm, and a current desktop browser. The downloaded ZIP does not contain `node_modules`. After extracting it, open PowerShell in the folder containing `package.json` and install the locked dependencies:
 
 ```powershell
 cd "$HOME\Downloads\PGPlanInsight-main"
@@ -12,36 +12,28 @@ npm ci
 npm run dev -- --host 127.0.0.1 --port 5176
 ```
 
-Open `http://127.0.0.1:5176/` in your browser and leave PowerShell running while using the app. Stop the server with `Ctrl+C`. If Windows added a suffix such as `(1)` to the extracted folder name, use that actual folder name in the `cd` command. If you cloned the repository instead, change to the clone's root folder before running these commands.
+Open `http://127.0.0.1:5176/` and leave the terminal running while using the app. Stop the server with `Ctrl+C`. If the extracted folder has a suffix such as `(1)`, use its actual name. If you cloned the repository, change to the clone's root instead.
 
-Requirements: Node.js 24 and npm.
-
-## 2. Quick start on macOS
-
-Open Terminal and run:
+On macOS or Linux, use Terminal and the same commands from the repository root:
 
 ```bash
-cd /Users/saiendla/Desktop/PGPlaninsight/pgplan_v0
-npm install
-npm run dev -- --host 127.0.0.1 --port 5175
+cd /path/to/PGPlanInsight
+npm ci
+npm run dev
 ```
 
-Open `http://127.0.0.1:5175/` in Chrome, Edge, Firefox, or Safari. Keep the Terminal process running while using the development server. Stop it with `Control+C`.
+Open the local URL printed by Vite. Keep the terminal process running and stop it with `Ctrl+C`.
 
-Requirements: Node.js 20 or newer, npm, and a current Chrome, Edge, Firefox, or Safari browser.
-
-## 3. Production build
+## 2. Production build and deployment
 
 ```bash
-cd /Users/saiendla/Desktop/PGPlaninsight/pgplan_v0
-npm install
+cd /path/to/PGPlanInsight
+npm ci
 npm run test
 npm run build
 ```
 
 The deployable static application is generated in `dist/`. Do not open `dist/index.html` directly with a `file://` URL; serve the directory through HTTPS or a local HTTP server.
-
-## 4. Making the tool available to other users
 
 Deploy the complete contents of `dist/` to a static HTTPS host such as an internal Nginx/Apache server, Cloudflare Pages, Netlify, Vercel, or GitHub Pages. No application server or database connection is required.
 
@@ -55,109 +47,95 @@ Recommended enterprise deployment:
 
 `127.0.0.1` is accessible only on the computer running the server. Other users need a hosted HTTPS URL or their own local installation.
 
-## 5. Capturing a high-quality PostgreSQL plan
+## 3. Capture a useful PostgreSQL plan
 
-Use a representative parameter value and capture:
+Use representative parameter values and capture where safe:
 
 ```sql
 EXPLAIN (ANALYZE, BUFFERS, VERBOSE, SETTINGS, WAL, FORMAT JSON)
 SELECT ...;
 ```
 
-`ANALYZE` executes the statement. Use production-safe judgment, especially for INSERT, UPDATE, DELETE, long-running queries, locks, and high-load systems. Capture write statements in a safe transaction or non-production environment when appropriate.
+`ANALYZE` executes the statement before the plan is pasted into PGPlan Insight, including writes. Use a safe environment, appropriate privileges, and a statement timeout. Rollback cannot undo every side effect.
 
-PGPlan Insight accepts:
+The app accepts PostgreSQL `FORMAT JSON` and standard PostgreSQL TEXT. JSON usually carries more structured evidence. Remove secrets or sensitive literal values before sharing plans or exported reports.
 
-- PostgreSQL `FORMAT JSON` — recommended because it carries the most reliable structured evidence.
-- Standard PostgreSQL TEXT plans containing `cost=...` nodes — supported for convenience, with less complete evidence than JSON.
-- Clipboard TEXT where every line is wrapped in double quotes and underscores are backslash-escaped — normalized locally before parsing.
+## 4. Analyze a plan
 
-Remove secrets or sensitive literal values before sharing exported reports.
+Before loading an individual plan, **Prioritize workload** can import the sanitized `pg_stat_statements` snapshot format. It ranks cumulative counters from the supplied snapshot and can start an investigation for a selected fingerprint. It does not establish latency percentiles, root cause, or fix benefit. The included read-only collector is [pgplan-workload-snapshot.sql](public/pgplan-workload-snapshot.sql); inspect its output before importing.
 
-## 6. Analyzing a plan
+1. Optionally enter a case name and choose whether to save it. Plans are not saved by default.
+2. Paste plan TEXT/JSON, choose a local `.txt` or `.json` file, or drop a file into the input area. **Sample plans** provides local diagnostic and scale examples.
+3. Select **Analyze plan**. Analysis is performed in the browser; no database connection is made.
+4. Review the six workspaces: **Plan**, **Findings**, **Planner diagnostics**, **Validate fix**, **Database context**, and **Plan reference**.
+5. In Plan, PEV2 provides **Plan**, **Grid**, **Raw**, **Query**, and **Stats** modes. Select a node to inspect available details and navigate to it from a related finding when an exact operation is known.
+6. Use the header switch to choose Dark or Light appearance. The selection is saved in that browser profile.
 
-1. Open the application.
-2. Optionally enter a case title.
-3. Paste the JSON or TEXT plan into **Plan evidence**.
-4. Select **Analyze and save**.
-5. Review the compact evidence findings above the plan.
-6. Use PEV2 **Plan** for the connected execution tree and metric outline.
-7. Use **Grid** for the dense node table; use **Raw** and **Stats** for source and plan-level metrics.
-8. Select PEV2 nodes to inspect their timing, rows, loops, estimate drift, buffers, temporary blocks, predicates, and node-specific details.
+## 5. Interpret evidence
 
-Timing is inclusive: parent timing normally contains child work. Approximate self time is provided to reduce incorrect hotspot conclusions.
+Read each investigation as a chain from captured evidence to a bounded next test:
 
-## 7. Understanding the diagnosis
+- **Observed** means directly captured in the plan or imported context.
+- **Derived** means calculated from captured evidence, such as actual-versus-planned row drift.
+- **Suspected** means a possible cause that still needs testing.
+- **Unknown** identifies evidence not present in this plan or context pack.
+- **Verified** means a bounded comparison passed its evidence checks; it does not guarantee improvement across a workload or production environment.
 
-Every finding has a stable evidence ID and three parts:
+Start with measured time, rows, loops, filtering, heap fetches, buffers, and direct temporary-block evidence. `Actual Rows` is generally per loop; read it with `Actual Loops`. Node timings and parent buffer totals are inclusive of descendants, so do not add parent and child values together. Planner cost is a comparison estimate, not milliseconds. A sequential scan is not automatically bad, and an index scan is not automatically cheap.
 
-- **Diagnosis** — the threshold crossed by captured evidence.
-- **Why this is credible** — the measured fields supporting the finding.
-- **Safest next test** — a controlled experiment, not an automatic production command.
+Findings are prioritized review signals, not promised speedups. Follow an available operation link, check what is measured versus inferred, and use the suggested next step to test one hypothesis. Missing evidence should remain unknown rather than be filled in by assumption.
 
-The tool intentionally does not claim that every sequential scan is bad or that an index is always the correct fix. Accept a change only after representative before/after validation.
+## 6. Validate a change
 
-## 8. Fix Validation
+1. Make one controlled change outside PGPlan Insight.
+2. Capture an after-plan with comparable SQL shape, representative parameters, settings, cache/concurrency conditions, and repeated executions where practical.
+3. Open **Validate fix**, complete the capture comparability declarations, paste the after-plan, and run the comparison gate.
+4. Treat declarations as operator-provided, not plan-verified facts. A single faster run or missing runtime/evidence is not sufficient proof of improvement.
 
-1. Keep the original slow plan open.
-2. Apply one controlled query, index, statistics, memory, or configuration experiment.
-3. Capture a new plan with equivalent parameters and environment.
-4. Open **Validate fix**.
-5. Paste the after plan and select **Compare plans**.
+The comparison uses captured runtime and structural evidence. It does not approve a production change or prove workload-wide benefit.
+After a comparison, **Export validation report** downloads a Markdown summary of that comparison and its evidence boundaries.
 
-The verdict uses runtime thresholds and also compares root reads, temporary blocks, WAL, node count, and structurally matched access-path changes. A missing runtime produces an inconclusive verdict.
+## 7. Database context and Plan reference
 
-## 9. Navigation
+Database context is optional. Generate the sanitized metadata pack using the supplied read-only collection SQL, review its output, then import it in **Database context**. The application does not connect to a database. Context can qualify hypotheses about relations, columns, types, indexes, statistics, partitions, and safe planner settings; it does not establish runtime causality.
 
-The stable workflow has four direct destinations:
+The **Plan reference** workspace searches and filters guidance for scans, buffers and I/O, memory, timing, common PostgreSQL data types, casts, operator resolution, and collations. Expand an entry for its meaning, how to read it, what not to infer, and the related official PostgreSQL documentation.
 
-- **Plan** — PEV2 visualization plus PGPlan Insight evidence findings.
-- **Findings** — deterministic diagnoses and guarded index experiments.
-- **Validate fix** — before/after evidence comparison.
-- **Evidence** — captured fields, quality, and diagnostic ledger.
-- **Context** — optional sanitized relation, column, index, size, and statistics evidence. No database connection is created.
+## 8. Reports, history, and appearance
 
-Open **More tools** for Access Paths, Parallel Workers, and Bad Estimates. Only tools supported by the current plan are shown.
+- Plans are not saved by default. Choose 1, 7, or 30 days before analysis to save a plan in this browser profile.
+- Use **Plan history** to reopen a saved case, delete one case, or clear all history. Expired cases are removed when history is opened; at most 50 cases are kept.
+- The Dark/Light selection is saved separately in browser local storage.
 
-Fix Validation requires declarations that the SQL shape, representative parameters, and execution environment are comparable. Captured setting conflicts or missing runtime evidence block an improvement/regression verdict. A single execution remains a warning until repeated.
+Plan history is local to that browser profile and origin. Changing hostname or port can create a separate storage origin. Saved plans may contain SQL, identifiers, and expressions. Use **Preview redacted plan** before sharing; redaction reduces detail but does not guarantee anonymity.
 
-The AI DBA view prepares a sanitized local packet only. It sends nothing unless a future user-configured integration is explicitly added.
-
-## 10. Reports and history
-
-- **Export Markdown** creates a DBA-readable report.
-- **Export JSON** creates a machine-readable normalized analysis.
-- Fix Validation can export its comparison report.
-- Plans are not saved by default. Choose 1, 7 or 30 days before analysis to save a plan in this browser profile. Expired cases are deleted when history is opened, and only the newest 50 active cases are retained. Existing legacy cases expire 30 days after creation. Use **Delete** for one case or **Clear all history** for all cases. Closing a tab does not delete saved cases.
-
-Browser history is local to that browser profile and origin. Changing the hostname or port can create a separate browser-storage origin.
-
-## 11. Verification commands
+## 9. Development and release checks
 
 ```bash
 npm test
-npm run test:e2e
 npm run build
+npm run test:e2e
+npm run security:static
 ```
 
-`npm test` runs deterministic domain rules. `npm run test:e2e` runs desktop Chrome, Firefox, Safari/WebKit, Android Chrome, and mobile Safari workflows. `npm run build` verifies the production TypeScript/Vite build.
+`npm run release:gate` additionally performs a locked install, synthetic diagnostic scoring, the complete test/build/security checks, online dependency audits, and release artifact verification. The hosted Windows/macOS workflow is the release acceptance gate. Check its status before treating a candidate as approved.
 
-## 12. Troubleshooting
+## 10. Troubleshooting
 
-- **Page does not open:** confirm the Terminal server is still running and use the exact displayed URL.
-- **Port already in use:** choose another port, for example `--port 5176`.
-- **`'vite' is not recognized` on Windows:** run `npm ci` from the extracted project root, then rerun `npm run dev -- --host 127.0.0.1 --port 5176`. Do not install Vite globally.
-- **Plan rejected:** confirm it is valid PostgreSQL FORMAT JSON or a standard TEXT plan beginning with a node containing `cost=`.
-- **Weak evidence score:** recapture with ANALYZE, BUFFERS, SETTINGS, and WAL where safe.
-- **History missing:** confirm the same browser profile, hostname, and port are being used and site storage was not cleared.
-- **Other users cannot connect:** `127.0.0.1` is local-only; deploy `dist/` to an accessible HTTPS host.
+- **Page does not open:** confirm the Vite server is running and use the exact URL it printed.
+- **Port already in use:** choose another port with `npm run dev -- --port 5177`.
+- **`vite` is not recognized:** run `npm ci` from the repository root. Do not install Vite globally.
+- **Plan rejected:** confirm it is PostgreSQL `FORMAT JSON` or standard TEXT containing plan nodes and `cost=` fields.
+- **Evidence is incomplete:** recapture with `ANALYZE`, `BUFFERS`, `SETTINGS`, or `WAL` where safe; not every format or PostgreSQL version includes every field.
+- **History is missing:** confirm the same browser profile, hostname, and port are being used and site storage was not cleared.
+- **Other users cannot connect:** `127.0.0.1` is local-only; deploy `dist/` to an accessible HTTPS origin.
 
-## 13. Privacy boundary
+## 11. Privacy boundary
 
-The core application parses, analyzes, stores, and compares plans in the browser. There is no Java backend and no required remote API. Hosting the static files does not itself transmit pasted plan contents back to the host, but browser extensions, modified deployments, or added telemetry can change that boundary and must be reviewed separately.
+The core application parses, analyzes, stores, and compares plans in the browser. It does not connect to PostgreSQL, execute SQL, or send plan content to an AI provider or external service. Hosting static files does not itself transmit pasted plan contents, but browser extensions, modified deployments, or added telemetry can change that boundary and must be reviewed separately.
 
 
-### Privacy controls and deployment hardening
+## 12. Privacy controls and deployment hardening
 
 Use **Preview redacted plan** before saving sensitive input. It replaces identifiers and removes SQL, expressions, settings and unknown fields, then lets you inspect the JSON before choosing **Use redacted plan**. Metrics remain and can still be sensitive. Redaction reduces diagnostic evidence; it is not a guarantee of anonymity. The original input is unchanged until you accept the preview.
 

@@ -2,7 +2,7 @@
 
 ## Readiness
 
-Hosted release-gate run #50 passed on Windows and macOS for application commit `dfa1bf5`. This clears the prior CI prerequisite for an internal pilot of that application build. README, installation guide, and v0.6.0 release-note edits are currently local and uncommitted; freeze and rerun the gate on the exact final candidate commit before release approval. Linux is not a V1 support target.
+Hosted desktop release-gate run #52 passed on Windows and macOS for commit `015d031`, with two CI artifacts. Mobile browsers are outside the release matrix. This clears the CI prerequisite for an internal pilot of that build; it does not constitute human usability acceptance or release approval. The pilot scorecards below remain blank until real participants complete the sessions. Any source/documentation commit after `015d031` must pass a fresh gate before release approval. Linux is not a V1 support target.
 
 Recruit two or three engineers, including at least one person unfamiliar with execution plans. Run sessions without coaching. Use synthetic/anonymized plans and optional reviewed context packs. Do not run suggested SQL automatically or change production during the pilot. Tell participants this evaluates the product, not their skill; ask them to think aloud, but do not explain terms or point to controls during a task.
 

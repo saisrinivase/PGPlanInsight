@@ -1,12 +1,14 @@
 # PGPlan Insight
 
+<img src="public/pgplan-logo.svg" alt="PGPlan Insight PG monogram" width="80" height="80">
+
 **An evidence-first PostgreSQL plan review workspace for DBAs, developers, and database architects.** Paste an execution plan, inspect measured work, follow findings to relevant plan operations, and validate a proposed change with a comparable after-plan.
 
 [![PGPlan Insight release gate](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml/badge.svg)](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml)
 
-> **Version 0.6.0 candidate.** Source is available on `main`; this is not release approval. A tagged release should wait for both Windows and macOS release-gate jobs to pass. Check the [live release-gate runs](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml).
+> **Version 0.6.0 release candidate.** Annotated prerelease tag [`v0.6.0-rc.1`](https://github.com/saisrinivase/PGPlanInsight/tree/v0.6.0-rc.1) points to `6e38d25`; hosted desktop gate #54 passed on Windows and macOS for that commit. The current copyright/license audit changes are newer than RC1 and require a fresh gate before release. This is not final release approval: rights-holder authority, uncoached pilot acceptance, and deployment-origin HTTP header verification remain open. Check the [live release-gate runs](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml).
 
-## What it does
+## About
 
 PGPlan Insight analyzes PostgreSQL `EXPLAIN` output locally in your browser. It combines the PEV2 plan renderer with deterministic diagnostics and separates captured facts, derived signals, hypotheses, and conclusions that still require validation.
 
@@ -91,8 +93,20 @@ The evidence labels mean:
 ## Contributors and Acknowledgments
 
 - **Project owner:** [@saisrinivase](https://github.com/saisrinivase). Product decisions, review, and release responsibility remain with the project owner.
-- **Plan visualization:** PGPlan Insight uses [PEV2](https://github.com/dalibo/pev2) v1.23.0. Thank you to [Dalibo](https://dalibo.com/) and the PEV2 contributors for this open-source PostgreSQL plan visualizer. PEV2 is distributed under the PostgreSQL License; its license notice is included with the dependency.
+- **Plan visualization:** PGPlan Insight uses [PEV2](https://github.com/dalibo/pev2) v1.23.0. Thank you to [Dalibo](https://dalibo.com/) and the PEV2 contributors for this open-source PostgreSQL plan visualizer. PEV2 is distributed under the PostgreSQL License; required notice text is included in the shipped [third-party notices](public/THIRD_PARTY_NOTICES.md).
 - **Development assistance:** GitHub Copilot and OpenAI Codex were used as AI-assisted development tools. Their suggestions were reviewed and verified by the project owner. They are not application features, runtime dependencies, or services that receive user plans.
+
+Diagnostic rules are deterministic but have not been independently validated against a representative DBA-labelled corpus; see [Diagnostic Accuracy Status](docs/DIAGNOSTIC_ACCURACY.md). Synthetic regression scores measure conformance to authored examples, not production accuracy.
+
+## Project License
+
+First-party PGPlan Insight code uses the [PostgreSQL License](LICENSE), permitting use, copying, modification, and distribution for any purpose, provided the required copyright and license notices are preserved. Bundled dependencies and assets retain their own terms; see [third-party notices](public/THIRD_PARTY_NOTICES.md). The release package includes the locked production dependency license inventory and available license texts. This repository audit does not establish legal ownership or substitute for review by the relevant rights holder.
+
+## Disclaimer
+
+PGPlan Insight is provided **as is, without warranty**. Findings are investigation aids, not production-change approval or guaranteed performance improvements. Validate results independently, use a safe test environment, maintain backups, and apply your organization's change-control procedures. Capturing `EXPLAIN ANALYZE` executes the supplied statement, including writes; PGPlan Insight itself executes no SQL.
+
+To the extent permitted by applicable law, the PostgreSQL License disclaims warranties and liability for direct, indirect, special, incidental, or consequential damages, including lost profits, arising from use of the software and its documentation. See [LICENSE](LICENSE) for the controlling terms. This summary does not override applicable law or provide legal advice.
 
 ## Privacy and Deployment
 

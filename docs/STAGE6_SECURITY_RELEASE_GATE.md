@@ -1,5 +1,7 @@
 # Stage 6 — Security CI and release gate
 
+> Historical implementation report. Its test counts and five-browser matrix describe the Stage 6 run, not the current candidate. Current RC1 evidence is recorded in [SECURITY.md](../SECURITY.md); the active release matrix is desktop Chromium, Firefox, and WebKit.
+
 ## Executive summary
 
 PGPlan Insight now has one repeatable command: `npm run release:gate`. The accepted run passed the production build, 85 unit tests, 120 active workflows across five browser projects, static security checks, an offline production dependency advisory audit, license review, SBOM creation, and independent SHA-256 verification.

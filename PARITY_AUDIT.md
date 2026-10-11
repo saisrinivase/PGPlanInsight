@@ -1,5 +1,7 @@
 # PGPlan Insight v1.3.1 to React parity audit
 
+> Historical parity snapshot from 2026-08-24, audited against `pgplan_v0.2.1`. Its blocker list and release decision apply to that earlier build, not the current v0.6.0 candidate. For current scope and status, see [README](README.md), [release notes](RELEASE_NOTES_v0.6.0.md), and [delivery status](docs/DELIVERY_STATUS.md).
+
 Audit date: 2026-08-24
 Audited build: `pgplan_v0.2.1`
 Role: PostgreSQL DBA / performance-tuning SME

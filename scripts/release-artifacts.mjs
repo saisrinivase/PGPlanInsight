@@ -1,7 +1,7 @@
 import { verifiedEvidence } from "./release-evidence.mjs";
 const gateEvidence = verifiedEvidence();
 import { createHash, randomUUID } from "node:crypto";
-import { mkdirSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from "node:fs";
 import { basename, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -17,6 +17,7 @@ const accepted = new Set(["0BSD", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", 
 const forbidden = /\b(?:AGPL|GPL|SSPL)(?:-|\b)/i;
 const components = [];
 const licenses = [];
+const dependencyNoticeSections = [];
 const writeJsonAtomic = (path, value) => {
   const temporary = `${path}.tmp`;
   writeFileSync(temporary, `${JSON.stringify(value, null, 2)}\n`, { encoding: "utf8", flag: "w" });
@@ -39,6 +40,23 @@ for (const [path, item] of Object.entries(lock.packages ?? {})) {
   const status = accepted.has(license) ? "accepted" : exception ? "documented-exception" : forbidden.test(license) || license === "UNKNOWN" ? "blocked" : "review-required";
   components.push({ type: "library", name, version: item.version ?? "unknown", purl: item.version ? `pkg:npm/${encodeURIComponent(name)}@${item.version}` : undefined, hashes: item.integrity ? [{ alg: "SRI", content: item.integrity }] : [] });
   licenses.push({ name, version: item.version ?? "unknown", license, status });
+  if (!path.startsWith("node_modules/")) continue;
+  const packageDirectory = join(root, path);
+  if (!existsSync(packageDirectory)) {
+    dependencyNoticeSections.push(`## ${name}@${item.version ?? "unknown"}\n\nDeclared license: ${license}\n\nThis platform-optional package was not installed on the release runner; its license metadata is recorded in THIRD_PARTY_LICENSES.json.`);
+    continue;
+  }
+  const noticeNames = readdirSync(packageDirectory, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && /^(?:LICENSE|LICENCE|COPYING|NOTICE)(?:[._-][A-Za-z0-9._-]+)?$/i.test(entry.name))
+    .map((entry) => entry.name)
+    .sort();
+  const texts = noticeNames.flatMap((noticeName) => {
+    const noticePath = join(packageDirectory, noticeName);
+    if (statSync(noticePath).size > 1_000_000) return [];
+    try { return [`### ${noticeName}\n\n${readFileSync(noticePath, "utf8").trim()}`]; }
+    catch { return []; }
+  });
+  dependencyNoticeSections.push(`## ${name}@${item.version ?? "unknown"}\n\nDeclared license: ${license}\n${texts.length ? `\n${texts.join("\n\n")}` : "\n\nNo root license/notice text file was packaged; see the declared license in THIRD_PARTY_LICENSES.json and the package source."}`);
 }
 const blocked = licenses.filter((item) => item.status === "blocked" || item.status === "review-required");
 if (blocked.length) {
@@ -47,6 +65,9 @@ if (blocked.length) {
 }
 writeJsonAtomic(join(evidence, "sbom.cdx.json"), { bomFormat: "CycloneDX", specVersion: "1.5", serialNumber: `urn:uuid:${randomUUID()}`, version: 1, metadata: { timestamp: new Date().toISOString(), component: { type: "application", name: application.name, version: application.version } }, components });
 writeJsonAtomic(join(evidence, "licenses.json"), { generatedAt: new Date().toISOString(), policy: "No unknown, GPL, AGPL, or SSPL production dependency without documented approval.", packages: licenses, exceptions });
+copyFileSync(join(root, "LICENSE"), join(dist, "LICENSE"));
+writeJsonAtomic(join(dist, "THIRD_PARTY_LICENSES.json"), { generatedAt: new Date().toISOString(), packages: licenses, exceptions });
+writeFileSync(join(dist, "THIRD_PARTY_LICENSES.txt"), `# Third-party production dependency licenses\n\nGenerated from package-lock.json during release packaging. Project-level license: see LICENSE. Human-readable bundled notices for principal assets: see THIRD_PARTY_NOTICES.md.\n\n${dependencyNoticeSections.join("\n\n") }\n`, "utf8");
 writeJsonAtomic(join(evidence, "release-report.json"), { generatedAt: new Date().toISOString(), application: application.name, version: application.version, result: "PASS", commit: gateEvidence.commit, sourceHash: gateEvidence.sourceHash, lockHash: gateEvidence.lockHash, checkedAt: gateEvidence.checkedAt, statement: "Online audits reported no known dependency advisories at verification time.", gates: ["locked dependency provenance", "production type/build", "unit tests", "cross-browser E2E", "static secret and unsafe-sink scan", "CSP/referrer and outbound-request checks", "online production and development dependency audits", "SBOM", "license policy", "artifact SHA-256 manifest"] });
 
 const artifactFiles = [];

@@ -144,3 +144,11 @@ Serve only the built `dist` directory. A sample Nginx configuration is in `deplo
 The release gate performs its own locked install and online audits. Missing advisory data fails the gate. Standalone artifact generation cannot claim PASS without fresh matching gate evidence. Evidence includes the commit, source hash, lockfile hash, timestamp and both audit reports.
 
 EXPLAIN ANALYZE executes its SQL. Prefer a safe test environment, least privilege and a statement timeout. Transaction rollback cannot undo every side effect (for example sequence advancement or external functions).
+
+## 13. License and third-party notices
+
+PGPlan Insight's first-party code uses the [PostgreSQL License](LICENSE), permitting use, copying, modification, and distribution for any purpose with required notice preservation. The deployed app serves [third-party notices](public/THIRD_PARTY_NOTICES.md); the release package also includes the version-specific production dependency license inventory and available license texts. Each third-party component remains under its own license. Open **PGPlan Insight home** in the app for the same notice link. Ownership and provenance limitations are documented in [Copyright and License Review](docs/COPYRIGHT_AND_LICENSE_REVIEW.md).
+
+## 14. Disclaimer
+
+The software is provided as is, without warranty. It does not approve production changes or guarantee diagnostic correctness, performance gains, availability, or prevention of data loss. Independently validate findings, maintain backups, and follow your organization's change-control process. To the extent permitted by applicable law, the PostgreSQL License disclaims warranties and liability for direct, indirect, special, incidental, or consequential damages, including lost profits, arising from use. See [LICENSE](LICENSE) for the controlling terms; this summary is not legal advice.

@@ -6,7 +6,7 @@ The Context Pack qualifies plan-only hypotheses without connecting the browser t
 
 Review `public/pgplan-context-pack.sql` before using it. It opens a read-only transaction and queries catalog/statistics views for one schema. It does not read application table rows.
 
-Run from the `pgplan_v0` directory:
+Run from the repository root (the directory containing `package.json`):
 
 ```sh
 psql -X --no-psqlrc --set=ON_ERROR_STOP=1 --set=target_schema=public --file=public/pgplan-context-pack.sql

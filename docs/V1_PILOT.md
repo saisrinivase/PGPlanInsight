@@ -2,7 +2,7 @@
 
 ## Readiness
 
-Hosted desktop release-gate run #53 passed on Windows and macOS for commit `3547197`, with diagnostic-score artifacts for both platforms. Mobile browsers are outside the release matrix. This clears the CI prerequisite for an internal pilot of that build; it does not constitute human usability acceptance or release approval. The pilot scorecards below remain blank until real participants complete the sessions. Any source/documentation commit after `3547197` must pass a fresh gate before release approval. Linux is not a V1 support target.
+Hosted desktop release-gate run #54 passed on Windows and macOS for commit `6e38d25`, with diagnostic-score artifacts for both platforms. Annotated prerelease tag `v0.6.0-rc.1` points to that build. Mobile browsers are outside the release matrix. This clears the CI prerequisite for an internal pilot of RC1; it does not constitute human usability acceptance or release approval. The pilot scorecards below remain blank until real participants complete the sessions. The current PostgreSQL License/third-party notice changes are newer than RC1 and require a fresh gate before using that updated tree for acceptance or final release. Linux is not a V1 support target.
 
 Recruit two or three engineers, including at least one person unfamiliar with execution plans. Run sessions without coaching. Use synthetic/anonymized plans and optional reviewed context packs. Do not run suggested SQL automatically or change production during the pilot. Tell participants this evaluates the product, not their skill; ask them to think aloud, but do not explain terms or point to controls during a task.
 

@@ -1,5 +1,13 @@
 # PGPlan Insight delivery status
 
+## Current release-candidate status — 2026-10-10
+
+- Candidate tag: `v0.6.0-rc.1` at commit `6e38d25`.
+- Hosted desktop release gate #54 passed on Windows and macOS for that exact commit. Mobile browsers are outside the release matrix.
+- The new PostgreSQL License/third-party notice audit changes are newer than RC1 and need a fresh hosted gate before they are part of a release candidate.
+- This is a release candidate, not final approval. Rights-holder confirmation, human pilot acceptance, and HTTP security-header verification at the selected deployment origin remain open.
+- Dated entries below are historical implementation records; their old test counts and pending states are not the status of the current candidate.
+
 ## Windows release packaging repair — 2026-10-07
 
 - Latest hosted run 37683606902: macOS passed; Windows passed all 220 active browser checks, static checks and dependency audits, then failed creating `D:\D:\a\...\dist\release`.

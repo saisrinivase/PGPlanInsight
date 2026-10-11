@@ -9,17 +9,32 @@ const source = fileURLToPath(new URL("../", import.meta.url));
 const fixtures = [];
 afterEach(() => { for (const path of fixtures.splice(0)) rmSync(path, { recursive: true, force: true }); });
 
+test("project PostgreSQL license matches public copy and npm metadata", () => {
+  const license = readFileSync(join(source, "LICENSE"), "utf8");
+  expect(license).toBe(readFileSync(join(source, "public/LICENSE"), "utf8"));
+  expect(license).toContain("PostgreSQL License");
+  expect(license).toContain("Copyright (c) 2026 PGPlan Insight contributors");
+  expect(license).toContain("Permission to use, copy, modify, and distribute");
+  expect(JSON.parse(readFileSync(join(source, "package.json"), "utf8")).license).toBe("PostgreSQL");
+  expect(JSON.parse(readFileSync(join(source, "package-lock.json"), "utf8")).packages[""].license).toBe("PostgreSQL");
+});
+
 test("release artifacts generate and verify under a native path with spaces and percent signs", () => {
   const root = mkdtempSync(join(tmpdir(), "pgplan release % fixture-"));
   fixtures.push(root);
-  for (const dir of ["scripts", "security", "dist/assets"]) mkdirSync(join(root, dir), { recursive: true });
+  for (const dir of ["scripts", "security", "public", "node_modules/test-license-package", "dist/assets"]) mkdirSync(join(root, dir), { recursive: true });
   for (const name of ["release-artifacts.mjs", "verify-release-artifacts.mjs"]) copyFileSync(join(source, "scripts", name), join(root, "scripts", name));
   // Isolated packaging fixture, NOT evidence that real release gates passed.
   // Production verifiedEvidence remains unchanged and is never bypassed in CI releases.
   writeFileSync(join(root, "scripts/release-evidence.mjs"), 'import {readFileSync} from "node:fs"; export function verifiedEvidence() { return JSON.parse(readFileSync("dist/release/gate-evidence.json", "utf8")); }');
   writeFileSync(join(root, "package.json"), JSON.stringify({ name: "packaging-test-only", version: "0.5.0" }));
-  writeFileSync(join(root, "package-lock.json"), JSON.stringify({ lockfileVersion: 3, packages: {} }));
+  writeFileSync(join(root, "package-lock.json"), JSON.stringify({ lockfileVersion: 3, packages: { "node_modules/test-license-package": { version: "1.0.0", license: "MIT" } } }));
+  writeFileSync(join(root, "node_modules/test-license-package/LICENSE"), "sample third-party license notice\n");
   writeFileSync(join(root, "security/license-exceptions.json"), "[]");
+  writeFileSync(join(root, "LICENSE"), "MIT fixture license\n");
+  writeFileSync(join(root, "public/LICENSE"), "MIT fixture license\n");
+  writeFileSync(join(root, "public/THIRD_PARTY_NOTICES.md"), "Third-party notices fixture\n");
+  writeFileSync(join(root, "dist/THIRD_PARTY_NOTICES.md"), "Third-party notices fixture\n");
   writeFileSync(join(root, "dist/index.html"), '<script src="/assets/app-abcd1234.js"></script><link href="/assets/app-abcd1234.css" rel="stylesheet">');
   for (const name of ["app-abcd1234.js", "app-abcd1234.css", "ibm-plex-mono-test.woff2"]) writeFileSync(join(root, "dist/assets", name), "synthetic fixture");
   const run = (script) => spawnSync(process.execPath, [join(root, "scripts", script)], { cwd: root, encoding: "utf8", shell: false });
@@ -32,6 +47,11 @@ test("release artifacts generate and verify under a native path with spaces and 
   const verified = run("verify-release-artifacts.mjs");
   expect(verified.stderr).toBe("");
   expect(verified.status).toBe(0);
+  expect(readFileSync(join(root, "dist/LICENSE"), "utf8")).toBe("MIT fixture license\n");
+  expect(readFileSync(join(root, "dist/THIRD_PARTY_LICENSES.json"), "utf8")).toContain('"name": "test-license-package"');
+  const dependencyNotices = readFileSync(join(root, "dist/THIRD_PARTY_LICENSES.txt"), "utf8");
+  expect(dependencyNotices).toContain("Third-party production dependency licenses");
+  expect(dependencyNotices).toContain("sample third-party license notice");
   const report = JSON.parse(readFileSync(join(root, "dist/release/release-report.json"), "utf8"));
   expect(report.application).toBe("packaging-test-only");
   expect(report.gates).toHaveLength(10);

@@ -40,6 +40,15 @@ if (report.sourceHash !== evidence.sourceHash || report.lockHash !== evidence.lo
 for (const scope of ["production", "all"]) if (evidence.audits?.[scope]?.report?.metadata?.vulnerabilities?.total !== 0) fail("Current dependency evidence is missing or contains findings.");
 parseRequiredJson(join(release, "sbom.cdx.json"));
 parseRequiredJson(join(release, "licenses.json"));
+const releaseLicenses = parseRequiredJson(join(release, "licenses.json"));
+const publicLicenseInventory = parseRequiredJson(join(dist, "THIRD_PARTY_LICENSES.json"));
+if (!existsSync(join(dist, "LICENSE")) || !existsSync(join(dist, "THIRD_PARTY_NOTICES.md")) || !existsSync(join(dist, "THIRD_PARTY_LICENSES.txt"))) fail("Project or third-party license notices are missing from the distributable.");
+if (readRequired(join(dist, "LICENSE")) !== readRequired(join(root, "LICENSE"))) fail("Distributed project LICENSE differs from the repository LICENSE.");
+if (readRequired(join(root, "public", "LICENSE")) !== readRequired(join(root, "LICENSE"))) fail("Public app LICENSE differs from the repository LICENSE.");
+if (readRequired(join(dist, "THIRD_PARTY_NOTICES.md")) !== readRequired(join(root, "public", "THIRD_PARTY_NOTICES.md"))) fail("Distributed third-party notices differ from the source notice file.");
+if (JSON.stringify(publicLicenseInventory.packages) !== JSON.stringify(releaseLicenses.packages)) fail("Public third-party license inventory does not match release license evidence.");
+const licenseTexts = readRequired(join(dist, "THIRD_PARTY_LICENSES.txt"));
+for (const item of releaseLicenses.packages) if (!licenseTexts.includes(`## ${item.name}@${item.version}\n\nDeclared license: ${item.license}`)) fail(`Bundled license text inventory is missing ${item.name}@${item.version}.`);
 
 const index = readRequired(join(dist, "index.html"));
 if (/\/src\/main\.tsx/.test(index)) fail("index.html still references the Vite development entry point.");

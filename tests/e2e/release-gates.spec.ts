@@ -30,6 +30,16 @@ test("SMOKE: brand explains the product without discarding the current plan", as
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText("Your plan stays in this browser");
   await expect(dialog).toContainText("Nothing is sent to an AI provider or external service");
+  await expect(dialog).toContainText("Provided as is, without warranty");
+  await expect(dialog.getByRole("link", { name: "PostgreSQL License" })).toHaveAttribute("href", "/LICENSE");
+  await expect(dialog.getByRole("link", { name: "Third-party notices" })).toHaveAttribute("href", "/THIRD_PARTY_NOTICES.md");
+  const licenseResponse = await page.request.get("/LICENSE");
+  expect(licenseResponse.ok()).toBe(true);
+  expect(await licenseResponse.text()).toContain("PostgreSQL License");
+  expect(await licenseResponse.text()).toContain("Copyright (c) 2026 PGPlan Insight contributors");
+  const noticesResponse = await page.request.get("/THIRD_PARTY_NOTICES.md");
+  expect(noticesResponse.ok()).toBe(true);
+  expect(await noticesResponse.text()).toContain("Copyright (c) 2019, Dalibo");
   await dialog.getByRole("button", { name: "Close product information" }).click();
   await expect(dialog).toHaveCount(0);
   await expect(page.getByTestId("pev2-renderer")).toBeVisible();

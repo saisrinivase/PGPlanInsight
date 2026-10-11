@@ -98,6 +98,8 @@ export function App() {
           <div><dt>Safety boundary</dt><dd>Your plan stays in this browser. Nothing is sent to an AI provider or external service.</dd></div>
           <div><dt>Evidence boundary</dt><dd>Findings are deterministic signals and hypotheses, not proof that a proposed change will improve production.</dd></div>
         </dl>
+        <p className="about-disclaimer">Provided as is, without warranty. Validate findings independently; do not use this tool as the sole basis for a production change. To the extent permitted by law, the PostgreSQL License disclaims warranties and limits liability.</p>
+        <p><a href="/LICENSE" target="_blank" rel="noreferrer">PostgreSQL License</a> · <a href="/THIRD_PARTY_NOTICES.md" target="_blank" rel="noreferrer">Third-party notices</a></p>
       </section>
     </div>}
   </div>;

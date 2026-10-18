@@ -62,7 +62,7 @@ export function normalizeTextPlanClipboard(source: string) {
     .replace(/\u00a0/g, " ")
     .replace(/""(?=(?:\s{2,}(?:->|[A-Z])|(?:Planning(?: Time)?|Execution Time|Settings|Query Identifier):))/g, "\"\n\"");
   return clipboardSource.split("\n").map((raw) => {
-    const quoted = raw.match(/^\s*"([\s\S]*)"\s*,?\s*$/);
+    const quoted = raw.trim().match(/^"([\s\S]*)",?$/);
     return (quoted ? quoted[1] : raw).replace(/""/g, '"').replace(/\\+_/g, "_").replace(/\\"/g, '"');
   }).join("\n");
 }
@@ -72,7 +72,7 @@ function parseTextPlan(source: string): PlanEnvelope {
   let root: PlanNode | undefined, executionTime: number | undefined, planningTime: number | undefined;
   const settings: Record<string, string> = {};
   const version = source.match(/PostgreSQL\s+(\d+)/i);
-  const nodePattern = /^(\s*)(?:->\s*)?(.+?)\s+\(cost=([\d.]+)\.\.([\d.]+)\s+rows=(\d+).*?\)(?:\s+\(actual\s+time=([\d.]+)\.\.([\d.]+)\s+rows=(\d+)\s+loops=(\d+)\))?\s*$/;
+  const nodePattern = /^\(cost=(\d+(?:\.\d+)?)\.\.(\d+(?:\.\d+)?)\s+rows=(\d+)(?:\s+width=\d+)?\)(?:\s+\(actual\s+time=(\d+(?:\.\d+)?)\.\.(\d+(?:\.\d+)?)\s+rows=(\d+)\s+loops=(\d+)\))?$/;
   // Some SQL clients copy an entire result column as one physical line: each
   // logical EXPLAIN line is quoted and adjacent lines are separated by `""`.
   // They may also use non-breaking spaces for indentation. Restore the logical
@@ -81,12 +81,26 @@ function parseTextPlan(source: string): PlanEnvelope {
   // inside identifiers such as Subquery Scan on ""*SELECT* 1"".
   const normalizedSource = normalizeTextPlanClipboard(source);
   for (const raw of normalizedSource.split("\n")) {
-    const line = raw.replace(/\t/g, "  "), match = line.match(nodePattern);
+    const line = raw.replace(/\t/g, "  ");
+    // Split the label from metrics before matching: overlapping whitespace and
+    // arbitrary-label quantifiers previously stalled synchronous redaction.
+    const costAt = line.lastIndexOf("(cost=");
+    const prefix = costAt < 0 ? "" : line.slice(0, costAt);
+    const leading = prefix.match(/^\s*/)?.[0] ?? "";
+    const labelText = prefix.slice(leading.length).replace(/^->\s*/, "").trimEnd();
+    const metrics = costAt >= 0 && /\s$/.test(prefix) && labelText
+      ? line.slice(costAt).trimEnd().match(nodePattern) : null;
+    const match = metrics ? [metrics[0], leading, labelText, ...metrics.slice(1)] : null;
     if (match) {
       const indent = match[1].length + (line.includes("->") ? 2 : 0), label = match[2].trim();
-      const indexed = label.match(/^(.*?)\s+using\s+([^\s]+)\s+on\s+(?:ONLY\s+)?([^\s]+)(?:\s+[^\s]+)?$/i);
-      const relation = label.match(/^(.*?)\s+on\s+(?:ONLY\s+)?([^\s]+)(?:\s+[^\s]+)?$/i);
-      const node: PlanNode = { "Node Type": indexed ? indexed[1].trim() : relation ? relation[1].trim() : label, "Relation Name": (indexed?.[3] ?? relation?.[2])?.replace(/^"|"$/g, ""), "Index Name": indexed?.[2]?.replace(/^"|"$/g, ""), "Total Cost": numeric(match[4]), "Plan Rows": numeric(match[5]), "Actual Total Time": numeric(match[7]), "Actual Rows": numeric(match[8]), "Actual Loops": numeric(match[9]), Plans: [] };
+      const parts = label.split(/\s+/);
+      const onAt = parts.map((part) => part.toLowerCase()).lastIndexOf("on");
+      const relationParts = parts.slice(onAt + 1);
+      if (relationParts[0]?.toUpperCase() === "ONLY") relationParts.shift();
+      const hasRelation = onAt > 0 && relationParts.length >= 1 && relationParts.length <= 2;
+      const usingAt = hasRelation ? parts.findIndex((part) => part.toLowerCase() === "using") : -1;
+      const hasIndex = usingAt > 0 && usingAt + 2 === onAt;
+      const node: PlanNode = { "Node Type": hasRelation ? parts.slice(0, hasIndex ? usingAt : onAt).join(" ") : label, "Relation Name": hasRelation ? relationParts[0].replace(/^"|"$/g, "") : undefined, "Index Name": hasIndex ? parts[usingAt + 1].replace(/^"|"$/g, "") : undefined, "Total Cost": numeric(match[4]), "Plan Rows": numeric(match[5]), "Actual Total Time": numeric(match[7]), "Actual Rows": numeric(match[8]), "Actual Loops": numeric(match[9]), Plans: [] };
       while (stack.length && stack.at(-1)!.indent >= indent) stack.pop();
       if (stack.length) stack.at(-1)!.node.Plans!.push(node); else if (!root) root = node; else throw new Error("TEXT plan contains multiple root nodes.");
       stack.push({ indent, node }); continue;
@@ -95,7 +109,17 @@ function parseTextPlan(source: string): PlanEnvelope {
     const planning = value.match(/^Planning Time:\s*([\d.]+)\s*ms/i); if (planning) { planningTime = Number(planning[1]); continue; }
     const execution = value.match(/^Execution Time:\s*([\d.]+)\s*ms/i); if (execution) { executionTime = Number(execution[1]); continue; }
     const settingsLine = value.match(/^Settings:\s*(.+)$/i);
-    if (settingsLine) { for (const entry of settingsLine[1].split(/,\s*/)) { const setting = entry.match(/^([^=]+)=\s*'?([^']*)'?$/); if (setting) settings[setting[1].trim()] = setting[2].trim(); } continue; }
+    if (settingsLine) {
+      for (const entry of settingsLine[1].split(/,\s*/)) {
+        const equalsAt = entry.indexOf("=");
+        if (equalsAt <= 0) continue;
+        const name = entry.slice(0, equalsAt).trim();
+        let setting = entry.slice(equalsAt + 1).trim();
+        if (setting.startsWith("'") && setting.endsWith("'")) setting = setting.slice(1, -1);
+        if (name && !setting.includes("'")) settings[name] = setting;
+      }
+      continue;
+    }
     const current = stack.at(-1)?.node, pair = value.match(/^([^:]+):\s*(.+)$/); if (!current || !pair) continue;
     const [, key, detail] = pair;
     if (/^(Filter|Index Cond|Recheck Cond|Hash Cond|Merge Cond|Join Filter|Output|Sort Key|Group Key)$/i.test(key)) current[key] = detail;

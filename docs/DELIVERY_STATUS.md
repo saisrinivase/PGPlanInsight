@@ -1,5 +1,12 @@
 # PGPlan Insight delivery status
 
+## Redaction parser availability fix — 2026-10-18
+
+- Replaced ambiguous TEXT label/cost matching with delimiter splitting and bounded numeric syntax; relation/index labels are tokenized. Clipboard quote normalization and settings parsing no longer use overlapping whitespace matches.
+- Synthetic regressions cover whitespace, tabs, NBSP, arrows, malformed cost/rows, long labels, quoted clipboard and malformed settings. Ordinary TEXT metrics, child structure, settings and identifier redaction remain covered.
+- Passed 142 unit tests, TypeScript/production build, 51-file static gate, and six focused Chromium/Firefox/WebKit redaction/recovery workflows. Malformed inputs complete within the bounded regression budget and valid preview-to-analysis still works. Initial duplicate local type folders required a clean locked reinstall; no lockfile changes.
+- Hosted Windows/macOS full release gate pending. This fixes the reviewed parsing routes; it is not full dependency or endpoint security certification. Existing bundle-size warning remains.
+
 ## Current release-candidate status — 2026-10-10
 
 - Candidate tag: `v0.6.0-rc.1` at commit `6e38d25`.

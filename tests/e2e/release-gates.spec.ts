@@ -123,6 +123,23 @@ test("S2: malformed input fails safely and remains editable", async ({ page }) =
   await expect(input).toHaveValue("hello world");
 });
 
+test("S1: malformed redaction preview stays responsive and a valid plan still works", async ({ page }) => {
+  await page.goto("/");
+  const input = page.getByLabel("Plan evidence");
+  for (const text of [" ".repeat(20_000) + "x", "\t".repeat(20_000) + "(cost=bad)"]) {
+    await input.fill(text);
+    await page.getByRole("button", { name: "Preview redacted plan" }).click();
+    await expect(page.getByRole("alert")).toContainText("Expected", { timeout: 5_000 });
+    await expect(input).toHaveValue(text);
+  }
+  await input.fill(textPlan);
+  await page.getByRole("button", { name: "Preview redacted plan" }).click();
+  await expect(page.getByLabel("Redacted JSON")).not.toHaveValue(/qa_accounts|account_id/);
+  await page.getByRole("button", { name: "Use redacted plan" }).click();
+  await page.getByRole("button", { name: /Analyze plan/ }).click();
+  await expect(page.getByTestId("pev2-renderer")).toBeVisible();
+});
+
 test("S1: default analysis leaves no saved plan and redaction removes private text", async ({ page }) => {
   await page.goto("/");
   await page.getByLabel("Case name").fill("Temporary private case");

@@ -588,3 +588,7 @@
 .validation-workbench .repeated-captures input[type="file"] { width: 100%; max-width: 100%; height: auto; min-width: 0; }
 .validation-workbench .repeated-captures button { justify-self: start; margin: 8px 12px; }
 @media (max-width: 560px) { .validation-workbench .repeated-captures { grid-template-columns: 1fr; } }
+@media (max-width: 560px) {
+  .shell > header { flex-wrap: wrap; row-gap: 8px; }
+  .shell > header .header-actions { margin-left: auto; flex-wrap: wrap; }
+}

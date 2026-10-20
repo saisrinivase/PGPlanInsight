@@ -36,5 +36,6 @@ test("repeated captures compare medians, export all runs and block resource regr
   await expect(workbench).toContainText("Median resource use increased");
   await page.getByRole("button", { name: "Clear additional captures" }).click();
   await expect(workbench.getByText("Before captures: 1", { exact: true })).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
 });

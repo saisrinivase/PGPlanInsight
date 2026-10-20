@@ -1,4 +1,7 @@
 /* Night Operations appearance. Scoped to the selected theme; Light remains unchanged. */
+.shell[data-appearance="dark"] .validation-baseline { background: #1f303c !important; border-color: #405363 !important; }
+.shell[data-appearance="dark"] .validation-workbench .table-wrap :where(table,tbody,tr,td) { background: #17232e !important; border-color: #405363 !important; }
+.shell[data-appearance="dark"] .validation-workbench .table-wrap th { background: #20303d !important; border-color: #405363 !important; }
 :root[data-appearance="dark"],
 body:has(.shell[data-appearance="dark"]) {
   color-scheme: dark;

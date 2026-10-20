@@ -1,5 +1,14 @@
 # PGPlan Insight delivery status
 
+## Repeated-run Fix Validation — 2026-10-20
+
+- Added bounded import of independent before/after captures, per-side median runtime, min/max, relative MAD, individual samples, median resource metrics and matching report export. A checkbox with one submitted pair cannot establish repetition: at least three measured captures per side are required.
+- Missing counters stay N/A. Captured settings/returned-row drift, unstable or overlapping runtimes, and increased median reads/temp/WAL block acceptance. Plan-shape variation is disclosed; structural changes and evidence scores describe representative captures. Thresholds are screening rules, not statistical significance or production-wide proof.
+- Fixed the preceding hosted navigation regression: never-executed TEXT nodes are preserved rather than skipped, keeping subsequent operation numbers aligned. Exact navigation passed all three desktop browser profiles.
+- Final local release gate passed: 154 unit tests; 156 active Chromium/Firefox/WebKit tests, including scale/stress and same-origin/security workflows; 27 retired tests skipped; production build; static checks; online dependency audits; license/SBOM generation and 37 artifact hashes verified. Visual inspection covered desktop dark and narrow layouts; dark validation tables/baseline contrast corrected. Existing bundle-size warning remains.
+- PARTIAL acceptance: independent DBA-labelled cases and human pilot remain pending; review matrix and capture instructions are in `docs/REPEATED_FIX_VALIDATION.md`. Groups remain temporary for the current validation visit. Hosted Windows/macOS gate must pass for the pushed commit before release acceptance.
+- Next slice: independent DBA review of false-positive improvement/regression cases, followed by the internal pilot. No accuracy percentage or endpoint-security certification is claimed.
+
 ## Redaction parser availability fix — 2026-10-18
 
 - Replaced ambiguous TEXT label/cost matching with delimiter splitting and bounded numeric syntax; relation/index labels are tokenized. Clipboard quote normalization and settings parsing no longer use overlapping whitespace matches.

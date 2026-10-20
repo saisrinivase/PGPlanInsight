@@ -109,6 +109,7 @@ export interface PlanVisualNode extends NodeMetric {
 }
 
 export interface Analysis {
+  metricCapture?: { rootBuffers: boolean; rootWal: boolean; rootRows: boolean; rootPlanRows: boolean };
   format: "JSON" | "TEXT";
   postgresMajor: number | null;
   adapter: string;

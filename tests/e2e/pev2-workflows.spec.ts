@@ -526,7 +526,7 @@ test("Planner diagnostics prioritizes measured access work and the first estimat
   await expect(page.getByTestId("pev2-renderer").locator(".plan-node.selected")).toContainText(estimateOperation);
 });
 
-test("Fix Validation compares structurally different plans", async ({ page }) => {
+test("Fix Validation shows structural changes but a single pair remains provisional", async ({ page }) => {
   await analyze(page, fixture("02_non_sargable_expression"), "Before");
   await page.getByRole("button", { name: "Validate fix" }).click();
   await page.getByText("Same SQL shape", { exact: true }).click();
@@ -535,7 +535,7 @@ test("Fix Validation compares structurally different plans", async ({ page }) =>
   await page.getByText("Result repeated", { exact: true }).click();
   await page.getByPlaceholder(/after\/fixed/).fill(fixture("01_indexed_point_lookup"));
   await page.getByRole("button", { name: "Run comparison gate" }).click();
-  await expect(page.getByText("Improved", { exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Validation verdict" })).toContainText("Inconclusive");
 });
 
 test("Fix Validation blocks a one-run improvement and exposes complete proof evidence", async ({ page }) => {

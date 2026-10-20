@@ -583,3 +583,8 @@
 @media (prefers-reduced-motion: reduce) {
   .command-nav > button { scroll-behavior: auto; }
 }
+.validation-workbench .repeated-captures { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.validation-workbench .repeated-captures label { flex-direction: column; gap: 8px; }
+.validation-workbench .repeated-captures input[type="file"] { width: 100%; max-width: 100%; height: auto; min-width: 0; }
+.validation-workbench .repeated-captures button { justify-self: start; margin: 8px 12px; }
+@media (max-width: 560px) { .validation-workbench .repeated-captures { grid-template-columns: 1fr; } }

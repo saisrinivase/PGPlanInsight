@@ -194,5 +194,11 @@ export function analyzePlan(source: string): Analysis {
     executionTime, planningTime, nodeCount: nodes.length, primarySignal,
     headline: runtime ? `${primarySignal} is the strongest deterministic signal in this capture.` : "Evidence is too weak for runtime hotspot claims.",
     checks, findings, hotspots, planMap, settings, metrics,
+    metricCapture: {
+      rootBuffers: ["Shared Read Blocks", "Shared Hit Blocks", "Temp Read Blocks", "Temp Written Blocks"].some((key) => key in root),
+      rootWal: "WAL Bytes" in root,
+      rootRows: "Actual Rows" in root,
+      rootPlanRows: "Plan Rows" in root,
+    },
   };
 }

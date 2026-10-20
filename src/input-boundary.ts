@@ -72,7 +72,7 @@ function parseTextPlan(source: string): PlanEnvelope {
   let root: PlanNode | undefined, executionTime: number | undefined, planningTime: number | undefined;
   const settings: Record<string, string> = {};
   const version = source.match(/PostgreSQL\s+(\d+)/i);
-  const nodePattern = /^\(cost=(\d+(?:\.\d+)?)\.\.(\d+(?:\.\d+)?)\s+rows=(\d+)(?:\s+width=\d+)?\)(?:\s+\(actual\s+time=(\d+(?:\.\d+)?)\.\.(\d+(?:\.\d+)?)\s+rows=(\d+)\s+loops=(\d+)\))?$/;
+  const nodePattern = /^\(cost=(\d+(?:\.\d+)?)\.\.(\d+(?:\.\d+)?)\s+rows=(\d+)(?:\s+width=\d+)?\)(?:\s+\(actual\s+time=(\d+(?:\.\d+)?)\.\.(\d+(?:\.\d+)?)\s+rows=(\d+)\s+loops=(\d+)\)|\s+\(never executed\))?$/;
   // Some SQL clients copy an entire result column as one physical line: each
   // logical EXPLAIN line is quoted and adjacent lines are separated by `""`.
   // They may also use non-breaking spaces for indentation. Restore the logical

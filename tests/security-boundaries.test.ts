@@ -50,6 +50,10 @@ describe("untrusted plan limits", () => {
     expect(redactPlanForSharing(text)).not.toMatch(/private_table|private_idx/);
     expect(parsePlanInput(text + "\nSettings: work_mem = '4MB', jit = off").Settings).toEqual({ work_mem: "4MB", jit: "off" });
   });
+  it("preserves never-executed operations so later node references stay aligned", () => {
+    const text = "Nested Loop (cost=0..20 rows=1 width=8) (actual time=0..2 rows=1 loops=1)\n  -> Index Scan using first_idx on first_table (cost=0..1 rows=1 width=8) (never executed)\n  -> Index Only Scan using second_idx on second_table (cost=0..1 rows=1 width=8) (actual time=0..1 rows=1 loops=1)";
+    expect(parsePlanInput(text).Plan.Plans?.map((node) => node["Relation Name"])).toEqual(["first_table", "second_table"]);
+  });
 });
 describe("worker recovery", () => {
   afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); });

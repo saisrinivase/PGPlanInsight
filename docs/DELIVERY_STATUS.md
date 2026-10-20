@@ -7,6 +7,7 @@
 - Fixed the preceding hosted navigation regression: never-executed TEXT nodes are preserved rather than skipped, keeping subsequent operation numbers aligned. Exact navigation passed all three desktop browser profiles.
 - Final local release gate passed: 154 unit tests; 156 active Chromium/Firefox/WebKit tests, including scale/stress and same-origin/security workflows; 27 retired tests skipped; production build; static checks; online dependency audits; license/SBOM generation and 37 artifact hashes verified. Visual inspection covered desktop dark and narrow layouts; dark validation tables/baseline contrast corrected. Existing bundle-size warning remains.
 - PARTIAL acceptance: independent DBA-labelled cases and human pilot remain pending; review matrix and capture instructions are in `docs/REPEATED_FIX_VALIDATION.md`. Groups remain temporary for the current validation visit. Hosted Windows/macOS gate must pass for the pushed commit before release acceptance.
+- Final narrow-only follow-up: the shared header wraps with automatic height at 390 px, keeping appearance/new-analysis controls above navigation. Production rebuild and all three repeated-validation browser profiles passed with explicit horizontal-overflow and header-overlap assertions after this CSS adjustment.
 - Next slice: independent DBA review of false-positive improvement/regression cases, followed by the internal pilot. No accuracy percentage or endpoint-security certification is claimed.
 
 ## Redaction parser availability fix — 2026-10-18

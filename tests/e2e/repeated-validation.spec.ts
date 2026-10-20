@@ -37,5 +37,7 @@ test("repeated captures compare medians, export all runs and block resource regr
   await page.getByRole("button", { name: "Clear additional captures" }).click();
   await expect(workbench.getByText("Before captures: 1", { exact: true })).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
+  const headerLayout = await page.evaluate(() => ({ actionsBottom: document.querySelector(".header-actions")!.getBoundingClientRect().bottom, navigationTop: document.querySelector(".focus-nav")!.getBoundingClientRect().top }));
+  expect(headerLayout.actionsBottom).toBeLessThanOrEqual(headerLayout.navigationTop);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
 });

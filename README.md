@@ -10,6 +10,8 @@
 
 ## About
 
+**Contributors:** [Sai (@saisrinivase)](https://github.com/saisrinivase) · Codex (AI-assisted development and testing). Human maintainers review and approve releases.
+
 PGPlan Insight analyzes PostgreSQL `EXPLAIN` output locally in your browser. It combines the PEV2 plan renderer with deterministic diagnostics and separates captured facts, derived signals, hypotheses, and conclusions that still require validation.
 
 It does not connect to a database, execute SQL, upload plans, or send plan content to an AI service. Optional case history is stored in the browser profile you choose.

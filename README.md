@@ -6,7 +6,7 @@
 
 [![PGPlan Insight release gate](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml/badge.svg)](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml)
 
-> **Version 0.6.0 release candidate.** Annotated prerelease tag [`v0.6.0-rc.1`](https://github.com/saisrinivase/PGPlanInsight/tree/v0.6.0-rc.1) points to `6e38d25`; hosted desktop gate #54 passed on Windows and macOS for that commit. The current copyright/license audit changes are newer than RC1 and require a fresh gate before release. This is not final release approval: rights-holder authority, uncoached pilot acceptance, and deployment-origin HTTP header verification remain open. Check the [live release-gate runs](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml).
+> **Version 1.0.0.** Internal pilot acceptance by DBAs and developers was reported by the product owner. Release publication requires the exact version commit to pass the Windows/macOS gates; check the [live release-gate runs](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml). Pilot acceptance is not a diagnostic-accuracy percentage or endpoint security certification. Rights-holder authority and deployment-origin HTTP header verification remain operator responsibilities.
 
 ## About
 
@@ -130,4 +130,4 @@ The full release gate also performs online dependency audits, license and releas
 npm run release:gate
 ```
 
-The v0.6.0 candidate has passed local unit, build, static-security, and focused desktop workflow checks. The hosted release gate must pass on the final candidate commit; follow the [live Actions page](https://github.com/saisrinivase/PGPlanInsight/actions).
+The hosted release gate must pass on the exact v1.0.0 commit before publishing its tag; follow the [live Actions page](https://github.com/saisrinivase/PGPlanInsight/actions).

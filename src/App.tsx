@@ -52,7 +52,7 @@ export function App() {
     setBusy(true); setError("");
     try {
       const result = await analyzeOffThread(source);
-      const item: StoredCase = { id: crypto.randomUUID(), title: title.trim() || `Plan ${new Date().toLocaleString()}`, source, analysis: result, createdAt: new Date().toISOString(), build: "pgplan_v0.6.0" };
+      const item: StoredCase = { id: crypto.randomUUID(), title: title.trim() || `Plan ${new Date().toLocaleString()}`, source, analysis: result, createdAt: new Date().toISOString(), build: "pgplan_v1.0.0" };
       if (retentionDays > 0) { item.expiresAt = new Date(Date.now() + Math.min(retentionDays, 30) * 86400_000).toISOString(); await saveCase(item); setHistory(await listCases()); } setPlanSource(source); setAnalysis(result); setTab("diagnosis");
     }
     catch (caught) { setError(caught instanceof Error ? caught.message : "Analysis failed."); }

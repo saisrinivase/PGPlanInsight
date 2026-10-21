@@ -1,5 +1,13 @@
 # PGPlan Insight delivery status
 
+## v1.0.0 release preparation — 2026-10-20
+
+- User reports successful internal testing by DBAs and developers and authorizes v1.0.0 production versioning.
+- Previous implementation commit 8e50ca2 passed hosted Windows/macOS release CI (run 39487835335).
+- Package, visible branding and new saved-case versions updated to 1.0.0, preserving older saved-case versions. Exact version commit must pass release gates before tagging/publishing.
+- Initial gate passed 154 unit and 156 desktop browser tests but correctly blocked on Vite advisories. Vite was updated within its existing supported range. Full rerun PASS: 154 unit tests, 156 desktop browser tests, 27 retired tests skipped, build/static checks, zero advisory findings, 101 production licenses/components and 37 artifact hashes verified. Hosted Windows/macOS verification of the exact commit remains required before tagging.
+- Pilot acceptance is user-reported, not independent diagnostic-accuracy scoring or endpoint/deployment security certification. Previously documented evidence and operational limitations remain applicable.
+
 ## Repeated-run Fix Validation — 2026-10-20
 
 - Added bounded import of independent before/after captures, per-side median runtime, min/max, relative MAD, individual samples, median resource metrics and matching report export. A checkbox with one submitted pair cannot establish repetition: at least three measured captures per side are required.

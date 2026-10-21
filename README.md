@@ -6,7 +6,7 @@
 
 [![PGPlan Insight release gate](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml/badge.svg)](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml)
 
-> **Version 1.0.0.** Internal pilot acceptance by DBAs and developers was reported by the product owner. Release publication requires the exact version commit to pass the Windows/macOS gates; check the [live release-gate runs](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml). Pilot acceptance is not a diagnostic-accuracy percentage or endpoint security certification. Rights-holder authority and deployment-origin HTTP header verification remain operator responsibilities.
+> **Version 1.0.0.** Internal pilot acceptance by DBAs and developers was reported by the product owner. Check the [release notes](RELEASE_NOTES_v1.0.0.md) and [live Windows/macOS release gates](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml) for publication status. Pilot acceptance is not a diagnostic-accuracy percentage or endpoint security certification. Rights-holder authority and deployment-origin HTTP header verification remain operator responsibilities.
 
 ## About
 
@@ -23,7 +23,7 @@ Before analyzing a single plan, **Prioritize workload** can import a sanitized `
 1. **Plan** — inspect the execution tree and metrics in PEV2 Plan, Grid, Raw, Query, and Stats views.
 2. **Findings** — review ranked evidence, uncertainty, controlled next tests, and available operation links.
 3. **Planner diagnostics** — review access-path work and row-estimate drift, with links to matching plan operations.
-4. **Validate fix** — compare before and after plans; missing comparability evidence blocks a confident verdict.
+4. **Validate fix** — compare repeated before/after captures using median runtime, variability and resource guardrails; missing comparability evidence blocks a confident verdict. See [capture instructions and limits](docs/REPEATED_FIX_VALIDATION.md).
 5. **Database context** — optionally import a sanitized metadata pack to qualify catalog and planner hypotheses. No database connection is made.
 6. **Plan reference** — search explanations for scans, heap fetches, buffers, temporary I/O, timing, `work_mem`, PostgreSQL types, casts, operators, and collations, with cautions and links to the official PostgreSQL manual.
 
@@ -41,12 +41,12 @@ npm run dev -- --host 127.0.0.1 --port 5176
 
 If your extracted folder has a different name or is not nested, adjust the `cd` path so it opens the folder containing `package.json`. Run `npm ci` once after extracting the ZIP (the ZIP does not contain `node_modules`), then open `http://127.0.0.1:5176/`. Keep PowerShell open while using the local server; stop it with `Ctrl+C`.
 
-**macOS or Linux**
+**macOS**
 
 ```bash
 cd /path/to/PGPlanInsight
 npm ci
-npm run dev
+npm run dev -- --host 127.0.0.1 --port 5176
 ```
 
 Open the local URL printed by Vite. For installation, plan capture, privacy, deployment, and troubleshooting, see the [Installation and User Guide](INSTALLATION_AND_USER_GUIDE.md).
@@ -115,6 +115,20 @@ To the extent permitted by applicable law, the PostgreSQL License disclaims warr
 Analysis runs in the browser. Plans are temporary by default; if you opt to save one, it stays in that browser profile and may contain SQL, identifiers, and expressions. Use **Preview redacted plan** before saving or sharing sensitive evidence. Redaction reduces detail but does not guarantee anonymity.
 
 For shared use, build and serve the static `dist/` output from an HTTPS host. No application backend is required. Configure and verify response security headers at the hosting origin; a sample is in [deploy/nginx.conf](deploy/nginx.conf). See the [Installation and User Guide](INSTALLATION_AND_USER_GUIDE.md) for deployment details.
+
+## Production package
+
+Supported release targets are Windows and macOS with desktop Chromium, Firefox and WebKit. Linux and mobile are not in the V1 release validation matrix.
+
+```bash
+npm ci
+npx playwright install chromium firefox webkit
+npm run release:gate
+```
+
+After a successful gate, deploy the **contents of `dist/`**, not the source repository. The build cleans prior output and generates compiled assets plus `dist/release/` evidence: release report, dependency SBOM, license inventory and SHA-256 manifest. Verify with `node scripts/verify-release-artifacts.mjs`. Registry access is needed for installation and current advisory audits.
+
+Do not deploy `node_modules/`, `src/`, `tests/`, development fixtures, or local test reports. These remain useful in the source repository for maintenance and reproducible verification. Vite's development server is for local development, not a shared production host. Keep the release evidence with the matching build; rebuilding invalidates earlier evidence.
 
 ## Development and Release Checks
 

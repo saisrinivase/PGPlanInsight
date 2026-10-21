@@ -1,5 +1,11 @@
 # PGPlan Insight delivery status
 
+## Production documentation and scoped cleanup — 2026-10-20
+
+- Updated README with v1.0.0 release notes, repeated-run validation, supported Windows/macOS matrix and production-only dist deployment instructions.
+- Removed the unreferenced theme-preview prototype. Retained historical notes, tests, fixtures and security/release tooling as maintenance evidence; these are not shipped as source in dist.
+- Documentation-only change: diff whitespace checks and existing production artifact verification passed (38 files, 37 hashes). No runtime behavior changed or new full-suite claim made. Production tag still requires exact-commit hosted gates.
+
 ## v1.0.0 release preparation — 2026-10-20
 
 - User reports successful internal testing by DBAs and developers and authorizes v1.0.0 production versioning.

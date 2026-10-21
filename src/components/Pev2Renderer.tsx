@@ -54,6 +54,8 @@ export function Pev2Renderer({ planSource, appearance }: { planSource: string; a
       #pev2-root.pgplan-plan-view .plan-container .tab-pane.active > div,
       #pev2-root.pgplan-plan-view .splitpanes,
       #pev2-root.pgplan-plan-view .splitpanes__pane { height:auto !important; min-height:680px; overflow:visible !important; }
+      /* Pan/zoom nodes must stay inside the graph pane, never over the outline. */
+      #pev2-root.pgplan-plan-view .splitpanes__pane.plan { overflow:clip !important; clip-path:inset(0); }
       .plan-container .tab-pane.active pre { max-width:100%; white-space:pre-wrap !important; overflow-wrap:anywhere; word-break:break-word; }
       .plan-grid .pgplan-grid-note {
         padding:8px 12px;

@@ -1,5 +1,14 @@
 # PGPlan Insight delivery status
 
+## V1 release-blocker fix — 2026-10-21
+
+- Hosted PEV2 1.25.0 candidate failed the unchanged 30-second Chromium 2,000-node budget on macOS (37.3s) and Windows (33.6s). Windows also had one Firefox initial-navigation timeout. No production tag was published for that failed candidate.
+- Profiled a production build under 4x CPU throttling: repeated synchronous PlanNode bounding-box reads dominated samples. Replaced only that reviewed upstream measurement/publication site with a microtask read-then-write batch, guarded by the exact PEV2 module hash. Installed dependencies are not modified. See `PEV2_LAYOUT_COMPATIBILITY.md`.
+- Final local gate PASS: 158 unit tests; 159 active desktop browser tests, 27 retired tests skipped; production build; static security; zero findings in current production/all advisory audits; 101 component/licenses and 37 artifact hashes verified. Chromium 2,000-node case took 4.0s in the full local run, with the 30-second budget unchanged. Throttled final-batch profiling was approximately 14.9s versus 42.7s baseline.
+- Added browser geometry checks for expansion/tab switching and unit tests for queue ordering, disconnected/coalesced requests and fail-closed Windows-compatible transformation. Clipped graph content to its pane to prevent WebKit interception of outline tooltips. Targeted 12 browser checks and the full gate passed.
+- Visual comparison against unmodified PEV2 confirmed a pre-existing dense-tree WebKit zoom-text limitation, documented in V1 release notes; Grid/Raw remain alternatives. Experimental SVG wrapper/height/auto-fit edits were discarded. Existing large-bundle warning remains.
+- Await exact-commit Windows/macOS gate before production tag/release publication. User-reported pilot acceptance does not establish an independent accuracy percentage or deployment security certification.
+
 ## PEV2 v1.25.0 integration — 2026-10-20
 
 - Pinned underlying renderer to 1.25.0; lockfile resolves one shared Vue 3.5.44 and Splitpanes 4.1.2. Updated current README, release notes, third-party attribution and exact-version browser assertion. Historical release notes remain unchanged.

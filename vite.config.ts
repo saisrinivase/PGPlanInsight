@@ -1,8 +1,11 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
+import { pev2LayoutPatch } from "./scripts/pev2-layout-patch.mjs";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [pev2LayoutPatch(), react()],
+  // Keep development and production on the same reviewed renderer transform.
+  optimizeDeps: { exclude: ["pev2"] },
   define: {
     __VUE_OPTIONS_API__: true,
     __VUE_PROD_DEVTOOLS__: false,

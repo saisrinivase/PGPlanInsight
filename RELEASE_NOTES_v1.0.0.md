@@ -12,11 +12,15 @@
 
 The product owner reports internal acceptance by DBAs and developers. The v1.0.0 preparation passed 154 unit tests and 156 desktop browser tests (27 retired tests skipped), production build, static checks, current dependency audits, license/SBOM generation and artifact verification. Vite was updated within its supported range to resolve advisory findings.
 
+The final performance-fix local gate passed 158 unit tests and 159 desktop browser tests (27 retired tests skipped), build/static/advisory/license checks and artifact verification. The 2,000-node Chromium case completed in 4.0 seconds locally; its 30-second release budget was not relaxed. Hosted approval is required for the exact published commit.
+
 Hosted Windows/macOS CI must pass on the exact published commit before creating the production tag. See [Actions](https://github.com/saisrinivase/PGPlanInsight/actions/workflows/release-gate.yml); a version string alone does not establish publication. Desktop Chromium, Firefox and WebKit are the release browser matrix; Linux and mobile are excluded.
 
 ## Limits and operator responsibilities
 
 No independent real-world diagnostic-accuracy percentage is established. Index candidates and causal explanations remain bounded hypotheses; plan-only evidence cannot prove cache effects, locks, concurrency or production-wide benefit. Repeated-run screening is not statistical significance or p95 estimation.
+
+Dense zoomed-out SVG trees may show overlapping text in WebKit (also observed with unmodified PEV2); use Grid/Raw for complete evidence or Chromium/Firefox for graphical review. The reviewed PEV2 layout batching modification reduces repeated forced layout work without changing plan metrics or relaxing the Chromium performance budget. See [compatibility notes](docs/PEV2_LAYOUT_COMPATIBILITY.md).
 
 Configure and verify HTTPS/security headers at the deployment origin, review sensitive plans before sharing, confirm rights-holder authorization and follow change control. The existing large-bundle warning remains. Security checks are not a guarantee of zero vulnerabilities.
 

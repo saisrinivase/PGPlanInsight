@@ -89,6 +89,28 @@ test("PEV2 is the primary renderer with plan modes", async ({ page }) => {
   await expect(page.getByTestId("pev2-renderer")).toBeVisible();
 });
 
+test("batched graph measurements settle without overlap after detail and tab changes", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Sample plans" }).click();
+  await page.getByRole("button", { name: /Sort spill/ }).click();
+  const renderer = page.getByTestId("pev2-renderer");
+  const nodes = renderer.locator(".plan-node");
+  const separated = () => renderer.evaluate((host) => {
+    const boxes = Array.from(host.shadowRoot!.querySelectorAll(".plan-node"))
+      .map((node) => node.getBoundingClientRect()).sort((a, b) => a.top - b.top);
+    return boxes.length === 2 && boxes.every((box) => box.width > 0 && box.height > 0)
+      && boxes[1].top >= boxes[0].bottom;
+  });
+  await expect.poll(separated).toBe(true);
+  await nodes.first().locator(".node-detail-toggle").click();
+  await expect(nodes.first()).toHaveClass(/detailed/);
+  await expect.poll(separated).toBe(true);
+  await page.getByRole("link", { name: /Grid/ }).click();
+  await expect(renderer.locator(".plan-grid tr.node")).toHaveCount(2);
+  await page.getByRole("link", { name: "Plan", exact: true }).click();
+  await expect.poll(separated).toBe(true);
+});
+
 test("sample library exposes diagnostic patterns and renders a 500-node plan completely", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Sample plans" }).click();

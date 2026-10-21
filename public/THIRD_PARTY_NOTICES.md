@@ -6,6 +6,8 @@ PGPlan Insight bundles third-party code, fonts, and icon assets. The project its
 
 PGPlan Insight bundles PEV2 v1.25.0 by Dalibo: <https://github.com/dalibo/pev2>. PEV2 is distributed under the PostgreSQL License.
 
+PGPlan Insight applies a reviewed build-time compatibility modification to batch graph-node layout measurements before publishing size updates. This preserves node dimensions and plan metrics while reducing forced layout work. The patch is guarded against the exact upstream package build; the upstream files in node_modules are not edited.
+
 Copyright (c) 2019, Dalibo
 
 Permission to use, copy, modify, and distribute this software and its documentation for any purpose, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and this paragraph and the following two paragraphs appear in all copies.

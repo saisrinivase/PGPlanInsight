@@ -76,7 +76,7 @@ test("PEV2 is the primary renderer with plan modes", async ({ page }) => {
   await page.getByRole("button", { name: /Sort spill/ }).click();
   await expect(page.getByTestId("pev2-renderer")).toBeVisible();
   for (const name of ["Plan", "Grid new", "Raw", "Stats"]) await expect(page.getByRole("link", { name, exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: /PEV2 1\.23\.0/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /PEV2 1\.25\.0/ })).toBeVisible();
   const iconSizes = await page.getByTestId("pev2-renderer").evaluate((host) =>
     Array.from(host.shadowRoot?.querySelectorAll<SVGElement>("svg.svg-inline--fa") ?? []).map((icon) => {
       const box = icon.getBoundingClientRect();

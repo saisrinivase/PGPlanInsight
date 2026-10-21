@@ -95,7 +95,7 @@ The evidence labels mean:
 ## Contributors and Acknowledgments
 
 - **Project owner:** [@saisrinivase](https://github.com/saisrinivase). Product decisions, review, and release responsibility remain with the project owner.
-- **Plan visualization:** PGPlan Insight uses [PEV2](https://github.com/dalibo/pev2) v1.23.0. Thank you to [Dalibo](https://dalibo.com/) and the PEV2 contributors for this open-source PostgreSQL plan visualizer. PEV2 is distributed under the PostgreSQL License; required notice text is included in the shipped [third-party notices](public/THIRD_PARTY_NOTICES.md).
+- **Plan visualization:** PGPlan Insight uses [PEV2](https://github.com/dalibo/pev2) v1.25.0. Thank you to [Dalibo](https://dalibo.com/) and the PEV2 contributors for this open-source PostgreSQL plan visualizer. PEV2 is distributed under the PostgreSQL License; required notice text is included in the shipped [third-party notices](public/THIRD_PARTY_NOTICES.md).
 - **Development assistance:** GitHub Copilot and OpenAI Codex were used as AI-assisted development tools. Their suggestions were reviewed and verified by the project owner. They are not application features, runtime dependencies, or services that receive user plans.
 
 Diagnostic rules are deterministic but have not been independently validated against a representative DBA-labelled corpus; see [Diagnostic Accuracy Status](docs/DIAGNOSTIC_ACCURACY.md). Synthetic regression scores measure conformance to authored examples, not production accuracy.

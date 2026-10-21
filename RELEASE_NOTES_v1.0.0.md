@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Browser-local PostgreSQL TEXT/JSON execution-plan analysis with PEV2 Plan, Grid, Raw, Query and Stats views.
+- Browser-local PostgreSQL TEXT/JSON execution-plan analysis with PEV2 v1.25.0 Plan, Grid, Raw, Query and Stats views. Includes upstream HashAggregate batch parsing, never-executed-node and tree/tab-layout fixes.
 - Evidence-led Findings and Planner diagnostics for access paths, estimates, loop amplification, visible casts, heap fetches and temporary I/O.
 - Sanitized Database Context Pack, environment comparison and guarded candidate-index experiments. No SQL execution or direct database connection.
 - Repeated-run Fix Validation: 3–10 captures per side for directional screening, median runtime/resources, variability checks and report export. Missing evidence stays explicit; captures are temporary for the current validation visit.

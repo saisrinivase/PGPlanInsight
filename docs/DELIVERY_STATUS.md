@@ -1,5 +1,12 @@
 # PGPlan Insight delivery status
 
+## PEV2 v1.25.0 integration — 2026-10-20
+
+- Pinned underlying renderer to 1.25.0; lockfile resolves one shared Vue 3.5.44 and Splitpanes 4.1.2. Updated current README, release notes, third-party attribution and exact-version browser assertion. Historical release notes remain unchanged.
+- Full local release gate PASS: 154 unit tests, 156 active Chromium/Firefox/WebKit tests, 27 retired tests skipped, production build, 52-file static checks, current production/all dependency audits, 101 component/license inventory and 37 artifact hashes. Existing bundle-size warning remains.
+- First run's three failures were the expected old displayed-version assertion, not layout failures; reran the entire gate after updating it. Dense Plan/Grid/Raw, navigation, appearance, popups, scale and stress checks passed. Inspected settled desktop dark Plan graph in an isolated Chromium browser; connected screenshot capture timed out, so used a fresh local browser. No custom renderer rewrite required.
+- Restarted local dev server with forced dependency refresh so localhost:5176 shows 1.25.0 rather than cached 1.23.0. Hosted Windows/macOS CI must verify the upgrade commit before production tagging. Independent diagnostic accuracy and deployment-origin security remain separate evidence requirements.
+
 ## Production documentation and scoped cleanup — 2026-10-20
 
 - Updated README with v1.0.0 release notes, repeated-run validation, supported Windows/macOS matrix and production-only dist deployment instructions.

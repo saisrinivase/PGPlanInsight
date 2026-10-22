@@ -11,7 +11,7 @@ export const SAMPLE_PLANS: SamplePlan[] = [
   { id: "sort-spill", title: "Sort spill", description: "Temporary-block I/O caused by a sort that exceeded available memory.", category: "diagnostic", path: "/samples/memory_spill_plan.json" },
   { id: "loop-amplification", title: "Nested-loop amplification", description: "A fast inner lookup repeated enough times to dominate total execution.", category: "diagnostic", path: "/samples/cpu_nested_loop_plan.json" },
   { id: "cast-join", title: "Join with visible cast", description: "Join evidence containing plan-visible type coercion and material reads.", category: "diagnostic", path: "/samples/io_join_cast_plan.json" },
-  { id: "parallel-limit", title: "Limited parallelism", description: "A measured parallel operation with incomplete worker evidence.", category: "diagnostic", path: "/samples/parallel_limited_plan.json" },
+  { id: "parallel-limit", title: "Limited parallelism", description: "Synthetic Gather with four workers planned but none launched; the leader performs the scan.", category: "diagnostic", path: "/samples/parallel_limited_plan.json" },
   { id: "bind-loop", title: "Production-style deep loop", description: "A deeper ten-node join chain with repeated index access and estimate drift.", category: "diagnostic", path: "/samples/real_bind_loop_churn_plan.json" },
   { id: "wal-write", title: "WAL-heavy write", description: "Write-amplification evidence with WAL records, bytes, and full-page images.", category: "diagnostic", path: "/samples/wal_write_bound_plan.json" },
   ...[100, 500, 1_000, 2_000].map((nodeCount): SamplePlan => ({
@@ -61,5 +61,8 @@ export async function loadSamplePlan(sample: SamplePlan): Promise<string> {
   if (!sample.path) throw new Error("Sample source is unavailable.");
   const response = await fetch(sample.path);
   if (!response.ok) throw new Error("Sample could not be loaded.");
-  return response.text();
+  const source = JSON.parse(await response.text());
+  // Explicit provenance: these are educational examples, not production captures.
+  source[0]["PGPlan Sample Provenance"] = "Synthetic educational example; not a captured production plan.";
+  return JSON.stringify(source, null, 2);
 }

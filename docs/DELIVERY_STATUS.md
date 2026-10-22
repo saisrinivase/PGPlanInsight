@@ -1,5 +1,11 @@
 # PGPlan Insight delivery status
 
+## Sample-tree corrections — 2026-10-22
+
+- Replaced incomplete educational sample trees with explicit Outer/Inner join inputs, complete Sort/ModifyTable inputs, and Gather-level worker evidence. Repeated inner-loop counts now match the driving outer rows in these synthetic fixtures; inclusive timing bounds are checked. These examples do not establish production diagnostic accuracy.
+- Added source-tree structural assertions for all six diagnostic examples and browser checks matching every source operation to Plan/Grid rows across Chromium, Firefox and WebKit. Sample intake records synthetic provenance in Raw evidence.
+- Passed: 164 unit tests, production build, 53-file static security gate, and 24 focused cross-browser sample/renderer checks. Full release gate and exact-commit hosted CI remain pending; existing bundle-size warning remains. Published v1.0.0 is unchanged.
+
 ## Post-V1 WebKit stabilization / DBA corpus intake — 2026-10-21
 
 - Immutable v1.0.0 was published at dc23ef0 after hosted Windows/macOS gate 39599366646 passed. This entry describes a subsequent candidate; the production tag and downloadable release are not replaced.

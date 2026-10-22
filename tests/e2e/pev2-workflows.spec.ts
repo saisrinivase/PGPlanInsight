@@ -2,6 +2,26 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
 const fixture = (name: string) => readFileSync(new URL(`../enterprise_plans/${name}.json`, import.meta.url), "utf8");
+import { SAMPLE_PLANS } from "../../src/sample-plans";
+
+for (const sample of SAMPLE_PLANS.filter((entry) => entry.path)) {
+  test(`sample tree preserves source operations: ${sample.title}`, async ({ page }) => {
+    const [capture] = JSON.parse(readFileSync(new URL(`../../public${sample.path}`, import.meta.url), "utf8"));
+    const flatten = (node: any): any[] => [node, ...(node.Plans ?? []).flatMap(flatten)];
+    const sourceNodes = flatten(capture.Plan);
+    await page.goto("/");
+    await page.getByRole("button", { name: "Sample plans", exact: true }).click();
+    await page.getByRole("button", { name: new RegExp(sample.title) }).click();
+    const renderer = page.getByTestId("pev2-renderer");
+    await expect(renderer.locator(".plan-node")).toHaveCount(sourceNodes.length);
+    await page.getByRole("link", { name: /Grid/ }).click();
+    const rows = renderer.locator(".plan-grid tr.node");
+    await expect(rows).toHaveCount(sourceNodes.length);
+    for (let i = 0; i < sourceNodes.length; i++) {
+      await expect(rows.nth(i)).toContainText(sourceNodes[i]["Node Type"] === "ModifyTable" ? "Insert" : sourceNodes[i]["Node Type"]);
+    }
+  });
+}
 const quotedParallelPlan = readFileSync(new URL("../quoted-parallel-plan.txt", import.meta.url), "utf8");
 const productionNestedLoopPlan = readFileSync(new URL("../production-nested-loop-plan.txt", import.meta.url), "utf8");
 const coercionPlan = `PostgreSQL 16.4

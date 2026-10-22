@@ -1,40 +1,88 @@
 [
   {
-    "Execution Time": 4200,
     "Plan": {
       "Node Type": "Nested Loop",
+      "Join Type": "Inner",
+      "Startup Cost": 0,
+      "Total Cost": 10000,
+      "Plan Rows": 2500,
+      "Plan Width": 32,
+      "Actual Startup Time": 0.01,
       "Actual Total Time": 4198,
       "Actual Rows": 2500,
       "Actual Loops": 1,
-      "Shared Read Blocks": 120000,
-      "Shared I/O Read Time": 3600,
       "Plans": [
         {
           "Node Type": "Nested Loop",
-          "Join Filter": "((a.unit_id)::text = (b.unit_id)::text)",
-          "Rows Removed by Join Filter": 280000,
+          "Join Type": "Inner",
+          "Startup Cost": 0,
+          "Total Cost": 10000,
+          "Plan Rows": 2500,
+          "Plan Width": 32,
+          "Actual Startup Time": 0.01,
           "Actual Total Time": 3800,
           "Actual Rows": 2500,
           "Actual Loops": 1,
-          "Shared Read Blocks": 90000
+          "Plans": [
+            {
+              "Node Type": "Seq Scan",
+              "Relation Name": "units_a",
+              "Alias": "units_a",
+              "Startup Cost": 0,
+              "Total Cost": 100,
+              "Plan Rows": 2500,
+              "Plan Width": 16,
+              "Actual Startup Time": 0.001,
+              "Actual Total Time": 100,
+              "Actual Rows": 2500,
+              "Actual Loops": 1,
+              "Parent Relationship": "Outer"
+            },
+            {
+              "Node Type": "Seq Scan",
+              "Relation Name": "units_b",
+              "Alias": "units_b",
+              "Startup Cost": 0,
+              "Total Cost": 100,
+              "Plan Rows": 1,
+              "Plan Width": 16,
+              "Actual Startup Time": 0.001,
+              "Actual Total Time": 1.4,
+              "Actual Rows": 1,
+              "Actual Loops": 2500,
+              "Filter": "((units_a.unit_id)::text = (units_b.unit_id)::text)",
+              "Rows Removed by Filter": 112,
+              "Shared Read Blocks": 90000,
+              "Parent Relationship": "Inner"
+            }
+          ],
+          "Join Filter": "((units_a.unit_id)::text = (units_b.unit_id)::text)",
+          "Shared Read Blocks": 90000,
+          "Parent Relationship": "Outer"
         },
         {
           "Node Type": "Index Only Scan",
           "Relation Name": "most_recent_medical_school",
-          "Actual Rows": 2500,
-          "Actual Loops": 1,
-          "Heap Fetches": 2400,
-          "Actual Total Time": 150
-        },
-        {
-          "Node Type": "Result",
-          "Parent Relationship": "SubPlan",
-          "Subplan Name": "SubPlan 1",
+          "Alias": "most_recent_medical_school",
+          "Startup Cost": 0,
+          "Total Cost": 100,
+          "Plan Rows": 1,
+          "Plan Width": 16,
+          "Actual Startup Time": 0.001,
+          "Actual Total Time": 0.15,
           "Actual Rows": 1,
           "Actual Loops": 2500,
-          "Actual Total Time": 120
+          "Index Name": "most_recent_medical_school_pkey",
+          "Heap Fetches": 2400,
+          "Index Cond": "(application_id = units_a.application_id)",
+          "Shared Read Blocks": 30000,
+          "Parent Relationship": "Inner"
         }
-      ]
-    }
+      ],
+      "Shared Read Blocks": 120000,
+      "Shared I/O Read Time": 3600
+    },
+    "Planning Time": 1,
+    "Execution Time": 4200
   }
 ]

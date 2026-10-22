@@ -1,17 +1,41 @@
 [
   {
-    "Execution Time": 1800,
-    "WAL Records": 950000,
-    "WAL FPI": 60000,
-    "WAL Bytes": 268435456,
     "Plan": {
       "Node Type": "ModifyTable",
+      "Operation": "Insert",
+      "Relation Name": "event_archive",
+      "Startup Cost": 0,
+      "Total Cost": 10000,
+      "Plan Rows": 0,
+      "Plan Width": 0,
+      "Actual Startup Time": 1790,
       "Actual Total Time": 1790,
-      "Actual Rows": 300000,
+      "Actual Rows": 0,
       "Actual Loops": 1,
       "Shared Read Blocks": 4000,
       "Shared I/O Read Time": 120,
-      "Shared I/O Write Time": 820
-    }
+      "Shared I/O Write Time": 820,
+      "WAL Records": 950000,
+      "WAL FPI": 60000,
+      "WAL Bytes": 268435456,
+      "Plans": [
+        {
+          "Node Type": "Seq Scan",
+          "Relation Name": "events",
+          "Alias": "events",
+          "Startup Cost": 0,
+          "Total Cost": 100,
+          "Plan Rows": 300000,
+          "Plan Width": 16,
+          "Actual Startup Time": 0.001,
+          "Actual Total Time": 800,
+          "Actual Rows": 300000,
+          "Actual Loops": 1,
+          "Parent Relationship": "Outer"
+        }
+      ]
+    },
+    "Planning Time": 1,
+    "Execution Time": 1800
   }
 ]

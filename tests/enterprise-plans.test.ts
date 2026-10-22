@@ -123,9 +123,9 @@ describe("enterprise pgbench diagnosis gate", () => {
     const hitBlocks = nodes.map((node) => Number(node["Shared Hit Blocks"] ?? 0));
     expect(source[0]["Execution Time"]).toBeGreaterThan(1_000);
     expect(source[0]["Execution Time"]).toBeLessThan(10_000);
-    expect(Math.max(...loopCounts)).toBe(10_284);
+    expect(Math.max(...loopCounts)).toBe(1_000);
     expect(Math.max(...hitBlocks)).toBeLessThan(100_000);
-    expect(nodes.filter((node) => node["Node Type"] === "Index Only Scan").map((node) => node["Actual Loops"])).toEqual([10_284, 10_284]);
+    expect(nodes.filter((node) => node["Node Type"] === "Index Only Scan").map((node) => node["Actual Loops"])).toEqual([1_000, 1_000, 1_000, 1_000]);
     expect(Number(source[0].Plan["Actual Total Time"])).toBeGreaterThanOrEqual(Number(source[0].Plan.Plans[0]["Actual Total Time"]));
   });
 });

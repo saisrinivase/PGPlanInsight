@@ -1,30 +1,54 @@
 [
   {
-    "Execution Time": 1600,
     "Plan": {
       "Node Type": "Nested Loop",
+      "Join Type": "Inner",
+      "Startup Cost": 0,
+      "Total Cost": 10000,
+      "Plan Rows": 120000,
+      "Plan Width": 32,
+      "Actual Startup Time": 0.01,
       "Actual Total Time": 1590,
       "Actual Rows": 120000,
       "Actual Loops": 1,
-      "Shared Read Blocks": 500,
-      "Shared I/O Read Time": 20,
       "Plans": [
         {
-          "Node Type": "Nested Loop",
-          "Actual Total Time": 1500,
+          "Node Type": "Seq Scan",
+          "Relation Name": "applications",
+          "Alias": "applications",
+          "Startup Cost": 0,
+          "Total Cost": 100,
+          "Plan Rows": 120000,
+          "Plan Width": 16,
+          "Actual Startup Time": 0.001,
+          "Actual Total Time": 90,
           "Actual Rows": 120000,
           "Actual Loops": 1,
-          "Rows Removed by Filter": 400000
+          "Parent Relationship": "Outer"
         },
         {
-          "Node Type": "Result",
-          "Parent Relationship": "SubPlan",
-          "Subplan Name": "SubPlan 2",
+          "Node Type": "Index Scan",
+          "Relation Name": "application_status",
+          "Alias": "application_status",
+          "Startup Cost": 0,
+          "Total Cost": 100,
+          "Plan Rows": 1,
+          "Plan Width": 16,
+          "Actual Startup Time": 0.001,
+          "Actual Total Time": 0.012,
           "Actual Rows": 1,
-          "Actual Loops": 800,
-          "Actual Total Time": 200
+          "Actual Loops": 120000,
+          "Index Name": "application_status_pkey",
+          "Index Cond": "(application_id = applications.id)",
+          "Shared Read Blocks": 500,
+          "Shared I/O Read Time": 20,
+          "Parent Relationship": "Inner"
         }
-      ]
-    }
+      ],
+      "Shared Read Blocks": 500,
+      "Shared I/O Read Time": 20
+    },
+    "Planning Time": 1,
+    "Execution Time": 1600
   }
 ]

@@ -1,16 +1,41 @@
 [
   {
-    "Execution Time": 2400,
     "Plan": {
-      "Node Type": "Seq Scan",
-      "Relation Name": "big_table",
+      "Node Type": "Gather",
+      "Startup Cost": 1000,
+      "Total Cost": 100000,
+      "Plan Rows": 1200000,
+      "Plan Width": 16,
+      "Actual Startup Time": 0.02,
       "Actual Total Time": 2390,
       "Actual Rows": 1200000,
       "Actual Loops": 1,
+      "Workers Planned": 4,
+      "Workers Launched": 0,
+      "Single Copy": false,
       "Shared Read Blocks": 180000,
       "Shared I/O Read Time": 1700,
-      "Workers Planned": 4,
-      "Workers Launched": 0
-    }
+      "Plans": [
+        {
+          "Node Type": "Seq Scan",
+          "Relation Name": "big_table",
+          "Alias": "big_table",
+          "Startup Cost": 0,
+          "Total Cost": 100,
+          "Plan Rows": 1200000,
+          "Plan Width": 16,
+          "Actual Startup Time": 0.001,
+          "Actual Total Time": 2380,
+          "Actual Rows": 1200000,
+          "Actual Loops": 1,
+          "Parent Relationship": "Outer",
+          "Parallel Aware": true,
+          "Shared Read Blocks": 180000,
+          "Shared I/O Read Time": 1700
+        }
+      ]
+    },
+    "Planning Time": 1,
+    "Execution Time": 2400
   }
 ]

@@ -1,25 +1,41 @@
 [
   {
-    "Execution Time": 2100,
     "Plan": {
       "Node Type": "Sort",
+      "Startup Cost": 10000,
+      "Total Cost": 11000,
+      "Plan Rows": 900000,
+      "Plan Width": 32,
+      "Actual Startup Time": 2089,
       "Actual Total Time": 2090,
       "Actual Rows": 900000,
       "Actual Loops": 1,
-      "Sort Method": "external merge",
-      "Temp Read Blocks": 260000,
-      "Temp Written Blocks": 300000,
+      "Sort Key": [
+        "event_time"
+      ],
       "Plans": [
         {
-          "Node Type": "Hash Join",
+          "Node Type": "Seq Scan",
+          "Relation Name": "events",
+          "Alias": "events",
+          "Startup Cost": 0,
+          "Total Cost": 100,
+          "Plan Rows": 900000,
+          "Plan Width": 16,
+          "Actual Startup Time": 0.001,
           "Actual Total Time": 1800,
           "Actual Rows": 900000,
           "Actual Loops": 1,
-          "Batches": 16,
-          "Temp Read Blocks": 120000,
-          "Temp Written Blocks": 130000
+          "Parent Relationship": "Outer"
         }
-      ]
-    }
+      ],
+      "Sort Method": "external merge",
+      "Sort Space Type": "Disk",
+      "Sort Space Used": 2400000,
+      "Temp Read Blocks": 260000,
+      "Temp Written Blocks": 300000
+    },
+    "Planning Time": 1,
+    "Execution Time": 2100
   }
 ]

@@ -56,6 +56,14 @@ export function Pev2Renderer({ planSource, appearance }: { planSource: string; a
       #pev2-root.pgplan-plan-view .splitpanes__pane { height:auto !important; min-height:680px; overflow:visible !important; }
       /* Pan/zoom nodes must stay inside the graph pane, never over the outline. */
       #pev2-root.pgplan-plan-view .splitpanes__pane.plan { overflow:clip !important; clip-path:inset(0); }
+      /* WebKit paints positioned foreignObject descendants outside the SVG
+         zoom transform. Keep only that engine's node HTML in normal flow. */
+      @supports (font: -apple-system-body) {
+        .plan svg foreignObject { transition:none !important; }
+        #pev2-root.pgplan-plan-view .splitpanes__pane.plan { overflow:hidden !important; clip-path:none; height:max(680px, calc(100vh - 280px)) !important; align-self:flex-start; }
+        .plan svg foreignObject > .position-fixed { position:static !important; display:block !important; width:max-content; }
+        #pev2-root.pgplan-webkit-svg-layout .plan svg foreignObject :where(.plan-node, .plan-node-body, .position-relative, .alert) { position:static !important; }
+      }
       .plan-container .tab-pane.active pre { max-width:100%; white-space:pre-wrap !important; overflow-wrap:anywhere; word-break:break-word; }
       .plan-grid .pgplan-grid-note {
         padding:8px 12px;
@@ -179,7 +187,37 @@ export function Pev2Renderer({ planSource, appearance }: { planSource: string; a
     shadow.append(style, mount);
     const app = createApp({ render: () => h(Plan, { planSource: rendererSource(planSource), planQuery: "" }) });
     app.mount(mount);
+    const webkitSvgLayout = CSS.supports("font", "-apple-system-body");
+    const graphWrappers = new Set<Element>();
+    const graphSizes = new ResizeObserver((entries) => {
+      let measured = false;
+      for (const entry of entries) {
+        const wrapper = entry.target;
+        const box = wrapper.parentElement;
+        if (!wrapper.isConnected || box?.localName !== "foreignObject") continue;
+        const height = entry.borderBoxSize[0]?.blockSize ?? entry.contentRect.height;
+        if (!Number.isFinite(height) || height <= 0) continue;
+        const value = String(Math.ceil(height));
+        if (box.getAttribute("height") !== value) box.setAttribute("height", value);
+        measured = true;
+      }
+      // Apply after initial SVG layout/auto-fit, invalidating WebKit's stale
+      // positioned-HTML paint layer as well as keeping subsequent zoom correct.
+      if (measured && !mount.classList.contains("pgplan-webkit-svg-layout")) mount.classList.add("pgplan-webkit-svg-layout");
+    });
     const enhanceRenderedViews = () => {
+      for (const wrapper of graphWrappers) {
+        if (!wrapper.isConnected) {
+          graphSizes.unobserve(wrapper);
+          graphWrappers.delete(wrapper);
+        }
+      }
+      if (graphWrappers.size === 0 && mount.classList.contains("pgplan-webkit-svg-layout")) mount.classList.remove("pgplan-webkit-svg-layout");
+      if (webkitSvgLayout) shadow.querySelectorAll(".plan svg foreignObject > .position-fixed").forEach((wrapper) => {
+        if (graphWrappers.has(wrapper)) return;
+        graphWrappers.add(wrapper);
+        graphSizes.observe(wrapper);
+      });
       const grid = shadow.querySelector<HTMLElement>(".plan-grid");
       mount.classList.toggle("pgplan-grid-view", Boolean(grid));
       mount.classList.toggle("pgplan-source-view", Boolean(shadow.querySelector(".tab-pane.active pre")));
@@ -246,6 +284,8 @@ export function Pev2Renderer({ planSource, appearance }: { planSource: string; a
     return () => {
       dismissTooltips();
       observer.disconnect();
+      graphSizes.disconnect();
+      graphWrappers.clear();
       tooltipObserver.disconnect();
       shadow.removeEventListener("click", dismissOnInteraction, true);
       shadow.removeEventListener("scroll", dismissOnInteraction, true);

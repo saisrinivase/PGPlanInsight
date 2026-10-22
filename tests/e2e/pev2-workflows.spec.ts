@@ -111,6 +111,56 @@ test("batched graph measurements settle without overlap after detail and tab cha
   await expect.poll(separated).toBe(true);
 });
 
+test("dense graph SVG content stays within its measured boxes during WebKit zoom and expansion", async ({ page }, info) => {
+  await analyze(page, productionNestedLoopPlan, "SVG content scaling");
+  const renderer = page.getByTestId("pev2-renderer");
+  const operationCount = await renderer.locator(".plan-diagram tr.node").count();
+  expect(operationCount).toBeGreaterThan(25);
+  const webkit = info.project.name === "webkit";
+  await expect.poll(() => renderer.evaluate((host, needsNormalFlow) => {
+    const objects = Array.from(host.shadowRoot!.querySelectorAll<SVGForeignObjectElement>(".plan svg foreignObject"));
+    if (objects.length < 25) return false;
+    return objects.every((box) => {
+      const wrapper = box.firstElementChild as HTMLElement;
+      const card = wrapper.querySelector<HTMLElement>(".plan-node")!;
+      if (!needsNormalFlow) return getComputedStyle(wrapper).position === "fixed";
+      const svgHeight = Number(box.getAttribute("height"));
+      return getComputedStyle(wrapper).position === "static" && getComputedStyle(card).position === "static"
+        && Array.from(box.querySelectorAll('.alert,.position-relative')).every((node) => getComputedStyle(node).position === "static")
+        && svgHeight >= wrapper.offsetHeight && svgHeight > 1;
+    });
+  }, webkit)).toBe(true);
+  await renderer.locator(".plan-diagram tr.node").first().click();
+  const first = renderer.locator(".plan svg foreignObject").first();
+  await expect(first.locator(".plan-node")).toHaveClass(/detailed/);
+  if (webkit) await expect.poll(() => first.evaluate((box) => {
+    const wrapper = box.firstElementChild as HTMLElement;
+    return Number(box.getAttribute("height")) >= wrapper.offsetHeight && wrapper.offsetHeight > 48;
+  })).toBe(true);
+  if (webkit) await expect.poll(() => first.locator(".node-detail-toggle").evaluate((heading) => {
+    const rect = heading.getBoundingClientRect();
+    return rect.top >= 0 && rect.top < innerHeight;
+  })).toBe(true);
+  const pane = renderer.locator(".splitpanes__pane.plan");
+  const bounds = (await pane.boundingBox())!;
+  const scale = () => first.evaluate((box: SVGForeignObjectElement) => box.getScreenCTM()!.a);
+  const before = await scale();
+  await page.mouse.move(bounds.x + bounds.width / 2, Math.max(10, bounds.y + 150));
+  await page.mouse.wheel(0, -250);
+  await expect.poll(scale).toBeGreaterThan(before);
+  if (webkit) await expect.poll(() => first.evaluate((box) => {
+    const wrapper = box.firstElementChild!;
+    return box.getBoundingClientRect().height + 1 >= wrapper.getBoundingClientRect().height;
+  })).toBe(true);
+  await page.getByRole("link", { name: /Grid/ }).click();
+  await expect(renderer.locator(".plan-grid tr.node")).toHaveCount(operationCount);
+  await page.getByRole("link", { name: "Plan", exact: true }).click();
+  if (webkit) {
+    await expect(renderer.locator("#pev2-root")).toHaveClass(/pgplan-webkit-svg-layout/);
+    await expect.poll(() => first.evaluate((box) => Number(box.getAttribute("height")) > 1)).toBe(true);
+  }
+});
+
 test("sample library exposes diagnostic patterns and renders a 500-node plan completely", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Sample plans" }).click();

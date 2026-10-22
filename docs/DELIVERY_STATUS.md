@@ -1,5 +1,14 @@
 # PGPlan Insight delivery status
 
+## Post-V1 WebKit stabilization / DBA corpus intake — 2026-10-21
+
+- Immutable v1.0.0 was published at dc23ef0 after hosted Windows/macOS gate 39599366646 passed. This entry describes a subsequent candidate; the production tag and downloadable release are not replaced.
+- Implemented WebKit-capability-scoped SVG normal-flow positioning after first layout, real foreignObject heights via ResizeObserver, transition suppression and a viewport-sized canvas. This fixes the observed initial/zoom text painting problem while preserving Chromium/Firefox positioning. Detached targets are unobserved and observers disconnected on unmount. Diagnostic rules and performance thresholds are unchanged.
+- Added dense-plan SVG-height, expanded-node, visible selected-heading, zoom and Plan/Grid/Plan re-entry regressions across the three desktop engines. Inspected first-paint dark, expanded/zoomed light and narrow WebKit screenshots; scrolling-layer and overly broad positioning experiments were discarded.
+- Final local gate PASS: 158 unit tests, 162 active desktop browser tests, 27 retired tests skipped; build/static checks; zero current production/all advisory findings; 101 production component/licenses and 37 artifact hashes verified. Vitest/mocker were updated to 4.1.12 in the lockfile after newly reported development-tooling advisories blocked the earlier gate. Existing bundle-size warning remains.
+- PARTIAL until exact-commit hosted Windows/macOS verification passes. No new release has been authorized or published for this candidate.
+- Independent DBA corpus validation is awaiting actual sanitized plans and per-case reviewer decisions. The user agreed to provide them, but general pilot approval is not ground-truth labels. Existing 18-case synthetic regression conformance passes; independent review stays false and production accuracy unknown. Intake requirements are in `DBA_CORPUS_INTAKE.md`.
+
 ## V1 release-blocker fix — 2026-10-21
 
 - Hosted PEV2 1.25.0 candidate failed the unchanged 30-second Chromium 2,000-node budget on macOS (37.3s) and Windows (33.6s). Windows also had one Firefox initial-navigation timeout. No production tag was published for that failed candidate.
